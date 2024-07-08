@@ -3,6 +3,7 @@ import { useRouter } from "next/navigation";
 import Image from "next/image";
 import SearchBar from "@/components/Searchbar";
 import { Suspense } from "react";
+import Link from "next/link";
 
 export default function Home() {
   const router = useRouter();
@@ -23,12 +24,14 @@ export default function Home() {
       <div className="bg-zinc-800 w-full min-h-screen">
         <header className="bg-zinc-800 px-6 shadow-lg flex items-center justify-center">
           <div className="flex h-20 items-center justify-between w-full">
-            <Image
-              src="/ConnecTo-logo-horizontal2.png"
-              alt="ConnecTo Logo"
-              width={250}
-              height={50}
-            />
+            <Link href="/">
+              <Image
+                src="/ConnecTo-logo-horizontal2.png"
+                alt="ConnecTo Logo"
+                width={250}
+                height={50}
+              />
+            </Link>
             <div className="flex items-center">
               <button
                 className=" px-4 py-2 rounded-xl font-semibold text-white mr-2  hover:text-sky-400 transition-colors duration-300 ease-in-out"
