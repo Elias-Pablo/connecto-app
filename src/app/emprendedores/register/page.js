@@ -1,17 +1,18 @@
 import Image from "next/image";
 import Link from "next/link";
-
 export default function Register() {
   return (
     <>
       <div className="bg-neutral-900 w-full h-screen flex flex-col items-center justify-center">
-        <Image
-          src="/ConnecTo-logo.png"
-          alt="ConnecTo Logo"
-          width={250}
-          height={250}
-          className="mb-10"
-        />
+        <Link href="/">
+          <Image
+            src="/ConnecTo-logo.png"
+            alt="ConnecTo Logo"
+            width={250}
+            height={250}
+            className="mb-10"
+          />
+        </Link>
         <div className="flex flex-col md:flex-row justify-center items-center">
           <form className="bg-blue-600 flex flex-col w-[500px] h-auto p-10 rounded-2xl shadow-md mb-8 md:ml-4">
             <h2 className="text-white text-center mb-4 font-bold text-xl">
@@ -25,6 +26,13 @@ export default function Register() {
               id="businessName"
               className="border border-gray-300 rounded-md p-1 mb-2 text-black"
             />
+            <label htmlFor="bussinessUser" className="text-white"></label>
+            Nombre del Propietario/a o Representante Legal
+            <input
+              type="text"
+              id="bussinessUser"
+              className="border border-gray-300 rounded-md p-1 mb-2 text-black"
+            ></input>
             <label htmlFor="emailEmp" className="text-white">
               Correo Electrónico
             </label>

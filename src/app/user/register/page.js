@@ -5,13 +5,15 @@ export default function Register() {
   return (
     <>
       <div className="bg-neutral-900 w-full h-screen flex flex-col items-center justify-center">
-        <Image
-          src="/ConnecTo-logo.png"
-          alt="ConnecTo Logo"
-          width={250}
-          height={250}
-          className="mb-10"
-        />
+        <Link href="/">
+          <Image
+            src="/ConnecTo-logo.png"
+            alt="ConnecTo Logo"
+            width={250}
+            height={250}
+            className="mb-10"
+          />
+        </Link>
         <div className="flex flex-col md:flex-row justify-center items-center">
           <form className="bg-fuchsia-600 flex flex-col w-[500px] h-auto p-10 rounded-2xl shadow-md mb-8 md:mr-4">
             <h2 className="text-white text-center mb-4 text-xl font-bold">

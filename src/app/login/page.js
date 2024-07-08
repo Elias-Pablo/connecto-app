@@ -4,13 +4,15 @@ import Link from "next/link";
 export default function Login() {
   return (
     <div className="bg-neutral-900 min-h-screen flex flex-col justify-center items-center">
-      <Image
-        src="/ConnecTo-logo.png"
-        alt="ConnecTo Logo"
-        width={250}
-        height={250}
-        className="mb-10"
-      />
+      <Link href="/">
+        <Image
+          src="/ConnecTo-logo.png"
+          alt="ConnecTo Logo"
+          width={250}
+          height={250}
+          className="mb-10"
+        />
+      </Link>
       <div className="bg-fuchsia-600 w-full md:w-1/3 p-10 rounded-2xl shadow-md">
         <div className="flex flex-col items-center">
           <form className="w-full max-w-md mt-6">
