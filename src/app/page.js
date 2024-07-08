@@ -2,6 +2,7 @@
 import { useRouter } from "next/navigation";
 import Image from "next/image";
 import SearchBar from "@/components/Searchbar";
+import { Suspense } from "react";
 
 export default function Home() {
   const router = useRouter();
@@ -54,7 +55,9 @@ export default function Home() {
           <h1 className="p-5 text-2xl font-semibold">
             Busca lo que quieres de nuestros emprendedores...
           </h1>
-          <SearchBar />
+          <Suspense fallback={<div>Loading...</div>}>
+            <SearchBar />
+          </Suspense>
         </section>
       </div>
     </>
