@@ -35,7 +35,11 @@ jobs:
           cache: "npm"
 
       - name: Install dependencies
-        run: npm ci
+        run: |
+          if [ -f package-lock.json ]; then
+            rm package-lock.json
+          fi
+          npm install
         env:
           CI: true
 
@@ -48,7 +52,7 @@ jobs:
       - name: Set up database
         run: |
           mysql -h 127.0.0.1 -u root -proot -e 'CREATE DATABASE IF NOT EXISTS testdb;'
-        # mysql -h 127.0.0.1 -u root -proot testdb < path/to/your/schema.sql
+        #mysql -h 127.0.0.1 -u root -proot testdb < path/to/your/schema.sql
 
       - name: Run tests
         run: npm run test
