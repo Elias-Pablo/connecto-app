@@ -1,5 +1,7 @@
-# This workflow will do a clean install of node dependencies, cache/restore them, build the source code and run tests across different versions of node
-# For more information see: https://help.github.com/actions/language-and-framework-guides/using-nodejs-with-github-actions
+# This workflow performs a continuous deployment of a Node.js project.
+# It includes steps for cloning the repository, setting up Node.js,
+# installing dependencies, running tests, building the project,
+# and creating a GitHub release.
 
 name: CD
 on:
@@ -11,7 +13,7 @@ jobs:
     name: Release
     runs-on: ubuntu-latest
     env:
-      NODE_ENV: test
+      NODE_ENV: production # Typically set to 'production' for deployment
 
     steps:
       - name: Clone repository
@@ -20,7 +22,7 @@ jobs:
       - name: Use Node.js 18
         uses: actions/setup-node@v2
         with:
-          node-version: 18.17.0"
+          node-version: 18.17.0
           cache: "npm"
 
       - name: Install dependencies
@@ -31,22 +33,22 @@ jobs:
       - name: Run the tests
         run: npm run test
 
-        # When we need to make commits it is important to set up the Git User
+      # Configure Git User for making commits
       - name: Configure Git User
         run: |
           git config user.email "actions@github.com"
           git config user.name "GitHub Actions"
 
-        # Get version number and save it in a variable
+      # Get version number from package.json and save it in a variable
       - name: Get package version
-        run: echo "::set-output name=tag-version::$(jq '.version' package.json | sed 's/-SNAPSHOT.0//' | xargs npm version --no-git-tag-version | sed 's/v//')"
+        run: echo "::set-output name=tag-version::$(jq -r '.version' package.json | sed 's/-SNAPSHOT.0//')"
         id: version
         shell: bash
 
       - name: Build
         run: npm run build
 
-        # Allows you to release using an already created tag, if the given tag does not exist it will fail
+      # Create a new GitHub Release
       - name: Create GitHub Release
         uses: ncipollo/release-action@v1
         with:
@@ -54,13 +56,12 @@ jobs:
           tag: ${{ steps.version.outputs.tag-version }}
           token: ${{ secrets.GITHUB_TOKEN }}
 
-        # Prepare prerelease with the preid SNAPSHOT (ex.: 0.0.0-SNAPSHOT.0)
+      # Prepare a new SNAPSHOT version
       - name: Create SNAPSHOT
         run: npm version prerelease --preid SNAPSHOT --no-git-tag-version
 
       - name: Update version in remote
         run: |
-          git add package.json
-          git add package-lock.json
+          git add package.json package-lock.json
           git commit -m "Update SNAPSHOT"
           git push
