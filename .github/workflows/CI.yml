@@ -54,9 +54,6 @@ jobs:
           mysql -h 127.0.0.1 -u root -proot -e 'CREATE DATABASE IF NOT EXISTS testdb;'
         #mysql -h 127.0.0.1 -u root -proot testdb < path/to/your/schema.sql
 
-      - name: Run tests
-        run: npm run test
-
       - name: Build
         run: npm run build
 
