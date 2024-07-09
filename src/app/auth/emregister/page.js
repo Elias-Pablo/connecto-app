@@ -14,7 +14,7 @@ export default function Register() {
           />
         </Link>
         <div className="flex flex-col md:flex-row justify-center items-center">
-          <form className="bg-blue-600 flex flex-col w-[500px] h-auto p-10 rounded-2xl shadow-md mb-8 md:ml-4">
+          <form className="bg-blue-600 flex flex-col w-[400px] h-auto p-10 rounded-2xl shadow-md mb-8 md:ml-4">
             <h2 className="text-white text-center mb-4 font-bold text-xl">
               Registro para Emprendedores
             </h2>
@@ -59,7 +59,7 @@ export default function Register() {
             />
             <button
               type="submit"
-              className="text-white bg-green-400 hover:bg-green-700 rounded-md p-1 mt-5"
+              className="text-white bg-green-400 hover:bg-green-700 rounded-md p-4 mt-5"
             >
               Registrarse como Emprendedor
             </button>

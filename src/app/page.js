@@ -9,14 +9,14 @@ export default function Home() {
   const router = useRouter();
 
   const handleLoginClick = () => {
-    router.push("/login");
+    router.push("/auth/login");
   };
 
   const handleRegisterClick = () => {
-    router.push("user/register");
+    router.push("/auth/register");
   };
   const handleRegisterEmprendedorClick = () => {
-    router.push("/emprendedores");
+    router.push("/auth/emprendedores");
   };
 
   return (
@@ -34,19 +34,19 @@ export default function Home() {
             </Link>
             <div className="flex items-center">
               <button
-                className=" px-4 py-2 rounded-xl font-semibold text-white mr-2  hover:text-sky-400 transition-colors duration-300 ease-in-out"
+                className=" px-4 py-2 text-xs md:text-base rounded-xl font-semibold text-white mr-2  hover:text-sky-400 transition-colors duration-300 ease-in-out"
                 onClick={handleRegisterEmprendedorClick}
               >
                 Registrar mi negocio
               </button>
               <button
-                className="bg-fuchsia-700 px-4 py-2 rounded-xl font-semibold text-zinc-800 mr-2 hover:bg-sky-400 hover:text-fuchsia-700 transition-colors duration-300 ease-in-out"
+                className="bg-fuchsia-700 px-4 text-xs md:text-base py-2 rounded-xl font-semibold text-zinc-800 mr-2 hover:bg-sky-400 hover:text-fuchsia-700 transition-colors duration-300 ease-in-out"
                 onClick={handleRegisterClick}
               >
                 Registrarse
               </button>
               <button
-                className="bg-sky-400 px-4 py-2 rounded-xl font-semibold text-zinc-800 hover:bg-fuchsia-700 hover:text-sky-400 transition-colors duration-300 ease-in-out"
+                className="bg-sky-400 px-4 py-2  text-xs md:text-base rounded-xl font-semibold text-zinc-800 hover:bg-fuchsia-700 hover:text-sky-400 transition-colors duration-300 ease-in-out"
                 onClick={handleLoginClick}
               >
                 Iniciar Sesión

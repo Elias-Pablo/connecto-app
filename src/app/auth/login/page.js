@@ -1,5 +1,6 @@
 import Image from "next/image";
 import Link from "next/link";
+import { ArrowRightEndOnRectangleIcon } from "@heroicons/react/24/outline";
 
 export default function Login() {
   return (
@@ -13,9 +14,9 @@ export default function Login() {
           className="mb-10"
         />
       </Link>
-      <div className="bg-fuchsia-600 w-full md:w-1/3 p-10 rounded-2xl shadow-md">
+      <div className="bg-fuchsia-600 w-[400px] md:w-2/4  p-10 rounded-2xl shadow-md">
         <div className="flex flex-col items-center">
-          <form className="w-full max-w-md mt-6">
+          <form className="  w-3/4   mt-6">
             <label htmlFor="email" className="text-white">
               Correo
             </label>
@@ -34,8 +35,9 @@ export default function Login() {
             />
             <button
               type="submit"
-              className="text-white bg-sky-400 hover:bg-sky-700 rounded-md p-2 mt-5 w-full"
+              className="text-white bg-sky-400 hover:bg-sky-700 rounded-md p-4 mt-5 w-full flex items-center justify-center"
             >
+              <ArrowRightEndOnRectangleIcon className="h-6 w-6 inline-block mr-2" />
               Iniciar Sesión
             </button>
             <Link
