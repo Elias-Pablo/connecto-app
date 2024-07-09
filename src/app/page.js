@@ -16,7 +16,7 @@ export default function Home() {
     router.push("/auth/register");
   };
   const handleRegisterEmprendedorClick = () => {
-    router.push("/auth/emprendedores");
+    router.push("/emprendedores");
   };
 
   return (
