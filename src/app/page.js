@@ -19,6 +19,28 @@ export default function Home() {
     router.push("/emprendedores");
   };
 
+  const products = [
+    {
+      image: "/producto1.jpg",
+      name: "Producto 1",
+      description: "Descripción del producto 1",
+    },
+    {
+      image: "/producto2.jpg",
+      name: "Producto 2",
+      description: "Descripción del producto 2",
+    },
+    {
+      image: "/producto3.jpg",
+      name: "Producto 3",
+      description: "Descripción del producto 3",
+    },
+    {
+      image: "/producto4.jpg",
+      name: "Producto 4",
+      description: "Descripción del producto 4",
+    },
+  ];
   return (
     <>
       <div className="bg-zinc-800 w-full min-h-screen">
@@ -62,6 +84,30 @@ export default function Home() {
             <SearchBar />
           </Suspense>
         </section>
+        <section className="p-10">
+          <div className="container mx-auto">
+            <h2 className="text-2xl font-semibold mb-5 text-center">
+              Productos destacados
+            </h2>
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+              {products.map((product, index) => (
+                <div
+                  key={index}
+                  className="bg-violet-300 p-5 rounded-lg shadow-lg text-center"
+                >
+                  <Image
+                    src={product.image}
+                    alt={product.name}
+                    width={350}
+                    height={200}
+                  />
+                  <h3 className="text-lg font-semibold">{product.name}</h3>
+                  <p className="text-sm text-black">{product.description}</p>
+                </div>
+              ))}
+            </div>
+          </div>
+        </section>        
       </div>
     </>
   );
