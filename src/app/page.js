@@ -20,27 +20,128 @@ export default function Home() {
   };
 
   const products = [
-    {
-      image: "/producto1.jpg",
-      name: "Producto 1",
-      description: "Descripción del producto 1",
-    },
-    {
-      image: "/producto2.jpg",
-      name: "Producto 2",
-      description: "Descripción del producto 2",
-    },
-    {
-      image: "/producto3.jpg",
-      name: "Producto 3",
-      description: "Descripción del producto 3",
-    },
-    {
-      image: "/producto4.jpg",
-      name: "Producto 4",
-      description: "Descripción del producto 4",
-    },
+    { image: "/imagenpromo.jpeg", name: "Producto 1", description: "Descripción 1" },
+    { image: "/product2.jpg", name: "Producto 2", description: "Descripción 2" },
+    { image: "/product3.jpg", name: "Producto 3", description: "Descripción 3" },
+    { image: "/product4.jpg", name: "Producto 4", description: "Descripción 4" },
   ];
+
+  const profiles = [
+    { image: "/imagenpromo.jpeg", name: "Nombre 1", profession: "Profesión 1" },
+    { image: "/profile2.jpg", name: "Nombre 2", profession: "Profesión 2" },
+    { image: "/profile3.jpg", name: "Nombre 3", profession: "Profesión 3" },
+    { image: "/profile4.jpg", name: "Nombre 4", profession: "Profesión 4" },
+  ];
+  
+  const ProductSection = () => (
+    <section className="p-10">
+      <div className="container mx-auto">
+        <h2 className="text-2xl font-semibold mb-5 text-center">
+          Productos Destacados
+        </h2>
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+          {products.map((product, index) => (
+            <div
+              key={index}
+              className="bg-fuchsia-700 active:bg-violet-400 p-5 rounded-lg shadow-lg text-center transform hover:-translate-y-1 hover:scale-scale-105 cursor-pointer"
+            >
+              <Image
+                src={product.image}
+                width={350}
+                height={200}
+                alt=""
+                layout="responsive"
+                objectFit="cover"
+              />
+              <h3 className="text-lg font-semibold mt-2">{product.name}</h3>
+              <p className="text-sm text-black">{product.description}</p>
+            </div>
+          ))}
+        </div>
+      </div>
+    </section>
+  );
+
+  const ProfileSection = () => (
+    <section className="p-10 flex justify-center items-center">
+      <div className="container mx-auto">
+        <h2 className="text-2xl font-semibold mb-5 text-center">
+          Perfiles de Emprendedores
+        </h2>
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+          {profiles.map((profile, index) => (
+            <div
+              key={index}
+              className="text-center"
+            >
+              <div className="cursor-pointer hover:opacity-80 transition-opacity duration-300 inline-block">
+                <div className="w-32 h-32 mx-auto rounded-full shadow-lg overflow-hidden">
+                  <Image
+                    src={profile.image}
+                    width={128}
+                    height={128}
+                    alt=""
+                    layout="responsive"
+                    objectFit="cover"
+                  />
+                </div>
+                <h3 className="text-lg font-semibold text-white mt-2">{profile.name}</h3>
+                <p className="text-sm text-gray-300">{profile.profession}</p>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+    </section>
+  );
+  
+  const SubscriptionPlans = () => (
+    <section className="w-full flex flex-col items-center justify-center py-20">
+          <p className="text-white text-3xl font-bold pb-5 drop-shadow-lg">
+            Planes de Suscripcion
+          </p>
+          <div className="flex flex-wrap justify-around w-full px-5">
+            {[
+                {
+                  name: "Free",
+                  color: "bg-sky-400",
+                  items: [
+                    "Perfil básico de negocio",
+                    "Catálogo de productos limitado",
+                    "Redirección a la página del negocio",
+                    "Acceso a la red de Emprendedores",
+                    "Gestor de redes sociales básico",
+                    "Visibilidad Básica en buscadores internos",
+                  ],
+                },
+                {
+                  name: "Premium",
+                  color: "bg-fuchsia-700",
+                  items: [
+                    "Perfil avanzado de negocio",
+                    "Catálogo de productos ilimitado",
+                    "Analíticas de interacciones",
+                    "Gestor de redes sociales con IA",
+                    "Promociones destacadas",
+                    "Visibilidad Mejorada en buscadores internos",
+                  ],
+                },
+              ].map((plan, index) => (
+              <div
+                key={index}
+                  className={`w-auto ${plan.color} text-white px-6 py-5 rounded-2xl shadow-xl mb-4 flex flex-col items-center transition-transform transform hover:scale-105 duration-300 ease-in-out`}
+                >
+                <p className="text-4xl m-4 font-bold">{plan.name}</p>
+                <ul className="text-sm font-light list-disc list-inside">
+                  {plan.items.map((item, i) => (
+                    <li key={i}>{item}</li>
+                  ))}
+                </ul>
+              </div>
+            ))}
+          </div>
+    </section>
+  );
   return (
     <>
       <div className="bg-zinc-800 w-full min-h-screen">
@@ -84,30 +185,11 @@ export default function Home() {
             <SearchBar />
           </Suspense>
         </section>
-        <section className="p-10">
-          <div className="container mx-auto">
-            <h2 className="text-2xl font-semibold mb-5 text-center">
-              Productos destacados
-            </h2>
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-              {products.map((product, index) => (
-                <div
-                  key={index}
-                  className="bg-violet-300 active:bg-violet-400 p-5 rounded-lg shadow-lg text-center transform hover:-translate-y-1 hover:scale-scale-105 cursor-pointer"
-                >
-                  <Image
-                    src={product.image}
-                    alt={product.name}
-                    width={350}
-                    height={200}
-                  />
-                  <h3 className="text-lg font-semibold">{product.name}</h3>
-                  <p className="text-sm text-black">{product.description}</p>
-                </div>
-              ))}
-            </div>
-          </div>
-        </section>        
+        <>
+          <ProductSection/>
+          <ProfileSection/> 
+          <SubscriptionPlans/>
+        </>
       </div>
     </>
   );
