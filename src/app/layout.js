@@ -1,6 +1,7 @@
 import { Inter } from "next/font/google";
 import "./globals.css";
 import Image from "next/image";
+import Link from "next/link";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -15,7 +16,15 @@ export default function RootLayout({ children }) {
     <html lang="es">
       <body className={inter.className}>
         {children}
-        <footer className="bg-neutral-800 p-4 text-white text-center  w-full h-full">
+        <footer className="bg-neutral-800 p-4 text-white text-center flex  justify-center items-center w-full h-auto">
+          <Link href="/">
+            <Image
+              src="/ConnecTo-logo-horizontal2.png"
+              alt="ConnecTo Logo"
+              width={200}
+              height={20}
+            />
+          </Link>
           &copy; 2024 ConnecTo. Todos los derechos reservados.
         </footer>
       </body>
