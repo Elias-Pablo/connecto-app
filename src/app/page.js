@@ -68,7 +68,7 @@ export default function Home() {
           {products.map((product, index) => (
             <div
               key={index}
-              className="bg-fuchsia-700 active:bg-violet-400 p-5 rounded-lg shadow-lg text-center transform hover:-translate-y-1 cursor-pointer"
+              className="bg-sky-300 active:bg-sky-400 p-5 rounded-lg shadow-lg text-center cursor-pointer hover:scale-105 duration-300"
             >
               <Image
                 src={product.image}
@@ -87,9 +87,9 @@ export default function Home() {
     </section>
   );
   const ProfileSection = () => (
-    <section className="p-10 bg-gray-800">
+    <section className="p-10 bg-white">
       <div className="container mx-auto">
-        <h2 className="text-2xl font-semibold mb-5 text-center text-white">
+        <h2 className="text-2xl font-semibold mb-5 text-center text-black">
           Perfiles de Emprendedores
         </h2>
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
@@ -99,7 +99,7 @@ export default function Home() {
               className="text-center"
             >
               <div className="cursor-pointer hover:opacity-80 transition-opacity duration-300 inline-block">
-                <div className="w-32 h-32 mx-auto rounded-full shadow-lg overflow-hidden">
+                <div className="w-32 h-32 mx-auto rounded-full shadow-lg overflow-hidden hover:scale-105 duration-300">
                   <Image
                     src={profile.image}
                     width={128}
@@ -109,8 +109,8 @@ export default function Home() {
                     objectFit="cover"
                   />
                 </div>
-                <h3 className="text-lg font-semibold text-white mt-2">{profile.name}</h3>
-                <p className="text-sm text-gray-300">{profile.profession}</p>
+                <h3 className="text-lg font-semibold text-black mt-2">{profile.name}</h3>
+                <p className="text-sm text-black">{profile.profession}</p>
               </div>
             </div>
           ))}
@@ -127,9 +127,9 @@ export default function Home() {
     };
 
     return (
-      <section className="p-10 bg-gray-700">
+      <section className="p-10 bg-white">
         <div className="container mx-auto">
-          <h2 className="text-2xl font-semibold mb-5 text-center text-white">
+          <h2 className="text-2xl font-semibold mb-5 text-center text-black">
             Preguntas Frecuentes
           </h2>
           <div className="space-y-4">
@@ -139,16 +139,16 @@ export default function Home() {
                   className="flex justify-between items-center cursor-pointer"
                   onClick={() => handleToggleAnswer(index)}
                 >
-                  <h3 className="text-lg font-semibold text-white">{faq.question}</h3>
+                  <h3 className="text-lg font-semibold text-black">{faq.question}</h3>
                   <button
-                    className="text-white text-xl"
+                    className="text-black text-xl"
                     aria-expanded={expandedQuestion === index}
                   >
                     {expandedQuestion === index ? "-" : "+"}
                   </button>
                 </div>
                 {expandedQuestion === index && (
-                  <p className="text-sm text-gray-300 mt-2">{faq.answer}</p>
+                  <p className="text-sm text-black mt-2">{faq.answer}</p>
                 )}
               </div>
             ))}
@@ -165,10 +165,6 @@ export default function Home() {
       </section>
     );
   };
-
-  //const Footer = () => (
-  //);
-
   return (
     <>
       <div className="bg-zinc-800 w-full min-h-screen">
