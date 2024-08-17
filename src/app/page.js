@@ -59,9 +59,9 @@ export default function Home() {
   ];
 
   const ProductSection = () => (
-    <section className="bg-blue-800 p-10">
+    <section className="bg-white p-10">
       <div className="container mx-auto">
-        <h2 className="text-2xl font-semibold mb-5 text-center text-white">
+        <h2 className="text-2xl font-semibold mb-5 text-center text-black">
           Productos Destacados
         </h2>
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
