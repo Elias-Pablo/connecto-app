@@ -16,13 +16,13 @@ export default function RootLayout({ children }) {
     <html lang="es">
       <body className={inter.className}>
         {children}
-        <footer className="bg-neutral-800 p-4 text-white text-center flex  justify-center items-center w-full h-auto">
+        <footer className="bg-neutral-800 p-4 text-white text-center flex  justify-center items-center w-full h-full">
           <Link href="/">
             <Image
               src="/ConnecTo-logo-horizontal2.png"
               alt="ConnecTo Logo"
-              width={200}
-              height={20}
+              width={100}
+              height={10}
             />
           </Link>
           &copy; 2024 ConnecTo. Todos los derechos reservados.
