@@ -56,7 +56,7 @@ export default function RegisterPage() {
               type="text"
               id="name"
               placeholder="tuNombredeUsuario123"
-              className="border border-gray-300 rounded-md p-2 mb-2 text-black"
+              className="border border-gray-300 rounded-md p-2 mb-2 text-black placeholder:text-xs placeholder:italic placeholder:font-thin"
               {...register("username", {
                 required: {
                   value: true,
@@ -76,7 +76,7 @@ export default function RegisterPage() {
               type="email"
               id="email"
               placeholder="tucorreo@email.com"
-              className="border border-gray-300 rounded-md p-2 mb-2 text-black"
+              className="border border-gray-300 rounded-md p-2 mb-2 text-black placeholder:text-xs placeholder:italic placeholder:font-thin"
               {...register("email", {
                 required: {
                   value: true,
@@ -97,7 +97,7 @@ export default function RegisterPage() {
               type="password"
               id="password"
               placeholder="********"
-              className="border border-gray-300 rounded-md p-2 mb-2 text-black"
+              className="border border-gray-300 rounded-md p-2 mb-2 text-black placeholder:text-xs placeholder:italic placeholder:font-thin"
               {...register("password", {
                 required: {
                   value: true,
@@ -117,7 +117,7 @@ export default function RegisterPage() {
               type="password"
               placeholder="********"
               id="passwordrevaliduser"
-              className="border border-gray-300 rounded-md p-2 mb-2 text-black"
+              className="border border-gray-300 rounded-md p-2 mb-2 text-black placeholder:text-xs placeholder:italic placeholder:font-thin"
               {...register("confirmpassword", {
                 required: {
                   value: true,
