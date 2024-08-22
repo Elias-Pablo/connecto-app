@@ -200,7 +200,7 @@ export default function Home() {
                 className="bg-fuchsia-600 px-4 text-xs md:text-base py-2 rounded-xl font-semibold text-white mr-2 hover:bg-fuchsia-900  transition-colors duration-300 ease-in-out"
                 href="/auth/register"
               >
-                Registrate
+                Regístrate
               </Link>
               <Link
                 className="bg-sky-400 px-4 py-2 text-xs md:text-base rounded-xl font-semibold text-white hover:bg-sky-700  transition-colors duration-300 ease-in-out"
