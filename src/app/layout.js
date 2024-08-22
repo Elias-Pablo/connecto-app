@@ -21,8 +21,8 @@ export default function RootLayout({ children }) {
             <Image
               src="/ConnecTo-logo-horizontal2.png"
               alt="ConnecTo Logo"
-              width={200}
-              height={20}
+              width={105}
+              height={25}
             />
           </Link>
           &copy; 2024 ConnecTo. Todos los derechos reservados.

@@ -22,7 +22,7 @@ export default function SearchBar({ placeholder }) {
         onChange={(event) => handleSearch(event.target.value)}
         type="text"
         placeholder={placeholder}
-        className="bg-zinc-800 border-2 border-sky-400 text-white p-2 rounded-lg w-1/2"
+        className="bg-white border-2 border-sky-400 text-white p-2 rounded-lg w-1/2"
         defaultValue={searchParams.get("query")?.toString()}
       />
       <button className=" p-2 rounded-lg">

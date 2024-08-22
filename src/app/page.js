@@ -9,27 +9,31 @@ import Link from "next/link";
 export default function Home() {
   const router = useRouter();
 
-  const handleLoginClick = () => {
-    router.push("/auth/login");
-  };
-
-  const handleRegisterClick = () => {
-    router.push("/auth/register");
-  };
-
-  const handleRegisterEmprendedorClick = () => {
-    router.push("/emprendedores");
-  };
-
   const handleFAQClick = () => {
     router.push("/faq");
   };
 
   const products = [
-    { image: "/imagenpromo.jpeg", name: "Producto 1", description: "Descripción 1" },
-    { image: "/imagenpromo.jpeg", name: "Producto 2", description: "Descripción 2" },
-    { image: "/imagenpromo.jpeg", name: "Producto 3", description: "Descripción 3" },
-    { image: "/imagenpromo.jpeg", name: "Producto 4", description: "Descripción 4" },
+    {
+      image: "/imagenpromo.jpeg",
+      name: "Producto 1",
+      description: "Descripción 1",
+    },
+    {
+      image: "/imagenpromo.jpeg",
+      name: "Producto 2",
+      description: "Descripción 2",
+    },
+    {
+      image: "/imagenpromo.jpeg",
+      name: "Producto 3",
+      description: "Descripción 3",
+    },
+    {
+      image: "/imagenpromo.jpeg",
+      name: "Producto 4",
+      description: "Descripción 4",
+    },
   ];
 
   const profiles = [
@@ -42,19 +46,23 @@ export default function Home() {
   const faqs = [
     {
       question: "¿Qué es ConnecTo y cómo funciona?",
-      answer: "ConnecTo es una plataforma que facilita la conexión entre emprendedores y clientes mediante perfiles personalizados, productos destacados y planes de suscripción. La plataforma ofrece una interfaz intuitiva para explorar productos, conocer emprendedores y optar por diferentes planes según las necesidades del negocio."
+      answer:
+        "ConnecTo es una plataforma que facilita la conexión entre emprendedores y clientes mediante perfiles personalizados, productos destacados y planes de suscripción. La plataforma ofrece una interfaz intuitiva para explorar productos, conocer emprendedores y optar por diferentes planes según las necesidades del negocio.",
     },
     {
       question: "¿Es ConnecTo fácil de usar?",
-      answer: "Sí, ConnecTo está diseñado para ser accesible y fácil de usar. La plataforma proporciona una navegación sencilla con secciones claramente definidas para explorar productos, perfiles de emprendedores y planes de suscripción, asegurando una experiencia de usuario fluida y agradable."
+      answer:
+        "Sí, ConnecTo está diseñado para ser accesible y fácil de usar. La plataforma proporciona una navegación sencilla con secciones claramente definidas para explorar productos, perfiles de emprendedores y planes de suscripción, asegurando una experiencia de usuario fluida y agradable.",
     },
     {
       question: "¿Qué diferencia a ConnecTo de otras plataformas similares?",
-      answer: "ConnecTo se destaca por su enfoque en la integración de perfiles de emprendedores y productos destacados dentro de una misma plataforma. Además, ofrece planes de suscripción adaptados a diferentes niveles de necesidad empresarial, con un diseño atractivo y funcionalidades que facilitan la visibilidad y el crecimiento de los negocios."
+      answer:
+        "ConnecTo se destaca por su enfoque en la integración de perfiles de emprendedores y productos destacados dentro de una misma plataforma. Además, ofrece planes de suscripción adaptados a diferentes niveles de necesidad empresarial, con un diseño atractivo y funcionalidades que facilitan la visibilidad y el crecimiento de los negocios.",
     },
     {
       question: "¿Es ConnecTo adecuado para mi negocio?",
-      answer: "ConnecTo es adecuado para una amplia gama de negocios, especialmente aquellos que buscan aumentar su visibilidad en línea y conectar con clientes potenciales. La plataforma es ideal si estás buscando una solución que combine la promoción de productos, la visibilidad de emprendedores y opciones de suscripción para mejorar tu presencia en el mercado."
+      answer:
+        "ConnecTo es adecuado para una amplia gama de negocios, especialmente aquellos que buscan aumentar su visibilidad en línea y conectar con clientes potenciales. La plataforma es ideal si estás buscando una solución que combine la promoción de productos, la visibilidad de emprendedores y opciones de suscripción para mejorar tu presencia en el mercado.",
     },
   ];
 
@@ -78,7 +86,9 @@ export default function Home() {
                 layout="responsive"
                 objectFit="cover"
               />
-              <h3 className="text-lg font-semibold mt-2 text-white">{product.name}</h3>
+              <h3 className="text-lg font-semibold mt-2 text-white">
+                {product.name}
+              </h3>
               <p className="text-sm text-black">{product.description}</p>
             </div>
           ))}
@@ -94,10 +104,7 @@ export default function Home() {
         </h2>
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
           {profiles.map((profile, index) => (
-            <div
-              key={index}
-              className="text-center"
-            >
+            <div key={index} className="text-center">
               <div className="cursor-pointer hover:opacity-80 transition-opacity duration-300 inline-block">
                 <div className="w-32 h-32 mx-auto rounded-full shadow-lg overflow-hidden hover:scale-105 duration-300">
                   <Image
@@ -109,7 +116,9 @@ export default function Home() {
                     objectFit="cover"
                   />
                 </div>
-                <h3 className="text-lg font-semibold text-black mt-2">{profile.name}</h3>
+                <h3 className="text-lg font-semibold text-black mt-2">
+                  {profile.name}
+                </h3>
                 <p className="text-sm text-black">{profile.profession}</p>
               </div>
             </div>
@@ -139,7 +148,9 @@ export default function Home() {
                   className="flex justify-between items-center cursor-pointer"
                   onClick={() => handleToggleAnswer(index)}
                 >
-                  <h3 className="text-lg font-semibold text-black">{faq.question}</h3>
+                  <h3 className="text-lg font-semibold text-black">
+                    {faq.question}
+                  </h3>
                   <button
                     className="text-black text-xl"
                     aria-expanded={expandedQuestion === index}
@@ -167,8 +178,8 @@ export default function Home() {
   };
   return (
     <>
-      <div className="bg-zinc-800 w-full min-h-screen">
-        <header className="bg-zinc-800 px-6 shadow-lg flex items-center justify-center">
+      <div className="bg-fuchsia-800 w-full min-h-screen">
+        <header className=" bg-transparent px-6   flex items-center justify-center">
           <div className="flex h-20 items-center justify-between w-full">
             <Link href="/">
               <Image
@@ -179,28 +190,28 @@ export default function Home() {
               />
             </Link>
             <div className="flex items-center">
-              <button
+              <Link
                 className="px-4 py-2 text-xs md:text-base rounded-xl font-semibold text-white mr-2 hover:text-sky-400 transition-colors duration-300 ease-in-out"
-                onClick={handleRegisterEmprendedorClick}
+                href="/emprendedores"
               >
                 Registrar mi negocio
-              </button>
-              <button
-                className="bg-fuchsia-700 px-4 text-xs md:text-base py-2 rounded-xl font-semibold text-zinc-800 mr-2 hover:bg-sky-400 hover:text-fuchsia-700 transition-colors duration-300 ease-in-out"
-                onClick={handleRegisterClick}
+              </Link>
+              <Link
+                className="bg-fuchsia-600 px-4 text-xs md:text-base py-2 rounded-xl font-semibold text-white mr-2 hover:bg-fuchsia-900  transition-colors duration-300 ease-in-out"
+                href="/auth/register"
               >
                 Registrarse
-              </button>
-              <button
-                className="bg-sky-400 px-4 py-2 text-xs md:text-base rounded-xl font-semibold text-zinc-800 hover:bg-fuchsia-700 hover:text-sky-400 transition-colors duration-300 ease-in-out"
-                onClick={handleLoginClick}
+              </Link>
+              <Link
+                className="bg-sky-400 px-4 py-2 text-xs md:text-base rounded-xl font-semibold text-white hover:bg-sky-700  transition-colors duration-300 ease-in-out"
+                href="/auth/login"
               >
                 Iniciar Sesión
-              </button>
+              </Link>
             </div>
           </div>
         </header>
-        <section className="w-full h-full flex flex-col items-center justify-center bg-fuchsia-700 p-5">
+        <section className="w-full h-full flex flex-col items-center justify-center  p-5">
           <h1 className="p-5 text-2xl font-semibold text-white">
             Busca lo que quieres de nuestros emprendedores...
           </h1>
@@ -210,9 +221,9 @@ export default function Home() {
         </section>
 
         <>
-          <ProductSection/>
-          <ProfileSection/>
-          <FAQSection/>
+          <ProductSection />
+          <ProfileSection />
+          <FAQSection />
         </>
       </div>
     </>
