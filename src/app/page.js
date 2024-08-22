@@ -155,7 +155,7 @@ export default function Home() {
           </div>
           <div className="flex justify-center mt-6">
             <button
-              className="bg-sky-400 text-white px-6 py-2 rounded-lg hover:bg-sky-500 transition-colors"
+              className="bg-sky-400 text-white px-6 py-2 rounded-lg hover:bg-sky-500 transition-colors hover:scale-105 duration-500"
               onClick={handleFAQClick}
             >
               Ver Más
