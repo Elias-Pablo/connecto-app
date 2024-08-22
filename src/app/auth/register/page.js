@@ -136,13 +136,16 @@ export default function RegisterPage() {
             >
               Registrarse como Usuario
             </button>
+            <Link
+              href="/auth/login"
+              className="underline text-center mt-4 text-white hover:text-sky-300 text-sm"
+            >
+              ¿Ya tienes una cuenta? Inicia sesión aquí.
+            </Link>
           </form>
         </div>
 
         {/* Enlace a la página de inicio de sesión */}
-        <Link href="/login" className="underline hover:text-sky-300 text-sm">
-          ¿Ya tienes una cuenta? Inicia sesión aquí.
-        </Link>
       </div>
     </>
   );

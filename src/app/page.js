@@ -9,18 +9,6 @@ import Link from "next/link";
 export default function Home() {
   const router = useRouter();
 
-  const handleLoginClick = () => {
-    router.push("/auth/login");
-  };
-
-  const handleRegisterClick = () => {
-    router.push("/auth/register");
-  };
-
-  const handleRegisterEmprendedorClick = () => {
-    router.push("/emprendedores");
-  };
-
   const handleFAQClick = () => {
     router.push("/faq");
   };
@@ -202,24 +190,24 @@ export default function Home() {
               />
             </Link>
             <div className="flex items-center">
-              <button
+              <Link
                 className="px-4 py-2 text-xs md:text-base rounded-xl font-semibold text-white mr-2 hover:text-sky-400 transition-colors duration-300 ease-in-out"
-                onClick={handleRegisterEmprendedorClick}
+                href="/emprendedores"
               >
                 Registrar mi negocio
-              </button>
-              <button
+              </Link>
+              <Link
                 className="bg-fuchsia-600 px-4 text-xs md:text-base py-2 rounded-xl font-semibold text-white mr-2 hover:bg-fuchsia-900  transition-colors duration-300 ease-in-out"
-                onClick={handleRegisterClick}
+                href="/auth/register"
               >
                 Registrarse
-              </button>
-              <button
+              </Link>
+              <Link
                 className="bg-sky-400 px-4 py-2 text-xs md:text-base rounded-xl font-semibold text-white hover:bg-sky-700  transition-colors duration-300 ease-in-out"
-                onClick={handleLoginClick}
+                href="/auth/login"
               >
                 Iniciar Sesión
-              </button>
+              </Link>
             </div>
           </div>
         </header>

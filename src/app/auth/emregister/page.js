@@ -63,13 +63,14 @@ export default function Register() {
             >
               Registrarse como Emprendedor
             </button>
+            <Link
+              href="/login"
+              className="underline text-white text-center hover:text-sky-300 text-sm"
+            >
+              ¿Ya tienes una cuenta? Inicia sesión aquí.
+            </Link>
           </form>
         </div>
-
-        {/* Enlace a la página de inicio de sesión */}
-        <Link href="/login" className="underline hover:text-sky-300 text-sm">
-          ¿Ya tienes una cuenta? Inicia sesión aquí.
-        </Link>
       </div>
     </>
   );

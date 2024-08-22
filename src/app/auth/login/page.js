@@ -43,13 +43,13 @@ export default function Login() {
               Iniciar Sesión
             </button>
             <Link
-              href="/recover"
+              href="/auth/recover"
               className="mt-3 block text-center underline hover:text-sky-300 text-sm"
             >
               ¿Has olvidado tus credenciales?
             </Link>
             <Link
-              href="/register"
+              href="/auth/register"
               className="mt-3 block text-center underline hover:text-sky-300 text-sm"
             >
               ¿No tienes cuenta?
