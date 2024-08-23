@@ -5,6 +5,7 @@ import Image from "next/image";
 import SearchBar from "@/components/Searchbar";
 import { Suspense } from "react";
 import Link from "next/link";
+import SearchedProducts from "@/components/Searched-Products";
 
 export default function Home() {
   const router = useRouter();
@@ -69,6 +70,9 @@ export default function Home() {
   const ProductSection = () => (
     <section className="bg-white p-10">
       <div className="container mx-auto">
+        <div className="flex ">
+          <SearchedProducts />
+        </div>
         <h2 className="text-2xl font-semibold mb-5 text-center text-black">
           Productos Destacados
         </h2>
@@ -200,7 +204,7 @@ export default function Home() {
                 className="bg-fuchsia-600 px-4 text-xs md:text-base py-2 rounded-xl font-semibold text-white mr-2 hover:bg-fuchsia-900  transition-colors duration-300 ease-in-out"
                 href="/auth/register"
               >
-                Registrarse
+                Regístrate
               </Link>
               <Link
                 className="bg-sky-400 px-4 py-2 text-xs md:text-base rounded-xl font-semibold text-white hover:bg-sky-700  transition-colors duration-300 ease-in-out"
