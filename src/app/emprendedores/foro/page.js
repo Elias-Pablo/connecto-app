@@ -82,7 +82,7 @@ export default function Foro() {
         <div className="w-full">
           <div className="bg-white p-4 rounded-lg m-4 shadow-lg">
             <div className="flex items-center justify-end gap-2">
-              <button className="bg-green-500 font-semibold text-white text-sm  p-3 rounded-lg flex justify-center items-center gap-2">
+              <button className="bg-green-500 font-semibold text-white text-sm  p-3 rounded-lg flex justify-center items-center gap-2 hover:scale-105 duration-300">
                 Crea una conversacion
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
@@ -102,7 +102,7 @@ export default function Foro() {
                   <path d="M12 9v6" />
                 </svg>
               </button>
-              <button className="bg-blue-400 p-3 rounded-lg text-sm font-semibold text-white flex justify-center items-center gap-2">
+              <button className="bg-blue-400 p-3 rounded-lg text-sm font-semibold text-white flex justify-center hover:scale-105 duration-300 items-center gap-2">
                 Administra tus conversaciones
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
