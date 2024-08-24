@@ -9,14 +9,14 @@ import {
   Title,
   Tooltip,
   Legend,
+  Colors
 } from "chart.js";
 
-// Registrar los componentes de Chart.js que vamos a usar
-ChartJS.register(CategoryScale, LinearScale, PointElement, LineElement, Title, Tooltip, Legend);
+ChartJS.register(CategoryScale, LinearScale, PointElement, LineElement, Title, Tooltip, Legend, Colors);
 
 export default function MetricChart({ data }) {
   const chartData = {
-    labels: ["Lun", "Mar", "Mié", "Jue", "Vie", "Sáb", "Dom"], // Etiquetas para los días de la semana
+    labels: ["Lun", "Mar", "Mié", "Jue", "Vie", "Sáb", "Dom"],
     datasets: [
       {
         label: "Visitas",
@@ -37,13 +37,29 @@ export default function MetricChart({ data }) {
 
   const options = {
     responsive: true,
+    scales: {
+      x: {
+        ticks: {
+          color: "black",
+        },
+      },
+      y: {
+        ticks: {
+          color: "black",
+        },
+      },
+    },
     plugins: {
       legend: {
         position: "top",
+        labels: {
+          color: "black",
+        },
       },
       title: {
         display: true,
         text: "Estadísticas Semanales",
+        color: "black",
       },
     },
   };

@@ -361,15 +361,15 @@ export default function EmprendedorProfile() {
             </div>
           </div>
         </div>
-          /* Sección de métricas y estadísticas */
-          <div className="mt-10">
+          <div className="mt-10 grid grid-cols-1 md:grid-cols-2   w-full  justify-center items-center gap-10">
+            <div className="flex flex-col items-center justify-center bg-fuchsia-800 p-4 rounded-xl shadow-lg">
             <h3 className="text-xl font-semibold mb-5">Métricas y Estadísticas</h3>
             <div>
               {/* Botones para cambiar la métrica */}
-              <div className="flex justify-center space-x-4 mb-5">
+              <div className="flex justify-center space-x-4 mb-5 ">
                 <button
                   className={`px-4 py-2 rounded-lg ${
-                    selectedMetric === "daily" ? "bg-blue-500 text-white" : "bg-gray-200"
+                    selectedMetric === "daily" ? "bg-white text-black" : "bg-black text-white"
                   }`}
                   onClick={() => setSelectedMetric("daily")}
                 >
@@ -377,7 +377,7 @@ export default function EmprendedorProfile() {
                 </button>
                 <button
                   className={`px-4 py-2 rounded-lg ${
-                    selectedMetric === "weekly" ? "bg-blue-500 text-white" : "bg-gray-200"
+                    selectedMetric === "weekly" ? "bg-white text-black" : "bg-black text-white"
                   }`}
                   onClick={() => setSelectedMetric("weekly")}
                 >
@@ -385,21 +385,22 @@ export default function EmprendedorProfile() {
                 </button>
                 <button
                   className={`px-4 py-2 rounded-lg ${
-                    selectedMetric === "monthly" ? "bg-blue-500 text-white" : "bg-gray-200"
+                    selectedMetric === "monthly" ? "bg-white text-black" : "bg-black text-white"
                   }`}
                   onClick={() => setSelectedMetric("monthly")}
                 >
                   Mensual
                 </button>
               </div>
+              </div>
 
               {/* Renderizar el gráfico */}
               <MetricChart data={metricData[selectedMetric]} />
             </div>
-          </div>
+          
 
           {/* Sección del producto más visto */}
-          <div className="mt-10">
+          <div className="flex flex-col items-center justify-center p-6 bg-sky-500 rounded-xl shadow-lg">
             <h3 className="text-xl font-semibold mb-5">Producto Más Visto</h3>
             <div className="text-center p-5 bg-gray-100 rounded-lg shadow-lg">
               <Image
@@ -419,8 +420,10 @@ export default function EmprendedorProfile() {
                 Ver más
               </a>
             </div>
+
+            </div>
+            </div>
           </div>
-      </div>
     </>
   );
 }
