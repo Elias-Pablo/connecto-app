@@ -22,11 +22,11 @@ export default function SearchBar({ placeholder }) {
         onChange={(event) => handleSearch(event.target.value)}
         type="text"
         placeholder={placeholder}
-        className="bg-white border-2 border-sky-400 text-black p-2 rounded-lg w-1/2"
+        className="bg-white border-2 border-sky-400 shadow-xl text-black p-2 rounded-lg w-1/2"
         defaultValue={searchParams.get("query")?.toString()}
       />
       <button className=" p-2 rounded-lg">
-        <MagnifyingGlassIcon className="h-7 w-7 text-sky-400" />
+        <MagnifyingGlassIcon className="drop-shadow-xl h-7 w-7 text-fuchsia-400" />
       </button>
     </div>
   );

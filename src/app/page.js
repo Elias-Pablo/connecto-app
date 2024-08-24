@@ -1,19 +1,20 @@
 "use client";
-import { useState } from "react";
+import { useState, Suspense } from "react";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
 import SearchBar from "@/components/Searchbar";
-import { Suspense } from "react";
-import Link from "next/link";
+import Header from "@/components/Header-us";
 import SearchedProducts from "@/components/Searched-Products";
 
 export default function Home() {
   const router = useRouter();
 
+  // Manejar clic en botón de FAQ
   const handleFAQClick = () => {
     router.push("/faq");
   };
 
+  // Datos de productos
   const products = [
     {
       image: "/imagenpromo.jpeg",
@@ -37,6 +38,7 @@ export default function Home() {
     },
   ];
 
+  // Datos de perfiles de emprendedores
   const profiles = [
     { image: "/imagenpromo.jpeg", name: "Nombre 1", profession: "Profesión 1" },
     { image: "/imagenpromo.jpeg", name: "Nombre 2", profession: "Profesión 2" },
@@ -44,6 +46,7 @@ export default function Home() {
     { image: "/imagenpromo.jpeg", name: "Nombre 4", profession: "Profesión 4" },
   ];
 
+  // Datos de preguntas frecuentes
   const faqs = [
     {
       question: "¿Qué es ConnecTo y cómo funciona?",
@@ -67,6 +70,7 @@ export default function Home() {
     },
   ];
 
+  // Componente de Productos Destacados
   const ProductSection = () => (
     <section className="bg-white p-10">
       <div className="container mx-auto">
@@ -86,7 +90,7 @@ export default function Home() {
                 src={product.image}
                 width={350}
                 height={200}
-                alt=""
+                alt={product.name}
                 layout="responsive"
                 objectFit="cover"
               />
@@ -100,6 +104,8 @@ export default function Home() {
       </div>
     </section>
   );
+
+  // Componente de Perfiles de Emprendedores
   const ProfileSection = () => (
     <section className="p-10 bg-white">
       <div className="container mx-auto">
@@ -115,7 +121,7 @@ export default function Home() {
                     src={profile.image}
                     width={128}
                     height={128}
-                    alt=""
+                    alt={profile.name}
                     layout="responsive"
                     objectFit="cover"
                   />
@@ -132,6 +138,7 @@ export default function Home() {
     </section>
   );
 
+  // Componente de Preguntas Frecuentes
   const FAQSection = () => {
     const [expandedQuestion, setExpandedQuestion] = useState(null);
 
@@ -180,56 +187,21 @@ export default function Home() {
       </section>
     );
   };
+
   return (
     <>
-      <div className="bg-fuchsia-800 w-full min-h-screen">
-        <header className=" bg-transparent px-6   flex items-center justify-center">
-          <div className="flex h-20 items-center justify-between w-full">
-            <Link href="/">
-              <Image
-                src="/ConnecTo-logo-horizontal2.png"
-                alt="ConnecTo Logo"
-                width={250}
-                height={50}
-              />
-            </Link>
-            <div className="flex items-center">
-              <Link
-                className="px-4 py-2 text-xs md:text-base rounded-xl font-semibold text-white mr-2 hover:text-sky-400 transition-colors duration-300 ease-in-out"
-                href="/emprendedores"
-              >
-                Registrar mi negocio
-              </Link>
-              <Link
-                className="bg-fuchsia-600 px-4 text-xs md:text-base py-2 rounded-xl font-semibold text-white mr-2 hover:bg-fuchsia-900  transition-colors duration-300 ease-in-out"
-                href="/auth/register"
-              >
-                Regístrate
-              </Link>
-              <Link
-                className="bg-sky-400 px-4 py-2 text-xs md:text-base rounded-xl font-semibold text-white hover:bg-sky-700  transition-colors duration-300 ease-in-out"
-                href="/auth/login"
-              >
-                Iniciar Sesión
-              </Link>
-            </div>
-          </div>
-        </header>
-        <section className="w-full h-full flex flex-col items-center justify-center  p-5">
-          <h1 className="p-5 text-2xl font-semibold text-white">
-            Busca lo que quieres de nuestros emprendedores...
-          </h1>
-          <Suspense fallback={<div>Loading...</div>}>
-            <SearchBar />
-          </Suspense>
-        </section>
-
-        <>
-          <ProductSection />
-          <ProfileSection />
-          <FAQSection />
-        </>
-      </div>
+      <Header />
+      <section className="w-full h-full flex flex-col items-center justify-center p-5 bg-sky-400">
+        <h1 className="p-5 text-2xl font-semibold text-white text-center">
+          Busca lo que quieres de nuestros emprendedores...
+        </h1>
+        <Suspense fallback={<div>Loading...</div>}>
+          <SearchBar />
+        </Suspense>
+      </section>
+      <ProductSection />
+      <ProfileSection />
+      <FAQSection />
     </>
   );
 }
