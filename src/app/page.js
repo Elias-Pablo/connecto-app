@@ -84,7 +84,7 @@ export default function Home() {
           {products.map((product, index) => (
             <div
               key={index}
-              className="bg-sky-300 active:bg-sky-400 p-5 rounded-lg shadow-lg text-center cursor-pointer hover:scale-105 duration-300"
+              className="bg-white active:bg-sky-400 p-5 rounded-lg shadow-lg text-center cursor-pointer hover:scale-105 duration-300"
             >
               <Image
                 src={product.image}
