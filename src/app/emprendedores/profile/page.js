@@ -2,8 +2,34 @@
 import Image from "next/image";
 import Link from "next/link";
 import Header from "@/components/Header-em";
+import { useState } from "react";
+import MetricChart from "@/components/MetricChart";
 
 export default function EmprendedorProfile() {
+  const [selectedMetric, setSelectedMetric] = useState("weekly");
+
+  const metricData = {
+    daily: {
+      visits: [50, 70, 80, 90, 60, 75, 85],
+      sales: [10, 15, 12, 18, 20, 22, 25],
+    },
+    weekly: {
+      visits: [300, 450, 600, 700, 500, 550, 700],
+      sales: [50, 70, 80, 90, 100, 110, 120],
+    },
+    monthly: {
+      visits: [1000, 1200, 1500, 1400, 1300, 1700, 1800],
+      sales: [150, 170, 200, 220, 240, 260, 280],
+    },
+  };
+
+  const mostViewedProduct = {
+    image: '/zapato.jpg', // Cambia esta ruta a una ruta válida para tus imágenes
+    name: 'Producto Ejemplo',
+    views: 1234,
+    price: '$19.99'
+  };
+
   return (
     <>
       <Header />
@@ -335,6 +361,65 @@ export default function EmprendedorProfile() {
             </div>
           </div>
         </div>
+          /* Sección de métricas y estadísticas */
+          <div className="mt-10">
+            <h3 className="text-xl font-semibold mb-5">Métricas y Estadísticas</h3>
+            <div>
+              {/* Botones para cambiar la métrica */}
+              <div className="flex justify-center space-x-4 mb-5">
+                <button
+                  className={`px-4 py-2 rounded-lg ${
+                    selectedMetric === "daily" ? "bg-blue-500 text-white" : "bg-gray-200"
+                  }`}
+                  onClick={() => setSelectedMetric("daily")}
+                >
+                  Diario
+                </button>
+                <button
+                  className={`px-4 py-2 rounded-lg ${
+                    selectedMetric === "weekly" ? "bg-blue-500 text-white" : "bg-gray-200"
+                  }`}
+                  onClick={() => setSelectedMetric("weekly")}
+                >
+                  Semanal
+                </button>
+                <button
+                  className={`px-4 py-2 rounded-lg ${
+                    selectedMetric === "monthly" ? "bg-blue-500 text-white" : "bg-gray-200"
+                  }`}
+                  onClick={() => setSelectedMetric("monthly")}
+                >
+                  Mensual
+                </button>
+              </div>
+
+              {/* Renderizar el gráfico */}
+              <MetricChart data={metricData[selectedMetric]} />
+            </div>
+          </div>
+
+          {/* Sección del producto más visto */}
+          <div className="mt-10">
+            <h3 className="text-xl font-semibold mb-5">Producto Más Visto</h3>
+            <div className="text-center p-5 bg-gray-100 rounded-lg shadow-lg">
+              <Image
+                src={mostViewedProduct.image}
+                alt={mostViewedProduct.name}
+                width={200}
+                height={150}
+                className="mx-auto"
+              />
+              <h4 className="text-lg font-semibold mt-3 text-black">{mostViewedProduct.name}</h4>
+              <p className="text-black">Vistas: {mostViewedProduct.views}</p>
+              <p className="text-black font-semibold mt-2">{mostViewedProduct.price}</p>
+              <a
+                href="#"
+                className="text-sm text-blue-500 hover:underline mt-2 inline-block"
+              >
+                Ver más
+              </a>
+            </div>
+          </div>
       </div>
     </>
   );

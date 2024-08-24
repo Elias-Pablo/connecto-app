@@ -1,6 +1,7 @@
 import Image from "next/image";
 export default function searchedProducts() {
   return (
+<<<<<<< HEAD
     <div className="grid grid-cols-4 bg-fuchsia-400 gap-5 w-full p-8 mb-4 rounded-lg">
       <div className="bg-white border border-gray-200 rounded-lg shadow-lg p-6 flex flex-col items-center justify-between transform transition-transform duration-300 hover:scale-105">
         <Image
@@ -142,6 +143,24 @@ export default function searchedProducts() {
             <path d="M19.5 12.572l-7.5 7.428l-7.5 -7.428a5 5 0 1 1 7.5 -6.566a5 5 0 1 1 7.5 6.572" />
           </svg>
         </button>
+=======
+    <div className="grid grid-cols-3 bg-gray-400 gap-5 w-full p-4 mb-4 rounded-lg">
+      <div className="bg-fuchsia-300 active:bg-fuchsia-600 p-5 rounded-lg shadow-lg text-center cursor-pointer hover:scale-105 duration-300 flex flex-col justify-center items-center">
+        <h3 className="text-lg font-semibold mt-2 text-white">
+          <Image
+            src="/zapato.jpg"
+            alt="zapato"
+            className="rounded-lg shadow-lg"
+            width={200}
+            height={200}
+          />
+          Zapatos Deportivos
+        </h3>
+        <p className="text-sm text-black">Zapato cómodo Lindo y barato</p>
+        <p className="text-sm text-black">Precio: $50.00</p>
+        <p className="text-sm text-black">Tallas: 5-10</p>
+        <p  className="text-sm text-black"> Zapatos Ltda.</p>
+>>>>>>> 9d81441f7f5f1e8e37e32d0a6db81ed4f0f18c67
       </div>
       <div className="bg-white border border-gray-200 rounded-lg shadow-lg p-6 flex flex-col items-center justify-between transform transition-transform duration-300 hover:scale-105">
         <Image
