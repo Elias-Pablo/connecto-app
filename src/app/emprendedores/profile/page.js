@@ -23,6 +23,13 @@ export default function EmprendedorProfile() {
     },
   };
 
+  const mostViewedProduct = {
+    image: '/zapato.jpg', // Cambia esta ruta a una ruta válida para tus imágenes
+    name: 'Producto Ejemplo',
+    views: 1234,
+    price: '$19.99'
+  };
+
   return (
     <>
       <Header />
