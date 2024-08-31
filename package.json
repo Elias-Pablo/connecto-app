@@ -20,7 +20,9 @@
     "react": "^18",
     "react-chartjs-2": "^5.2.0",
     "react-dom": "^18",
-    "react-hook-form": "^7.52.1"
+    "react-hook-form": "^7.52.1",
+    "sass": "^1.49.8",
+    "bluebird": "^3.7.2"
   },
   "devDependencies": {
     "@testing-library/jest-dom": "^6.0.0",
