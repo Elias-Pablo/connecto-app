@@ -23,7 +23,8 @@
     "react-chartjs-2": "^5.2.0",
     "react-dom": "^18",
     "react-hook-form": "^7.52.1",
-    "sass": "^1.49.8"
+    "sass": "^1.49.8",
+    "serverless-mysql": "^1.5.5"
   },
   "devDependencies": {
     "@testing-library/jest-dom": "^6.0.0",
