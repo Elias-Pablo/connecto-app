@@ -2,6 +2,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { useForm } from "react-hook-form";
+import { useState } from "react";
 
 export default function RegisterPage() {
   const {
@@ -10,25 +11,43 @@ export default function RegisterPage() {
     formState: { errors },
   } = useForm();
 
+  const [apiError, setApiError] = useState(null);
+  const [apiSuccess, setApiSuccess] = useState(null);
+
   const onSubmit = handleSubmit(async (data) => {
     if (data.password !== data.confirmpassword) {
       return alert("Las contraseñas no coinciden");
     }
 
-    const res = await fetch("/api/auth/register", {
-      method: "POST",
-      body: JSON.stringify({
-        username: data.username,
-        email: data.email,
-        password: data.password,
-      }),
-      headers: {
-        "Content-Type": "application/json",
-      },
-    });
-    const resJSON = await res.json();
-    console.log(resJSON);
+    try {
+      const res = await fetch("/api/auth/register", {
+        method: "POST",
+        body: JSON.stringify({
+          username: data.username,
+          email: data.email,
+          password: data.password,
+        }),
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+
+      if (!res.ok) {
+        const errorData = await res.json();
+        setApiError(errorData.message || "Error al registrar usuario");
+        return;
+      }
+
+      setApiError(null);
+      setApiSuccess("¡Registro exitoso! Ahora puedes iniciar sesión.");
+    } catch (error) {
+      console.error("Error en la solicitud:", error);
+      setApiError(
+        "Ocurrió un error inesperado. Por favor, inténtalo de nuevo."
+      );
+    }
   });
+
   return (
     <>
       <div className="bg-neutral-900 w-full h-screen flex flex-col items-center justify-center">
@@ -49,6 +68,14 @@ export default function RegisterPage() {
             <h2 className="text-white text-center mb-4 text-xl font-bold">
               Regístrate en ConnecTo
             </h2>
+
+            {apiError && (
+              <p className="text-red-400 text-center mb-4">{apiError}</p>
+            )}
+            {apiSuccess && (
+              <p className="text-green-400 text-center mb-4">{apiSuccess}</p>
+            )}
+
             <label htmlFor="name" className="text-white">
               Nombre de Usuario
             </label>
@@ -58,10 +85,7 @@ export default function RegisterPage() {
               placeholder="tuNombredeUsuario123"
               className="border border-gray-300 rounded-md p-2 mb-2 text-black placeholder:text-xs placeholder:italic placeholder:font-thin"
               {...register("username", {
-                required: {
-                  value: true,
-                  message: "Este campo es obligatorio",
-                },
+                required: "Este campo es obligatorio",
               })}
             />
             {errors.username && (
@@ -69,6 +93,7 @@ export default function RegisterPage() {
                 {errors.username.message}
               </span>
             )}
+
             <label htmlFor="email" className="text-white">
               Correo
             </label>
@@ -78,10 +103,7 @@ export default function RegisterPage() {
               placeholder="tucorreo@email.com"
               className="border border-gray-300 rounded-md p-2 mb-2 text-black placeholder:text-xs placeholder:italic placeholder:font-thin"
               {...register("email", {
-                required: {
-                  value: true,
-                  message: "Este campo es obligatorio",
-                },
+                required: "Este campo es obligatorio",
               })}
             />
             {errors.email && (
@@ -99,10 +121,7 @@ export default function RegisterPage() {
               placeholder="********"
               className="border border-gray-300 rounded-md p-2 mb-2 text-black placeholder:text-xs placeholder:italic placeholder:font-thin"
               {...register("password", {
-                required: {
-                  value: true,
-                  message: "Este campo es obligatorio",
-                },
+                required: "Este campo es obligatorio",
               })}
             />
             {errors.password && (
@@ -110,6 +129,7 @@ export default function RegisterPage() {
                 {errors.password.message}
               </span>
             )}
+
             <label htmlFor="passwordrevaliduser" className="text-white">
               Repetir Contraseña
             </label>
@@ -119,10 +139,7 @@ export default function RegisterPage() {
               id="passwordrevaliduser"
               className="border border-gray-300 rounded-md p-2 mb-2 text-black placeholder:text-xs placeholder:italic placeholder:font-thin"
               {...register("confirmpassword", {
-                required: {
-                  value: true,
-                  message: "Este campo es obligatorio",
-                },
+                required: "Este campo es obligatorio",
               })}
             />
             {errors.confirmpassword && (
@@ -130,6 +147,7 @@ export default function RegisterPage() {
                 {errors.confirmpassword.message}
               </span>
             )}
+
             <button
               type="submit"
               className="text-white bg-sky-400 hover:bg-sky-700 rounded-md p-2 mt-5"
@@ -144,8 +162,6 @@ export default function RegisterPage() {
             </Link>
           </form>
         </div>
-
-        {/* Enlace a la página de inicio de sesión */}
       </div>
     </>
   );
