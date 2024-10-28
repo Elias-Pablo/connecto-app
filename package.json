@@ -14,15 +14,16 @@
     "@heroicons/react": "^2.1.4",
     "@prisma/client": "^5.16.1",
     "@vercel/postgres": "^0.9.0",
+    "bluebird": "^3.7.2",
     "chart.js": "^4.4.4",
+    "dotenv": "^16.4.5",
     "mysql2": "^3.11.0",
     "next": "^14.2.4",
     "react": "^18",
     "react-chartjs-2": "^5.2.0",
     "react-dom": "^18",
     "react-hook-form": "^7.52.1",
-    "sass": "^1.49.8",
-    "bluebird": "^3.7.2"
+    "sass": "^1.49.8"
   },
   "devDependencies": {
     "@testing-library/jest-dom": "^6.0.0",
