@@ -8,7 +8,7 @@ export async function POST(req) {
     console.log("Datos recibidos:", body);
 
     const query = "SELECT * FROM usuarios WHERE email = ?";
-    const [results] = await new Promise((resolve, reject) => {
+    const results = await new Promise((resolve, reject) => {
       connection.query(query, [email], (err, results) => {
         if (err) {
           console.error("Error en la consulta:", err);
@@ -20,8 +20,23 @@ export async function POST(req) {
       });
     });
 
+    if (results.length === 0) {
+      return new Response(
+        JSON.stringify({
+          success: false,
+          error: "Email o contraseña incorrectos",
+        }),
+        {
+          status: 401,
+          headers: { "Content-Type": "application/json" },
+        }
+      );
+    }
+
     const user = results[0];
-    if (user && user.contraseña === password) {
+
+    // Compara las contraseñas como strings
+    if (user && String(user.contraseña) === String(password)) {
       console.log("Inicio de sesión exitoso");
       return new Response(
         JSON.stringify({ success: true, message: "Inicio de sesión exitoso" }),
@@ -32,7 +47,10 @@ export async function POST(req) {
       );
     } else {
       return new Response(
-        JSON.stringify({ success: false, error: "Email o contraseña incorrectos" }),
+        JSON.stringify({
+          success: false,
+          error: "Email o contraseña incorrectos",
+        }),
         {
           status: 401,
           headers: { "Content-Type": "application/json" },
@@ -50,4 +68,3 @@ export async function POST(req) {
     );
   }
 }
-

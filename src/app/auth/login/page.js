@@ -21,7 +21,7 @@ export default function Login() {
     setSuccessMessage("");
 
     try {
-      const response = await fetch("/auth/login", {
+      const response = await fetch("/api/auth/login", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -34,6 +34,7 @@ export default function Login() {
       if (data.success) {
         setSuccess(true);
         setSuccessMessage(data.message);
+        router.push("/"); // Redirige al usuario a la página principal
       } else {
         setError(data.error || "Error al iniciar sesión");
       }
@@ -43,7 +44,7 @@ export default function Login() {
   };
 
   return (
-    <div className="bg-neutral-900 p-14 flex flex-col justify-center items-center">
+    <div className="bg-neutral-900 p-14 h-screen flex flex-col justify-center items-center">
       <Link href="/">
         <Image
           src="/ConnecTo-logo.png"
