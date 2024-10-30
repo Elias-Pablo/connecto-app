@@ -77,7 +77,7 @@ export default function Home() {
         <div className="flex ">
           <SearchedProducts />
         </div>
-        <h2 className="text-2xl font-semibold mb-5 text-center text-black">
+        <h2 className="text-2xl font-semibold mb-5 text-center text-black ">
           Productos Destacados
         </h2>
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4">

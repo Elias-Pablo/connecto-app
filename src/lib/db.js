@@ -1,11 +1,11 @@
 import mysql from "mysql2";
 
 const connection = mysql.createPool({
-  host: "localhost", // El host de tu servidor MySQL
-  user: "root", // Usuario de la base de datos MySQL
-  password: "", // Contraseña de la base de datos MySQL
-  database: "connecto", // Nombre de la base de datos
-  port: "3306",
+  host: process.env.DB_HOST,
+  user: process.env.DB_USER,
+  password: process.env.DB_PASSWORD,
+  database: process.env.DB_NAME,
+  port: process.env.DB_PORT || 3306,
   waitForConnections: true,
   connectionLimit: 10,
   queueLimit: 0,

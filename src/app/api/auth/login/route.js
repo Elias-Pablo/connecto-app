@@ -1,20 +1,18 @@
 import connection from "@/lib/db";
+import jwt from "jsonwebtoken";
+import { serialize } from "cookie";
 
 export async function POST(req) {
   try {
     const body = await req.json();
     const { email, password } = body;
 
-    console.log("Datos recibidos:", body);
-
     const query = "SELECT * FROM usuarios WHERE email = ?";
     const results = await new Promise((resolve, reject) => {
       connection.query(query, [email], (err, results) => {
         if (err) {
-          console.error("Error en la consulta:", err);
           reject(err);
         } else {
-          console.log("Resultados de la consulta:", results);
           resolve(results);
         }
       });
@@ -35,14 +33,27 @@ export async function POST(req) {
 
     const user = results[0];
 
-    // Compara las contraseñas como strings
-    if (user && String(user.contraseña) === String(password)) {
-      console.log("Inicio de sesión exitoso");
+    if (user && user.contraseña === password) {
+      const token = jwt.sign(
+        {
+          exp: Math.floor(Date.now() / 1000) + 60 * 60 * 24 * 7,
+          email: user.email,
+          username: user.nombre_usuario,
+        },
+        process.env.JWT_SECRET
+      );
       return new Response(
-        JSON.stringify({ success: true, message: "Inicio de sesión exitoso" }),
+        JSON.stringify({
+          success: true,
+          message: "Inicio de sesión exitoso",
+          token,
+        }),
         {
           status: 200,
-          headers: { "Content-Type": "application/json" },
+          headers: {
+            "Content-Type": "application/json",
+            "Set-Cookie": `token=${token}; HttpOnly; Secure; Path=/; Max-Age=3600;`,
+          },
         }
       );
     } else {
@@ -58,7 +69,6 @@ export async function POST(req) {
       );
     }
   } catch (error) {
-    console.error("Error en el inicio de sesión:", error);
     return new Response(
       JSON.stringify({ success: false, error: "Error al iniciar sesión" }),
       {

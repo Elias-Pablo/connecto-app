@@ -1,8 +1,13 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Link from "next/link";
 import Image from "next/image";
+import { jwtDecode } from "jwt-decode"; // Cambiado a jwt_decode para evitar errores de importación
+import { useRouter } from "next/navigation";
 
 export default function Header() {
+  const [user, setUser] = useState(null);
+  const [menuOpen, setMenuOpen] = useState(false);
+  const router = useRouter();
   const [cartVisible, setCartVisible] = useState(false);
   const [cartItems, setCartItems] = useState([
     {
@@ -28,9 +33,31 @@ export default function Header() {
     },
   ]);
 
-  const toggleCart = () => {
-    setCartVisible(!cartVisible);
+  // Efecto para recuperar y decodificar el token desde localStorage
+  useEffect(() => {
+    const token = localStorage.getItem("token");
+    console.log("Token recuperado:", token);
+
+    if (token) {
+      try {
+        const decoded = jwtDecode(token);
+        setUser(decoded);
+      } catch (error) {
+        console.error("Token inválido:", error);
+        localStorage.removeItem("token");
+      }
+    }
+  }, []);
+
+  const handleLogout = () => {
+    localStorage.removeItem("token");
+    document.cookie = "token=; Max-Age=0; Path=/;";
+    setUser(null);
+    router.push("/");
   };
+
+  const toggleCart = () => setCartVisible(!cartVisible);
+  const toggleMenu = () => setMenuOpen(!menuOpen);
 
   const increaseQuantity = (id) => {
     setCartItems(
@@ -50,21 +77,13 @@ export default function Header() {
     );
   };
 
-  const removeItem = (id) => {
+  const removeItem = (id) =>
     setCartItems(cartItems.filter((item) => item.id !== id));
-  };
 
-  const calculateSubtotal = () => {
-    return cartItems.reduce((acc, item) => acc + item.price * item.quantity, 0);
-  };
-
-  const calculateTax = () => {
-    return calculateSubtotal() * 0.19; // Assuming a 10% tax rate
-  };
-
-  const calculateTotal = () => {
-    return calculateSubtotal() + calculateTax();
-  };
+  const calculateSubtotal = () =>
+    cartItems.reduce((acc, item) => acc + item.price * item.quantity, 0);
+  const calculateTax = () => calculateSubtotal() * 0.19;
+  const calculateTotal = () => calculateSubtotal() + calculateTax();
 
   return (
     <>
@@ -76,31 +95,92 @@ export default function Header() {
               alt="ConnecTo Logo"
               width={250}
               height={50}
-              className="drop-shadow-sm"
+              className="drop-shadow-sm cursor-pointer"
             />
           </Link>
           <div className="flex items-center">
-            <Link
-              className="px-4 py-2 text-xs md:text-base rounded-xl font-semibold text-white mr-2 hover:text-sky-400 transition-colors duration-300 ease-in-out"
-              href="/emprendedores"
-            >
-              Registrar mi negocio
-            </Link>
-            <Link
-              className="bg-fuchsia-600 px-4 text-xs md:text-base py-2 rounded-xl font-semibold text-white mr-2 hover:bg-fuchsia-900 transition-colors duration-300 ease-in-out"
-              href="/auth/register"
-            >
-              Regístrate
-            </Link>
-            <Link
-              className="bg-sky-400 px-4 py-2 text-xs md:text-base rounded-xl font-semibold text-white hover:bg-sky-700 transition-colors duration-300 ease-in-out"
-              href="/auth/login"
-            >
-              Iniciar Sesión
-            </Link>
+            {user ? (
+              <div className="flex items-center">
+                <Link href="/user/profile" passHref>
+                  <Image
+                    src="/avatar.jpg"
+                    alt="User Avatar"
+                    width={40}
+                    height={40}
+                    className="rounded-full mr-2 cursor-pointer"
+                  />
+                </Link>
+                <span className="text-white font-semibold mr-4">
+                  {user.username}
+                </span>
+                <button
+                  onClick={handleLogout}
+                  className="text-white bg-red-500 px-4 py-2 rounded-md hover:bg-red-600 transition-colors duration-300"
+                >
+                  Cerrar Sesión
+                </button>
+
+                {/* Menu de hamburguesa */}
+                <button
+                  onClick={toggleMenu}
+                  className="text-white ml-4 p-2 rounded-md hover:bg-fuchsia-700 transition-colors duration-300"
+                >
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    width="24"
+                    height="24"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="2"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    className="feather feather-menu"
+                  >
+                    <line x1="3" y1="12" x2="21" y2="12" />
+                    <line x1="3" y1="6" x2="21" y2="6" />
+                    <line x1="3" y1="18" x2="21" y2="18" />
+                  </svg>
+                </button>
+                {menuOpen && (
+                  <div className="absolute top-16 right-6 bg-white rounded-md shadow-lg p-4 w-40 z-20">
+                    <Link href="/user/orders" passHref>
+                      <p className="text-black hover:text-fuchsia-800 cursor-pointer py-2">
+                        Pedidos
+                      </p>
+                    </Link>
+                    <Link href="/user/favorites" passHref>
+                      <p className="text-black hover:text-fuchsia-800 cursor-pointer py-2">
+                        Favoritos
+                      </p>
+                    </Link>
+                    <Link href="/user/profile" passHref>
+                      <p className="text-black hover:text-fuchsia-800 cursor-pointer py-2">
+                        Perfil
+                      </p>
+                    </Link>
+                  </div>
+                )}
+              </div>
+            ) : (
+              <>
+                <Link
+                  href="/auth/register"
+                  className="bg-fuchsia-600 px-4 py-2 text-xs md:text-base rounded-xl font-semibold text-white mr-2 hover:bg-fuchsia-900 transition-colors"
+                >
+                  Regístrate
+                </Link>
+                <Link
+                  href="/auth/login"
+                  className="bg-sky-400 px-4 py-2 text-xs md:text-base rounded-xl font-semibold text-white hover:bg-sky-700 transition-colors"
+                >
+                  Iniciar Sesión
+                </Link>
+              </>
+            )}
             <button
               onClick={toggleCart}
-              className="ml-2 bg-green-400 px-4 py-2 text-xs md:text-base rounded-xl font-semibold text-white hover:bg-sky-700 transition-colors duration-300 ease-in-out"
+              className="ml-2 bg-green-400 px-4 py-2 text-xs md:text-base rounded-xl font-semibold text-white hover:bg-sky-700 transition-colors"
             >
               <svg
                 xmlns="http://www.w3.org/2000/svg"
@@ -112,11 +192,11 @@ export default function Header() {
                 strokeWidth="2"
                 strokeLinecap="round"
                 strokeLinejoin="round"
-                className="icon icon-tabler icons-tabler-outline icon-tabler-shopping-cart"
+                className="icon icon-tabler icon-tabler-shopping-cart"
               >
                 <path stroke="none" d="M0 0h24v24H0z" fill="none" />
-                <path d="M6 19m-2 0a2 2 0 1 0 4 0a2 2 0 1 0 -4 0" />
-                <path d="M17 19m-2 0a2 2 0 1 0 4 0a2 2 0 1 0 -4 0" />
+                <path d="M6 19a2 2 0 1 0 4 0 2 2 0 1 0 -4 0" />
+                <path d="M17 19a2 2 0 1 0 4 0 2 2 0 1 0 -4 0" />
                 <path d="M17 17h-11v-14h-2" />
                 <path d="M6 5l14 1l-1 7h-13" />
               </svg>
@@ -127,27 +207,9 @@ export default function Header() {
 
       {/* Carrito de compras */}
       {cartVisible && (
-        <div className="fixed z-20 right-0 top-0 w-full sm:w-1/3 h-full bg-white shadow-lg p-6 overflow-y-auto transition-transform duration-300 ease-in-out transform rounded-xl translate-x-0 border border-neutral-400">
+        <div className="fixed z-20 right-0 top-0 w-full sm:w-1/3 h-full bg-white shadow-lg p-6 overflow-y-auto transition-transform duration-300 transform rounded-xl translate-x-0 border border-neutral-400">
           <h2 className="text-xl text-black font-bold mb-4 flex justify-center items-center gap-2">
-            Carrito de Compras{" "}
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              width="24"
-              height="24"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="2"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              className="icon icon-tabler icons-tabler-outline icon-tabler-shopping-cart"
-            >
-              <path stroke="none" d="M0 0h24v24H0z" fill="none" />
-              <path d="M6 19m-2 0a2 2 0 1 0 4 0a2 2 0 1 0 -4 0" />
-              <path d="M17 19m-2 0a2 2 0 1 0 4 0a2 2 0 1 0 -4 0" />
-              <path d="M17 17h-11v-14h-2" />
-              <path d="M6 5l14 1l-1 7h-13" />
-            </svg>
+            Carrito de Compras
           </h2>
           {cartItems.length > 0 ? (
             <ul className="text-black space-y-4">
@@ -226,7 +288,7 @@ export default function Header() {
                   ${calculateTotal().toFixed(2)}
                 </p>
               </div>
-              <button className="w-full mt-4 bg-green-500 text-white py-2 rounded-lg hover:bg-green-600 transition-colors duration-300 ease-in-out">
+              <button className="w-full mt-4 bg-green-500 text-white py-2 rounded-lg hover:bg-green-600 transition-colors duration-300">
                 Proceder al Pago
               </button>
             </div>
@@ -234,7 +296,7 @@ export default function Header() {
 
           <button
             onClick={toggleCart}
-            className="mt-4 w-full bg-red-500 px-4 py-2 text-white rounded-lg hover:bg-red-600 transition-colors duration-300 ease-in-out"
+            className="mt-4 w-full bg-red-500 px-4 py-2 text-white rounded-lg hover:bg-red-600 transition-colors"
           >
             Cerrar
           </button>
