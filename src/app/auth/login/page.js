@@ -1,6 +1,7 @@
 "use client";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import { jwtDecode } from "jwt-decode"; // Importar decodificador de JWT
 
 export default function LoginPage() {
   const [email, setEmail] = useState("");
@@ -22,10 +23,19 @@ export default function LoginPage() {
       console.log(data);
 
       if (data.success) {
-        document.cookie = `token=${data.token}; path=/; max-age=3600`;
-
+        // Guardar el token en localStorage
         localStorage.setItem("token", data.token);
-        router.push("/");
+
+        // Decodificar el token para obtener el tipo de usuario
+        const decoded = jwtDecode(data.token);
+
+        // Redirigir según el tipo de usuario
+        if (decoded.tipo_usuario === "emprendedor") {
+          router.push("/emprendedores/profile");
+        } else {
+          router.push("/"); // Página para usuarios regulares
+        }
+
         router.refresh();
       } else {
         setError(data.error);

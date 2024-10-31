@@ -36,11 +36,12 @@ export async function POST(req) {
     if (user && user.contraseña === password) {
       const token = jwt.sign(
         {
-          exp: Math.floor(Date.now() / 1000) + 60 * 60 * 24 * 7,
-          email: user.email,
+          userId: user.id_usuario,
           username: user.nombre_usuario,
+          tipo_usuario: user.tipo_usuario,
         },
-        process.env.JWT_SECRET
+        process.env.JWT_SECRET,
+        { expiresIn: "1h" }
       );
       return new Response(
         JSON.stringify({
