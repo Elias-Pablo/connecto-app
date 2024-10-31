@@ -1,18 +1,37 @@
 import { useState, useEffect } from "react";
 import Link from "next/link";
 import Image from "next/image";
-import jwtDecode from "jwt-decode";
+import { jwtDecode } from "jwt-decode"; // Cambiado a jwt_decode para evitar errores de importación
 import { useRouter } from "next/navigation";
-import { useCart } from '../../src/app/context/CartContext';
 
 export default function Header() {
   const [user, setUser] = useState(null);
   const [menuOpen, setMenuOpen] = useState(false);
   const router = useRouter();
   const [cartVisible, setCartVisible] = useState(false);
-
-  // Utilizar funciones y estado del carrito de `CartContext`
-  const { cartItems, addToCart, decreaseQuantity, removeFromCart, calculateSubtotal, calculateTax, calculateTotal } = useCart();
+  const [cartItems, setCartItems] = useState([
+    {
+      id: 1,
+      name: "Producto 1",
+      price: 10.0,
+      quantity: 1,
+      image: "/zapato.jpg",
+    },
+    {
+      id: 2,
+      name: "Producto 2",
+      price: 20.0,
+      quantity: 1,
+      image: "/zapato.jpg",
+    },
+    {
+      id: 3,
+      name: "Producto 3",
+      price: 30.0,
+      quantity: 1,
+      image: "/zapato.jpg",
+    },
+  ]);
 
   // Efecto para recuperar y decodificar el token desde localStorage
   useEffect(() => {
@@ -39,6 +58,32 @@ export default function Header() {
 
   const toggleCart = () => setCartVisible(!cartVisible);
   const toggleMenu = () => setMenuOpen(!menuOpen);
+
+  const increaseQuantity = (id) => {
+    setCartItems(
+      cartItems.map((item) =>
+        item.id === id ? { ...item, quantity: item.quantity + 1 } : item
+      )
+    );
+  };
+
+  const decreaseQuantity = (id) => {
+    setCartItems(
+      cartItems.map((item) =>
+        item.id === id && item.quantity > 1
+          ? { ...item, quantity: item.quantity - 1 }
+          : item
+      )
+    );
+  };
+
+  const removeItem = (id) =>
+    setCartItems(cartItems.filter((item) => item.id !== id));
+
+  const calculateSubtotal = () =>
+    cartItems.reduce((acc, item) => acc + item.price * item.quantity, 0);
+  const calculateTax = () => calculateSubtotal() * 0.19;
+  const calculateTotal = () => calculateSubtotal() + calculateTax();
 
   return (
     <>
@@ -75,7 +120,7 @@ export default function Header() {
                   Cerrar Sesión
                 </button>
 
-                {/* Menú de hamburguesa */}
+                {/* Menu de hamburguesa */}
                 <button
                   onClick={toggleMenu}
                   className="text-white ml-4 p-2 rounded-md hover:bg-fuchsia-700 transition-colors duration-300"
@@ -197,7 +242,7 @@ export default function Header() {
                           {item.quantity}
                         </span>
                         <button
-                          onClick={() => addToCart(item)}
+                          onClick={() => increaseQuantity(item.id)}
                           className="bg-gray-300 px-2 py-1 rounded-r"
                         >
                           +
@@ -210,7 +255,7 @@ export default function Header() {
                       ${(item.price * item.quantity).toFixed(2)}
                     </p>
                     <button
-                      onClick={() => removeFromCart(item.id)}
+                      onClick={() => removeItem(item.id)}
                       className="text-red-500 text-sm mt-2"
                     >
                       Eliminar
