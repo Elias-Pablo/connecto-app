@@ -1,7 +1,6 @@
 "use client";
 import Image from "next/image";
 import Link from "next/link";
-
 import { useState } from "react";
 
 export default function Register() {
@@ -10,6 +9,8 @@ export default function Register() {
   const [password, setPassword] = useState("");
   const [passwordConfirm, setPasswordConfirm] = useState("");
   const [error, setError] = useState(null);
+  const [showPassword, setShowPassword] = useState(false);
+  const [showPasswordConfirm, setShowPasswordConfirm] = useState(false);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -78,26 +79,117 @@ export default function Register() {
               value={email}
               onChange={(e) => setEmail(e.target.value)}
             />
+
             <label htmlFor="passwordEmp" className="text-white">
               Contraseña
             </label>
-            <input
-              type="password"
-              id="passwordEmp"
-              className="border border-gray-300 rounded-md p-1 mb-2 text-black"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-            />
+            <div className="relative">
+              <input
+                type={showPassword ? "text" : "password"}
+                id="passwordEmp"
+                className="border border-gray-300 rounded-md p-1 mb-2 text-black w-full"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+              />
+              <button
+                type="button"
+                onClick={() => setShowPassword(!showPassword)}
+                className="absolute right-2 top-2"
+              >
+                {showPassword ? (
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    width="24"
+                    height="24"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="2"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    className="icon icon-tabler icon-tabler-eye-off"
+                  >
+                    <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+                    <path d="M10.585 10.587a2 2 0 0 0 2.829 2.828" />
+                    <path d="M16.681 16.673a8.717 8.717 0 0 1 -4.681 1.327c-3.6 0 -6.6 -2 -9 -6c1.272 -2.12 2.712 -3.678 4.32 -4.674m2.86 -1.146a9.055 9.055 0 0 1 1.82 -.18c3.6 0 6.6 2 9 6c-.666 1.11 -1.379 2.067 -2.138 2.87" />
+                    <path d="M3 3l18 18" />
+                  </svg>
+                ) : (
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    width="24"
+                    height="24"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="2"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    className="icon icon-tabler icon-tabler-eye"
+                  >
+                    <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+                    <path d="M10 12a2 2 0 1 0 4 0a2 2 0 0 0 -4 0" />
+                    <path d="M21 12c-2.4 4 -5.4 6 -9 6c-3.6 0 -6.6 -2 -9 -6c2.4 -4 5.4 -6 9 -6c3.6 0 6.6 2 9 6" />
+                  </svg>
+                )}
+              </button>
+            </div>
+
             <label htmlFor="passwordrevalid" className="text-white">
               Repetir Contraseña
             </label>
-            <input
-              type="password"
-              id="passwordrevalid"
-              className="border border-gray-300 rounded-md p-1 mb-2 text-black"
-              value={passwordConfirm}
-              onChange={(e) => setPasswordConfirm(e.target.value)}
-            />
+            <div className="relative">
+              <input
+                type={showPasswordConfirm ? "text" : "password"}
+                id="passwordrevalid"
+                className="border border-gray-300 rounded-md p-1 mb-2 text-black w-full"
+                value={passwordConfirm}
+                onChange={(e) => setPasswordConfirm(e.target.value)}
+              />
+              <button
+                type="button"
+                onClick={() => setShowPasswordConfirm(!showPasswordConfirm)}
+                className="absolute right-2 top-2"
+              >
+                {showPasswordConfirm ? (
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    width="24"
+                    height="24"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="2"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    className="icon icon-tabler icon-tabler-eye-off"
+                  >
+                    <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+                    <path d="M10.585 10.587a2 2 0 0 0 2.829 2.828" />
+                    <path d="M16.681 16.673a8.717 8.717 0 0 1 -4.681 1.327c-3.6 0 -6.6 -2 -9 -6c1.272 -2.12 2.712 -3.678 4.32 -4.674m2.86 -1.146a9.055 9.055 0 0 1 1.82 -.18c3.6 0 6.6 2 9 6c-.666 1.11 -1.379 2.067 -2.138 2.87" />
+                    <path d="M3 3l18 18" />
+                  </svg>
+                ) : (
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    width="24"
+                    height="24"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="2"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    className="icon icon-tabler icon-tabler-eye"
+                  >
+                    <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+                    <path d="M10 12a2 2 0 1 0 4 0a2 2 0 0 0 -4 0" />
+                    <path d="M21 12c-2.4 4 -5.4 6 -9 6c-3.6 0 -6.6 -2 -9 -6c2.4 -4 5.4 -6 9 -6c3.6 0 6.6 2 9 6" />
+                  </svg>
+                )}
+              </button>
+            </div>
+
             <button
               type="submit"
               className="text-white bg-green-400 hover:bg-green-700 rounded-md p-4 mt-5"
