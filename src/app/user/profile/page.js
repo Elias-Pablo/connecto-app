@@ -2,6 +2,7 @@
 import { useState } from "react";
 import Image from "next/image";
 import Header from "@/components/Header-us";
+import { CartProvider } from "@/app/context/CartContext"; // Cambia la ruta para usar el alias "@/"
 
 export default function HeaderUser() {
     const [favoriteProducts, setFavoriteProducts] = useState([]);
@@ -57,7 +58,7 @@ export default function HeaderUser() {
     };
 
     return (
-        <>
+        <CartProvider> {/* Envuelve el contenido con CartProvider */}
             <Header />
             <section className="user-profile flex flex-col items-center justify-center py-10">
                 <div className="user-profile-principal bg-white p-6 rounded-lg shadow-lg text-center w-full max-w-lg">
@@ -104,7 +105,6 @@ export default function HeaderUser() {
                             onClick={handleEditToggle}
                             className="bg-blue-500 text-black px-4 py-2 rounded-lg hover:bg-blue-600 transition-transform transform hover:scale-105"
                         >
-                            
                             {isEditing ? "Guardar" : "Editar"}
                         </button>
                     </div>
@@ -182,6 +182,6 @@ export default function HeaderUser() {
                     )}
                 </div>
             </section>
-        </>
+        </CartProvider> 
     );
 }
