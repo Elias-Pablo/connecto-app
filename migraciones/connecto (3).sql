@@ -1,11 +1,11 @@
 -- phpMyAdmin SQL Dump
--- version 5.2.1
+-- version 5.2.0
 -- https://www.phpmyadmin.net/
 --
--- Servidor: 127.0.0.1
--- Tiempo de generación: 28-10-2024 a las 20:32:16
--- Versión del servidor: 10.4.32-MariaDB
--- Versión de PHP: 8.2.12
+-- Servidor: localhost
+-- Tiempo de generación: 31-10-2024 a las 19:36:56
+-- Versión del servidor: 10.4.27-MariaDB
+-- Versión de PHP: 7.4.33
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 START TRANSACTION;
@@ -169,6 +169,13 @@ CREATE TABLE `imagen_publicacion` (
   `tiempo_creacion` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
+--
+-- Volcado de datos para la tabla `imagen_publicacion`
+--
+
+INSERT INTO `imagen_publicacion` (`id_imagen`, `id_post`, `url_imagen`, `tiempo_creacion`) VALUES
+(1, NULL, 'https://assets.adidas.com/images/w_600,f_auto,q_auto/02cd9a97ce874d89ba17ae2b003ebe50_9366/Zapatillas_adidas_Grand_Court_Lifestyle_para_Tenis_con_Cordones_Blanco_GW6511_01_standard.jpg', '2024-10-30 23:15:15');
+
 -- --------------------------------------------------------
 
 --
@@ -178,6 +185,7 @@ CREATE TABLE `imagen_publicacion` (
 CREATE TABLE `interacciones` (
   `id_interaccion` int(11) NOT NULL,
   `id_perfil` int(11) NOT NULL,
+  `id_producto` int(11) NOT NULL,
   `tipo_interaccion` enum('View','Click','Purchase') NOT NULL,
   `fecha_interaccion` timestamp NOT NULL DEFAULT current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
@@ -222,15 +230,15 @@ CREATE TABLE `notificaciones` (
 CREATE TABLE `perfil_negocio` (
   `id_perfil` int(11) NOT NULL,
   `id_usuario` int(11) NOT NULL,
-  `id_imagen` int(11) NOT NULL,
+  `id_imagen` int(11) DEFAULT NULL,
   `nombre_negocio` varchar(100) NOT NULL,
   `descripcion` text DEFAULT NULL,
   `direccion` varchar(255) DEFAULT NULL,
   `telefono` varchar(20) DEFAULT NULL,
   `sitioweb_url` varchar(255) DEFAULT NULL,
   `tipo_perfil` enum('Free','Premium') DEFAULT 'Free',
-  `id_metricas` int(11) NOT NULL,
-  `id_foro` int(11) NOT NULL,
+  `id_metricas` int(11) DEFAULT NULL,
+  `id_foro` int(11) DEFAULT NULL,
   `tiempo_creacion` timestamp NOT NULL DEFAULT current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
@@ -247,6 +255,13 @@ CREATE TABLE `preferencias` (
   `fecha_creacion` datetime NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
+--
+-- Volcado de datos para la tabla `preferencias`
+--
+
+INSERT INTO `preferencias` (`id_preferencias`, `productos_fav`, `fecha_interaccion`, `fecha_creacion`) VALUES
+(1, '', '2024-10-28 21:19:25', '2024-10-28 21:19:25');
+
 -- --------------------------------------------------------
 
 --
@@ -256,7 +271,6 @@ CREATE TABLE `preferencias` (
 CREATE TABLE `productos` (
   `id_producto` int(11) NOT NULL,
   `id_perfil` int(11) NOT NULL,
-  `id_interaccion` int(11) NOT NULL,
   `nombre` varchar(100) NOT NULL,
   `descripcion` text DEFAULT NULL,
   `id_imagen` int(11) NOT NULL,
@@ -310,6 +324,16 @@ CREATE TABLE `usuarios` (
   `contraseña` varchar(255) NOT NULL,
   `tiempo_creacion` timestamp NOT NULL DEFAULT current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Volcado de datos para la tabla `usuarios`
+--
+
+INSERT INTO `usuarios` (`id_usuario`, `id_preferencias`, `nombre_usuario`, `tipo_usuario`, `email`, `contraseña`, `tiempo_creacion`) VALUES
+(3, 1, 'malumaaaa', 'user', 'malumaweko@gmail.com', '1345', '2024-10-29 00:19:25'),
+(6, 1, 'hola', 'user', 'hola@gmail.com', 'hola', '2024-10-30 03:34:43'),
+(7, 1, 'eric', 'user', 'eric@gmail.com', 'eric', '2024-10-30 22:21:00'),
+(8, 1, 'xd', 'emprendedor', 'x@x.x', '123', '2024-10-31 21:35:24');
 
 -- --------------------------------------------------------
 
@@ -403,7 +427,8 @@ ALTER TABLE `imagen_publicacion`
 --
 ALTER TABLE `interacciones`
   ADD PRIMARY KEY (`id_interaccion`),
-  ADD KEY `profile_id` (`id_perfil`);
+  ADD KEY `profile_id` (`id_perfil`),
+  ADD KEY `id_producto` (`id_producto`);
 
 --
 -- Indices de la tabla `metricas`
@@ -440,7 +465,6 @@ ALTER TABLE `preferencias`
 ALTER TABLE `productos`
   ADD PRIMARY KEY (`id_producto`),
   ADD KEY `profile_id` (`id_perfil`),
-  ADD KEY `id_interaccion` (`id_interaccion`),
   ADD KEY `id_imagen` (`id_imagen`);
 
 --
@@ -534,7 +558,7 @@ ALTER TABLE `hilos_foro`
 -- AUTO_INCREMENT de la tabla `imagen_publicacion`
 --
 ALTER TABLE `imagen_publicacion`
-  MODIFY `id_imagen` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `id_imagen` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
 
 --
 -- AUTO_INCREMENT de la tabla `interacciones`
@@ -564,13 +588,13 @@ ALTER TABLE `perfil_negocio`
 -- AUTO_INCREMENT de la tabla `preferencias`
 --
 ALTER TABLE `preferencias`
-  MODIFY `id_preferencias` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `id_preferencias` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
 
 --
 -- AUTO_INCREMENT de la tabla `productos`
 --
 ALTER TABLE `productos`
-  MODIFY `id_producto` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `id_producto` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
 
 --
 -- AUTO_INCREMENT de la tabla `promociones`
@@ -588,7 +612,7 @@ ALTER TABLE `publicaciones_foro`
 -- AUTO_INCREMENT de la tabla `usuarios`
 --
 ALTER TABLE `usuarios`
-  MODIFY `id_usuario` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `id_usuario` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
 
 --
 -- AUTO_INCREMENT de la tabla `visibilidad_busqueda`
@@ -644,7 +668,8 @@ ALTER TABLE `hilos_foro`
 -- Filtros para la tabla `interacciones`
 --
 ALTER TABLE `interacciones`
-  ADD CONSTRAINT `interacciones_ibfk_1` FOREIGN KEY (`id_perfil`) REFERENCES `perfil_negocio` (`id_perfil`);
+  ADD CONSTRAINT `interacciones_ibfk_1` FOREIGN KEY (`id_perfil`) REFERENCES `perfil_negocio` (`id_perfil`),
+  ADD CONSTRAINT `interacciones_ibfk_2` FOREIGN KEY (`id_producto`) REFERENCES `productos` (`id_producto`);
 
 --
 -- Filtros para la tabla `notificaciones`
@@ -666,7 +691,6 @@ ALTER TABLE `perfil_negocio`
 --
 ALTER TABLE `productos`
   ADD CONSTRAINT `productos_ibfk_1` FOREIGN KEY (`id_perfil`) REFERENCES `perfil_negocio` (`id_perfil`),
-  ADD CONSTRAINT `productos_ibfk_2` FOREIGN KEY (`id_interaccion`) REFERENCES `interacciones` (`id_interaccion`),
   ADD CONSTRAINT `productos_ibfk_3` FOREIGN KEY (`id_imagen`) REFERENCES `imagen_publicacion` (`id_imagen`);
 
 --
