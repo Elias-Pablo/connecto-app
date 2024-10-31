@@ -3,7 +3,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { jwtDecode } from "jwt-decode"; // Cambiado a jwt_decode para evitar errores de importación
 import { useRouter } from "next/navigation";
-import { useCart } from '../../src/app/context/CartContext';
+import { useCart } from "../../src/app/context/CartContext";
 
 export default function Header() {
   const [user, setUser] = useState(null);
@@ -11,7 +11,14 @@ export default function Header() {
   const router = useRouter();
 
   const [cartVisible, setCartVisible] = useState(false);
-  const { cartItems, addToCart, decreaseQuantity, calculateSubtotal, calculateTax, calculateTotal } = useCart();
+  const {
+    cartItems,
+    addToCart,
+    decreaseQuantity,
+    calculateSubtotal,
+    calculateTax,
+    calculateTotal,
+  } = useCart();
   const toggleCart = () => setCartVisible(!cartVisible);
 
   // Efecto para recuperar y decodificar el token desde localStorage
@@ -119,6 +126,12 @@ export default function Header() {
             ) : (
               <>
                 <Link
+                  href="/auth/emregister"
+                  className="text-xs md:text-base text-sky-300 hover:text-sky-500 py-2 mr-4 font-bold"
+                >
+                  Registrar mi negocio
+                </Link>
+                <Link
                   href="/auth/register"
                   className="bg-fuchsia-600 px-4 py-2 text-xs md:text-base rounded-xl font-semibold text-white mr-2 hover:bg-fuchsia-900 transition-colors"
                 >
@@ -134,7 +147,7 @@ export default function Header() {
             )}
             <button
               onClick={toggleCart}
-              className="ml-2 bg-green-400 px-4 py-2 text-xs md:text-base rounded-xl font-semibold text-white hover:bg-sky-700 transition-colors"
+              className="ml-2 bg-green-400 px-4 py-2 text-xs md:text-base rounded-xl font-semibold text-white hover:bg-green-700 transition-colors"
             >
               <svg
                 xmlns="http://www.w3.org/2000/svg"
@@ -161,24 +174,51 @@ export default function Header() {
 
       {cartVisible && (
         <div className="fixed z-20 right-0 top-0 w-full sm:w-1/3 h-full bg-white shadow-lg p-6 overflow-y-auto transition-transform duration-300 ease-in-out transform rounded-xl translate-x-0 border border-neutral-400">
-          <h2 className="text-xl text-black font-bold mb-4 flex justify-center items-center gap-2">Carrito de Compras</h2>
+          <h2 className="text-xl text-black font-bold mb-4 flex justify-center items-center gap-2">
+            Carrito de Compras
+          </h2>
           {cartItems.length > 0 ? (
             <ul className="text-black space-y-4">
               {cartItems.map((item) => (
-                <li key={item.id} className="flex justify-between items-center border-b pb-4">
+                <li
+                  key={item.id}
+                  className="flex justify-between items-center border-b pb-4"
+                >
                   <div className="flex items-center">
-                    <Image src={item.image} alt={item.name} width={50} height={50} className="mr-4" />
+                    <Image
+                      src={item.image}
+                      alt={item.name}
+                      width={50}
+                      height={50}
+                      className="mr-4"
+                    />
                     <div>
                       <p className="font-semibold">{item.name}</p>
-                      <p className="text-sm text-gray-600">Precio: ${item.price.toFixed(2)}</p>
+                      <p className="text-sm text-gray-600">
+                        Precio: ${item.price.toFixed(2)}
+                      </p>
                       <div className="flex items-center mt-2">
-                        <button onClick={() => addToCart(item)} className="bg-gray-300 px-2 py-1 rounded">+</button>
-                        <span className="bg-gray-100 px-4 py-1 text-sm">{item.quantity}</span>
-                        <button onClick={() => decreaseQuantity(item.id)} className="bg-gray-300 px-2 py-1 rounded">-</button>
+                        <button
+                          onClick={() => addToCart(item)}
+                          className="bg-gray-300 px-2 py-1 rounded"
+                        >
+                          +
+                        </button>
+                        <span className="bg-gray-100 px-4 py-1 text-sm">
+                          {item.quantity}
+                        </span>
+                        <button
+                          onClick={() => decreaseQuantity(item.id)}
+                          className="bg-gray-300 px-2 py-1 rounded"
+                        >
+                          -
+                        </button>
                       </div>
                     </div>
                   </div>
-                  <p className="font-semibold">${(item.price * item.quantity).toFixed(2)}</p>
+                  <p className="font-semibold">
+                    ${(item.price * item.quantity).toFixed(2)}
+                  </p>
                 </li>
               ))}
             </ul>
@@ -186,17 +226,36 @@ export default function Header() {
             <p className="text-gray-600">Tu carrito está vacío.</p>
           )}
           <div className="mt-6">
-            <div className="flex justify-between"><p className="text-gray-600">Subtotal:</p><p className="font-semibold text-black">${calculateSubtotal().toFixed(2)}</p></div>
-            <div className="flex justify-between mt-2"><p className="text-gray-600">Impuesto (19%):</p><p className="font-semibold text-black">${calculateTax().toFixed(2)}</p></div>
-            <div className="flex justify-between mt-2"><p className="text-xl font-bold text-black">Total:</p><p className="text-xl font-bold text-black">${calculateTotal().toFixed(2)}</p></div>
+            <div className="flex justify-between">
+              <p className="text-gray-600">Subtotal:</p>
+              <p className="font-semibold text-black">
+                ${calculateSubtotal().toFixed(2)}
+              </p>
+            </div>
+            <div className="flex justify-between mt-2">
+              <p className="text-gray-600">Impuesto (19%):</p>
+              <p className="font-semibold text-black">
+                ${calculateTax().toFixed(2)}
+              </p>
+            </div>
+            <div className="flex justify-between mt-2">
+              <p className="text-xl font-bold text-black">Total:</p>
+              <p className="text-xl font-bold text-black">
+                ${calculateTotal().toFixed(2)}
+              </p>
+            </div>
           </div>
-          <button className="mt-4 w-full bg-blue-500 px-4 py-2 text-white rounded-lg hover:bg-blue-600 transition-colors duration-300 ease-in-out">
+          <button className="mt-4 w-full bg-green-500 px-4 py-2 text-white rounded-lg hover:bg-green-600 transition-colors duration-300 ease-in-out">
             Proceder al Pago
           </button>
-          <button onClick={toggleCart} className="mt-4 w-full bg-red-500 px-4 py-2 text-white rounded-lg hover:bg-red-600 transition-colors duration-300 ease-in-out">Cerrar</button>
+          <button
+            onClick={toggleCart}
+            className="mt-4 w-full bg-red-500 px-4 py-2 text-white rounded-lg hover:bg-red-600 transition-colors duration-300 ease-in-out"
+          >
+            Cerrar
+          </button>
         </div>
       )}
     </>
   );
 }
-
