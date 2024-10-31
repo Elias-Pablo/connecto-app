@@ -8,7 +8,16 @@ export function middleware(req) {
   if (token) {
     try {
       const decoded = jwt.verify(token, process.env.JWT_SECRET);
-      req.user = decoded; // Puedes usar este valor para validaciones adicionales si es necesario
+      req.user = decoded; // Almacenar el usuario decodificado en req para otras validaciones
+
+      // Si el usuario intenta acceder a /emprendedores y no es "emprendedor", redirigir
+      const url = req.nextUrl.clone();
+      if (
+        url.pathname.startsWith("/emprendedores") &&
+        decoded.tipo_usuario !== "emprendedor"
+      ) {
+        return NextResponse.redirect(new URL("/auth/login", req.url));
+      }
     } catch (error) {
       console.error("Error de JWT:", error);
       return NextResponse.redirect(new URL("/auth/login", req.url));
@@ -21,5 +30,5 @@ export function middleware(req) {
 }
 
 export const config = {
-  matcher: ["/perfil/:path*", "/dashboard/:path*"], // Rutas protegidas
+  matcher: ["/perfil/:path*", "/dashboard/:path*", "/emprendedores/:path*"], // Agregar la ruta /emprendedores
 };

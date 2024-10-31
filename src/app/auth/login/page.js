@@ -1,5 +1,7 @@
 "use client";
 import { useState } from "react";
+import Image from "next/image";
+import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { jwtDecode } from "jwt-decode"; // Importar decodificador de JWT
 
@@ -48,11 +50,22 @@ export default function LoginPage() {
 
   return (
     <div className="flex flex-col items-center justify-center h-screen bg-neutral-900 p-5">
-      <h1 className="text-2xl font-bold text-white mb-6">Iniciar Sesión</h1>
+      <Link href="/">
+        <Image
+          src="/ConnecTo-logo.png"
+          alt="ConnecTo Logo"
+          width={250}
+          height={250}
+          className="mb-10"
+        />
+      </Link>
       <form
         onSubmit={handleLogin}
         className="bg-fuchsia-600 w-full max-w-md p-8 rounded-lg shadow-lg"
       >
+        <h1 className="text-2xl text-center font-bold text-white mb-6">
+          Iniciar Sesión
+        </h1>
         <div className="mb-4">
           <label htmlFor="email" className="block text-white mb-2">
             Correo Electrónico
