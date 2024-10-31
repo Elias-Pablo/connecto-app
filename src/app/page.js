@@ -1,3 +1,4 @@
+// app/page.js
 "use client";
 import { useState, Suspense } from "react";
 import { useRouter } from "next/navigation";
@@ -5,13 +6,13 @@ import Image from "next/image";
 import SearchBar from "@/components/Searchbar";
 import Header from "@/components/Header-us";
 import SearchedProducts from "@/components/Searched-Products";
+import { useCart, CartProvider } from '../../src/app/context/CartContext';
 
 export default function Home() {
   const router = useRouter();
 
-  // Manejar clic en botón de FAQ
   const handleFAQClick = () => {
-    router.push("/faq");
+    router.push("/emprendedores/faq");
   };
 
   // Datos de productos
@@ -20,21 +21,29 @@ export default function Home() {
       image: "/imagenpromo.jpeg",
       name: "Producto 1",
       description: "Descripción 1",
+      price: 10.0,
+      id: 1,
     },
     {
       image: "/imagenpromo.jpeg",
       name: "Producto 2",
       description: "Descripción 2",
+      price: 20.0,
+      id: 2,
     },
     {
       image: "/imagenpromo.jpeg",
       name: "Producto 3",
       description: "Descripción 3",
+      price: 30.0,
+      id: 3,
     },
     {
       image: "/imagenpromo.jpeg",
       name: "Producto 4",
       description: "Descripción 4",
+      price: 40.0,
+      id: 4,
     },
   ];
 
@@ -47,63 +56,64 @@ export default function Home() {
   ];
 
   // Datos de preguntas frecuentes
-  const faqs = [
+  const FAQ = [
     {
       question: "¿Qué es ConnecTo y cómo funciona?",
       answer:
-        "ConnecTo es una plataforma que facilita la conexión entre emprendedores y clientes mediante perfiles personalizados, productos destacados y planes de suscripción. La plataforma ofrece una interfaz intuitiva para explorar productos, conocer emprendedores y optar por diferentes planes según las necesidades del negocio.",
+        "ConnecTo es una plataforma que facilita la conexión entre emprendedores y clientes mediante perfiles personalizados, productos destacados y planes de suscripción.",
     },
     {
       question: "¿Es ConnecTo fácil de usar?",
       answer:
-        "Sí, ConnecTo está diseñado para ser accesible y fácil de usar. La plataforma proporciona una navegación sencilla con secciones claramente definidas para explorar productos, perfiles de emprendedores y planes de suscripción, asegurando una experiencia de usuario fluida y agradable.",
+        "Sí, ConnecTo está diseñado para ser accesible y fácil de usar. La plataforma proporciona una navegación sencilla con secciones claramente definidas.",
     },
-    {
-      question: "¿Qué diferencia a ConnecTo de otras plataformas similares?",
-      answer:
-        "ConnecTo se destaca por su enfoque en la integración de perfiles de emprendedores y productos destacados dentro de una misma plataforma. Además, ofrece planes de suscripción adaptados a diferentes niveles de necesidad empresarial, con un diseño atractivo y funcionalidades que facilitan la visibilidad y el crecimiento de los negocios.",
-    },
-    {
-      question: "¿Es ConnecTo adecuado para mi negocio?",
-      answer:
-        "ConnecTo es adecuado para una amplia gama de negocios, especialmente aquellos que buscan aumentar su visibilidad en línea y conectar con clientes potenciales. La plataforma es ideal si estás buscando una solución que combine la promoción de productos, la visibilidad de emprendedores y opciones de suscripción para mejorar tu presencia en el mercado.",
-    },
+    // Agrega más preguntas aquí...
   ];
 
-  // Componente de Productos Destacados
-  const ProductSection = () => (
-    <section className="bg-white p-10">
-      <div className="container mx-auto">
-        <div className="flex ">
-          <SearchedProducts />
+  // Componente de Productos Destacados con carrito de compras
+  const ProductSection = () => {
+    const { addToCart } = useCart();
+
+    return (
+      <section className="bg-white p-10">
+        <div className="container mx-auto">
+          <div className="flex ">
+            <SearchedProducts />
+          </div>
+          <h2 className="text-2xl font-semibold mb-5 text-center text-black">
+            Productos Destacados
+          </h2>
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+            {products.map((product) => (
+              <div
+                key={product.id}
+                className="bg-white p-5 rounded-lg shadow-lg text-center"
+              >
+                <Image
+                  src={product.image}
+                  width={350}
+                  height={200}
+                  alt={product.name}
+                  layout="responsive"
+                />
+                <h3 className="text-lg font-semibold mt-2 text-black">
+                  {product.name}
+                </h3>
+                <p className="text-sm text-gray-600">${product.price}</p>
+                <p className="text-sm text-black">{product.description}</p>
+                <button
+                  onClick={() => addToCart(product)}
+                  className="mt-2 bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600"
+                >
+                  Agregar al Carrito
+                </button>
+              </div>
+            ))}
+          </div>
         </div>
-        <h2 className="text-2xl font-semibold mb-5 text-center text-black ">
-          Productos Destacados
-        </h2>
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-          {products.map((product, index) => (
-            <div
-              key={index}
-              className="bg-white active:bg-sky-400 p-5 rounded-lg shadow-lg text-center cursor-pointer hover:scale-105 duration-300"
-            >
-              <Image
-                src={product.image}
-                width={350}
-                height={200}
-                alt={product.name}
-                layout="responsive"
-                objectFit="cover"
-              />
-              <h3 className="text-lg font-semibold mt-2 text-white">
-                {product.name}
-              </h3>
-              <p className="text-sm text-black">{product.description}</p>
-            </div>
-          ))}
-        </div>
-      </div>
-    </section>
-  );
+      </section>
+    );
+  };
 
   // Componente de Perfiles de Emprendedores
   const ProfileSection = () => (
@@ -153,7 +163,7 @@ export default function Home() {
             Preguntas Frecuentes
           </h2>
           <div className="space-y-4">
-            {faqs.map((faq, index) => (
+            {FAQ.map((faq, index) => (
               <div key={index} className="border-b border-gray-500 pb-4">
                 <div
                   className="flex justify-between items-center cursor-pointer"
@@ -189,7 +199,7 @@ export default function Home() {
   };
 
   return (
-    <>
+    <CartProvider>
       <Header />
       <section className="w-full h-full flex flex-col items-center justify-center p-5 bg-sky-400">
         <h1 className="p-5 text-2xl font-semibold text-white text-center">
@@ -202,6 +212,6 @@ export default function Home() {
       <ProductSection />
       <ProfileSection />
       <FAQSection />
-    </>
+    </CartProvider>
   );
 }
