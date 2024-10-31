@@ -1,9 +1,9 @@
 import { useState, useEffect } from "react";
 import Link from "next/link";
 import Image from "next/image";
-import jwtDecode from "jwt-decode";
+import { jwtDecode } from "jwt-decode";
 import { useRouter } from "next/navigation";
-import { useCart } from '../../src/app/context/CartContext';
+import { useCart } from "../../src/app/context/CartContext";
 
 export default function Header() {
   const [user, setUser] = useState(null);
@@ -12,7 +12,15 @@ export default function Header() {
   const [cartVisible, setCartVisible] = useState(false);
 
   // Utilizar funciones y estado del carrito de `CartContext`
-  const { cartItems, addToCart, decreaseQuantity, removeFromCart, calculateSubtotal, calculateTax, calculateTotal } = useCart();
+  const {
+    cartItems,
+    addToCart,
+    decreaseQuantity,
+    removeFromCart,
+    calculateSubtotal,
+    calculateTax,
+    calculateTotal,
+  } = useCart();
 
   // Efecto para recuperar y decodificar el token desde localStorage
   useEffect(() => {
