@@ -1,429 +1,312 @@
 "use client";
 import Image from "next/image";
-import Link from "next/link";
+import { useState, useEffect } from "react"; // Agregado useEffect
 import Header from "@/components/Header-em";
-import { useState } from "react";
 import MetricChart from "@/components/MetricChart";
+
+// El resto del código permanece igual
+
 
 export default function EmprendedorProfile() {
   const [selectedMetric, setSelectedMetric] = useState("weekly");
+  const [products, setProducts] = useState([]);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [currentProduct, setCurrentProduct] = useState({
+    id: null,
+    name: "",
+    description: "",
+    price: "",
+    image: "",
+    stock: 0,
+    id_imagen: null,
+  });
+  const [profileInfo, setProfileInfo] = useState({
+    avatar: "/avatar.jpg",
+    name: "Avatar",
+    description: "Lorem ipsum dolor sit amet, consectetur adipiscing elit.",
+    website: "",
+  });
+  const [isEditingProfile, setIsEditingProfile] = useState(false);
+
+  const handleProfileChange = (e) => {
+    const { name, value } = e.target;
+    setProfileInfo({ ...profileInfo, [name]: value });
+  };
+
+  const saveProfileInfo = () => {
+    setIsEditingProfile(false);
+  };
+
+  const openProductModal = (product = { id: null, name: "", description: "", price: "", image: "", stock: 0, id_imagen: "" }) => {
+    setCurrentProduct(product);
+    setIsModalOpen(true);
+  };
+
+  useEffect(() => {
+    const fetchProducts = async () => {
+      try {
+        const response = await fetch('/api/auth/products', { method: 'GET' });
+        if (response.ok) {
+          const data = await response.json();
+          
+          // Asumiendo que `data.products` es un array de productos con las propiedades correctas
+          const formattedProducts = data.products.map(product => ({
+            id: product.id_producto, // Ajusta según el nombre del campo en tu respuesta
+            name: product.nombre,
+            description: product.descripcion,
+            price: product.precio,
+            stock: product.stock,
+          }));
+          
+          setProducts(formattedProducts);
+        } else {
+          console.error('Error al cargar productos');
+        }
+      } catch (error) {
+        console.error('Error en la solicitud:', error);
+      }
+    };
+  
+    fetchProducts();
+  }, []);
+  
+  const handleDeleteProduct = async (productId) => {
+    try {
+      const response = await fetch(`/api/auth/products?id=${productId}`, {
+        method: 'DELETE',
+      });
+      if (response.ok) {
+        setProducts(products.filter((product) => product.id !== productId));
+        console.log('Producto eliminado exitosamente');
+      } else {
+        console.error('Error al eliminar el producto');
+      }
+    } catch (error) {
+      console.error('Error en la solicitud:', error);
+    }
+  };
+  const handleSaveProduct = async () => {
+    try {
+      const method = currentProduct.id ? 'PUT' : 'POST';
+      const endpoint = currentProduct.id ? `/api/auth/products/${currentProduct.id}` : '/api/auth/products';
+    
+      const response = await fetch(endpoint, {
+        method,
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          id: currentProduct.id,
+          id_perfil: 1, // Puedes ajustar esto según tu lógica de negocio
+          name: currentProduct.name,
+          description: currentProduct.description,
+          price: currentProduct.price,
+          stock: currentProduct.stock || 0,
+          id_imagen: currentProduct.id_imagen || null,
+        }),
+      });
+    
+      if (response.ok) {
+        const data = await response.json();
+        if (method === 'PUT') {
+          setProducts(
+            products.map((product) =>
+              product.id === currentProduct.id ? { ...currentProduct } : product
+            )
+          );
+        } else {
+          setProducts([...products, { ...currentProduct, id: data.id }]);
+        }
+        console.log('Producto guardado exitosamente');
+      } else {
+        console.error('Error al guardar el producto');
+      }
+    } catch (error) {
+      console.error('Error en la solicitud:', error);
+    }
+    setIsModalOpen(false);
+  };
+  
+
+  const handleInputChange = (e) => {
+    const { name, value } = e.target;
+    setCurrentProduct((prevProduct) => ({
+      ...prevProduct,
+      [name]: value,
+    }));
+  };
 
   const metricData = {
-    daily: {
-      visits: [50, 70, 80, 90, 60, 75, 85],
-      sales: [10, 15, 12, 18, 20, 22, 25],
-    },
-    weekly: {
-      visits: [300, 450, 600, 700, 500, 550, 700],
-      sales: [50, 70, 80, 90, 100, 110, 120],
-    },
-    monthly: {
-      visits: [1000, 1200, 1500, 1400, 1300, 1700, 1800],
-      sales: [150, 170, 200, 220, 240, 260, 280],
-    },
+    daily: { visits: [50, 70, 80, 90, 60, 75, 85], sales: [10, 15, 12, 18, 20, 22, 25] },
+    weekly: { visits: [300, 450, 600, 700, 500, 550, 700], sales: [50, 70, 80, 90, 100, 110, 120] },
+    monthly: { visits: [1000, 1200, 1500, 1400, 1300, 1700, 1800], sales: [150, 170, 200, 220, 240, 260, 280] },
   };
 
   const mostViewedProduct = {
-    image: '/zapato.jpg', // Cambia esta ruta a una ruta válida para tus imágenes
+    image: '/zapato.jpg',
     name: 'Producto Ejemplo',
     views: 1234,
-    price: '$19.99'
+    price: '$19.99',
   };
 
   return (
     <>
       <Header />
-      <div className="p-10 ">
-        <div className="flex justify-end items-center">
-          <button className="bg-blue-500 text-white px-4 py-2 rounded-lg  flex">
-            Editar Perfil
-            <svg
-              width="24"
-              height="24"
-              viewBox="0 0 24 24"
-              fill=""
-              stroke="white"
-              stroke-width="2"
-              stroke-linecap="round"
-              stroke-linejoin="round"
-              class="icon icon-tabler icons-tabler-outline icon-tabler-edit"
-            >
-              <path stroke="none" d="M0 0h24v24H0z" fill="none" />
-              <path d="M7 7h-1a2 2 0 0 0 -2 2v9a2 2 0 0 0 2 2h9a2 2 0 0 0 2 -2v-1" />
-              <path d="M20.385 6.585a2.1 2.1 0 0 0 -2.97 -2.97l-8.415 8.385v3h3l8.385 -8.415z" />
-              <path d="M16 5l3 3" />
-            </svg>
+      <div className="p-10">
+        <div className="flex justify-end items-center mb-6">
+          <button onClick={() => setIsEditingProfile(!isEditingProfile)} className="bg-blue-500 text-white px-4 py-2 rounded-lg flex items-center">
+            {isEditingProfile ? "Guardar" : "Editar Perfil"}
           </button>
         </div>
-        <div className="text-center">
-          <Image
-            src="/avatar.jpg"
-            alt="avatar"
-            width={128}
-            height={128}
-            className="rounded-full mx-auto"
-          />
-          <h2 className="text-2xl font-semibold mt-4">Avatar</h2>
-          <p className="text-gray-500">Lorem ipsum</p>
-          <p className="mt-2">
-            Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do
-            eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim
-            ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut
-            aliquip ex ea commodo consequat. Duis aute irure dolor in
-            reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla
-            pariatur. Excepteur sint occaecat cupidatat non proident, sunt in
-            culpa qui officia deserunt mollit anim id est laborum.
-          </p>
-          <div className="flex justify-center space-x-4 mt-4">
-            <a
-              key="{index}"
-              href="{red.url}"
-              className="text-blue-500 hover:underline"
-            >
-              hola
-            </a>
-          </div>
+
+        <div className="text-center mb-12">
+          <Image src={profileInfo.avatar} alt="avatar" width={128} height={128} className="rounded-full mx-auto" />
+          {isEditingProfile ? (
+            <>
+              <input
+                type="text"
+                name="name"
+                value={profileInfo.name}
+                onChange={handleProfileChange}
+                placeholder="Nombre"
+                className="text-black text-center mt-4 text-2xl font-semibold border-b-2 border-gray-300 p-2 rounded-md"
+              />
+              <textarea
+                name="description"
+                value={profileInfo.description}
+                onChange={handleProfileChange}
+                placeholder="Descripción del perfil"
+                className="text-black text-center mt-2 border-b-2 border-gray-300 p-2 rounded-md w-full"
+              />
+              <input
+                type="url"
+                name="website"
+                value={profileInfo.website}
+                onChange={handleProfileChange}
+                placeholder="URL de la tienda en línea"
+                className=" text-center mt-2 text-blue-500 border-b-2 border-gray-300 p-2 rounded-md w-full"
+              />
+            </>
+          ) : (
+            <>
+              <h2 className="text-2xl font-semibold mt-4">{profileInfo.name}</h2>
+              <p className="text-gray-500 mt-2">{profileInfo.description}</p>
+              {profileInfo.website && (
+                <a href={profileInfo.website} target="_blank" rel="noopener noreferrer" className="text-blue-500 hover:underline mt-2 block">
+                  {profileInfo.website}
+                </a>
+              )}
+            </>
+          )}
         </div>
-        <div className="mt-10">
-          <div className="flex">
-            <h3 className="text-xl font-semibold mb-5">Productos Publicados</h3>
-            <button className="bg-green-500 text-white px-4 py-2 mb-5 rounded-lg ml-auto flex">
+
+        <div className="mb-12">
+          <div className="flex justify-between items-center mb-5">
+            <h3 className="text-xl font-semibold">Productos Publicados</h3>
+            <button onClick={() => openProductModal()} className="bg-green-500 text-white px-4 py-2 rounded-lg flex items-center">
               Agregar Producto
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                width="24"
-                height="24"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                stroke-width="2"
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                class="icon icon-tabler icons-tabler-outline icon-tabler-circle-plus"
-              >
+              <svg className="ml-2" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                 <path stroke="none" d="M0 0h24v24H0z" fill="none" />
-                <path d="M3 12a9 9 0 1 0 18 0a9 9 0 0 0 -18 0" />
-                <path d="M9 12h6" />
-                <path d="M12 9v6" />
+                <path d="M12 5v14" />
+                <path d="M5 12h14" />
               </svg>
             </button>
           </div>
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-            <div className="text-center p-5 bg-gray-200 rounded-lg shadow-lg">
-              <Image
-                src="/productos.jpeg"
-                alt="{producto.nombre}"
-                width={200}
-                height={150}
-                className="mx-auto"
-              />
-              <h4 className="text-lg font-semibold mt-3">Avatar</h4>
-              <p className="text-gray-600">
-                Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do
-                eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut
-                enim ad minim veniam, quis nostrud exercitation ullamco laboris
-                nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor
-                in reprehenderit in voluptate velit esse cillum dolore eu fugiat
-                nulla pariatur. Excepteur sint occaecat cupidatat non proident,
-                sunt in culpa qui officia deserunt mollit anim id est laborum.
-              </p>
-              <p className="text-blue-500 font-semibold mt-2">$10.000</p>
-              <a
-                href="#"
-                className="text-sm text-blue-500 hover:underline mt-2 inline-block"
-              >
-                Ver más
-              </a>
-              <div>
-                <button className="bg-blue-500 mr-3 text-white px-4 py-2 rounded-lg mt-2">
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    width="24"
-                    height="24"
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    stroke="currentColor"
-                    stroke-width="2"
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                    class="icon icon-tabler icons-tabler-outline icon-tabler-edit"
-                  >
-                    <path stroke="none" d="M0 0h24v24H0z" fill="none" />
-                    <path d="M7 7h-1a2 2 0 0 0 -2 2v9a2 2 0 0 0 2 2h9a2 2 0 0 0 2 -2v-1" />
-                    <path d="M20.385 6.585a2.1 2.1 0 0 0 -2.97 -2.97l-8.415 8.385v3h3l8.385 -8.415z" />
-                    <path d="M16 5l3 3" />
-                  </svg>
-                </button>
-                <button className="bg-red-500 text-white px-4 py-2 rounded-lg mt-2">
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    width="24"
-                    height="24"
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    stroke="currentColor"
-                    stroke-width="2"
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                    class="icon icon-tabler icons-tabler-outline icon-tabler-circle-minus"
-                  >
-                    <path stroke="none" d="M0 0h24v24H0z" fill="none" />
-                    <path d="M12 12m-9 0a9 9 0 1 0 18 0a9 9 0 1 0 -18 0" />
-                    <path d="M9 12l6 0" />
-                  </svg>
-                </button>
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+            {products.map((product) => (
+              <div key={product.id} className="text-center p-5 bg-gray-200 rounded-lg shadow-lg">
+                <Image src={product.image} alt={product.name} width={200} height={150} className="mx-auto" />
+                <h4 className="text-lg font-semibold mt-3">{product.name}</h4>
+                <p className="text-gray-600">{product.description}</p>
+                <p className="text-blue-500 font-semibold mt-2">${product.price}</p>
+                <div className="mt-3">
+                  <button onClick={() => openProductModal(product)} className="bg-blue-500 text-white px-4 py-2 rounded-lg mr-2">Editar</button>
+                  <button onClick={() => handleDeleteProduct(product.id)} className="bg-red-500 text-white px-4 py-2 rounded-lg">Eliminar</button>
+                </div>
               </div>
-            </div>
-            <div className="text-center p-5 bg-gray-200 rounded-lg shadow-lg">
-              <Image
-                src="/productos.jpeg"
-                alt="{producto.nombre}"
-                width={200}
-                height={150}
-                className="mx-auto"
-              />
-              <h4 className="text-lg font-semibold mt-3">Avatar</h4>
-              <p className="text-gray-600">
-                Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do
-                eiusmod tempor incididunt ut labore et dolore magna aliqua. sunt
-                in culpa qui officia deserunt mollit anim id est laborum.
-              </p>
-              <p className="text-blue-500 font-semibold mt-2">$10.000</p>
-              <a
-                href="#"
-                className="text-sm text-blue-500 hover:underline mt-2 inline-block"
-              >
-                Ver más
-              </a>
-              <div>
-                <button className="bg-blue-500 mr-3 text-white px-4 py-2 rounded-lg mt-2">
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    width="24"
-                    height="24"
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    stroke="currentColor"
-                    stroke-width="2"
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                    class="icon icon-tabler icons-tabler-outline icon-tabler-edit"
-                  >
-                    <path stroke="none" d="M0 0h24v24H0z" fill="none" />
-                    <path d="M7 7h-1a2 2 0 0 0 -2 2v9a2 2 0 0 0 2 2h9a2 2 0 0 0 2 -2v-1" />
-                    <path d="M20.385 6.585a2.1 2.1 0 0 0 -2.97 -2.97l-8.415 8.385v3h3l8.385 -8.415z" />
-                    <path d="M16 5l3 3" />
-                  </svg>
-                </button>
-                <button className="bg-red-500 text-white px-4 py-2 rounded-lg mt-2">
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    width="24"
-                    height="24"
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    stroke="currentColor"
-                    stroke-width="2"
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                    class="icon icon-tabler icons-tabler-outline icon-tabler-circle-minus"
-                  >
-                    <path stroke="none" d="M0 0h24v24H0z" fill="none" />
-                    <path d="M12 12m-9 0a9 9 0 1 0 18 0a9 9 0 1 0 -18 0" />
-                    <path d="M9 12l6 0" />
-                  </svg>
-                </button>
-              </div>
-            </div>
-            <div className="text-center p-5 bg-gray-200 rounded-lg shadow-lg">
-              <Image
-                src="/productos.jpeg"
-                alt="{producto.nombre}"
-                width={200}
-                height={150}
-                className="mx-auto"
-              />
-              <h4 className="text-lg font-semibold mt-3">Avatar</h4>
-              <p className="text-gray-600">
-                Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do
-                eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut
-                enim ad minim veniam, quis nostrud exercitation ullamco laboris
-                nisi ut aliquip ex ea commodo consequat. Duis aut
-              </p>
-              <p className="text-blue-500 font-semibold mt-2">$10.000</p>
-              <a
-                href="#"
-                className="text-sm text-blue-500 hover:underline mt-2 inline-block"
-              >
-                Ver más
-              </a>
-              <div>
-                <button className="bg-blue-500 mr-3 text-white px-4 py-2 rounded-lg mt-2">
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    width="24"
-                    height="24"
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    stroke="currentColor"
-                    stroke-width="2"
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                    class="icon icon-tabler icons-tabler-outline icon-tabler-edit"
-                  >
-                    <path stroke="none" d="M0 0h24v24H0z" fill="none" />
-                    <path d="M7 7h-1a2 2 0 0 0 -2 2v9a2 2 0 0 0 2 2h9a2 2 0 0 0 2 -2v-1" />
-                    <path d="M20.385 6.585a2.1 2.1 0 0 0 -2.97 -2.97l-8.415 8.385v3h3l8.385 -8.415z" />
-                    <path d="M16 5l3 3" />
-                  </svg>
-                </button>
-                <button className="bg-red-500 text-white px-4 py-2 rounded-lg mt-2">
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    width="24"
-                    height="24"
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    stroke="currentColor"
-                    stroke-width="2"
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                    class="icon icon-tabler icons-tabler-outline icon-tabler-circle-minus"
-                  >
-                    <path stroke="none" d="M0 0h24v24H0z" fill="none" />
-                    <path d="M12 12m-9 0a9 9 0 1 0 18 0a9 9 0 1 0 -18 0" />
-                    <path d="M9 12l6 0" />
-                  </svg>
-                </button>
-              </div>
-            </div>
-            <div className="text-center p-5 bg-gray-200 rounded-lg shadow-lg">
-              <Image
-                src="/productos.jpeg"
-                alt="{producto.nombre}"
-                width={200}
-                height={150}
-                className="mx-auto"
-              />
-              <h4 className="text-lg font-semibold mt-3">Avatar</h4>
-              <p className="text-gray-600">
-                Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do
-                eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut
-                enim ad minim veniam, quis nostrud exercitation ullamco laboris
-                nisi ut aliquip ex ea commodo consequat.
-              </p>
-              <p className="text-blue-500 font-semibold mt-2">$10.000</p>
-              <a
-                href="#"
-                className="text-sm text-blue-500 hover:underline mt-2 inline-block"
-              >
-                Ver más
-              </a>
-              <div>
-                <button className="bg-blue-500 mr-3 text-white px-4 py-2 rounded-lg mt-2">
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    width="24"
-                    height="24"
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    stroke="currentColor"
-                    stroke-width="2"
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                    class="icon icon-tabler icons-tabler-outline icon-tabler-edit"
-                  >
-                    <path stroke="none" d="M0 0h24v24H0z" fill="none" />
-                    <path d="M7 7h-1a2 2 0 0 0 -2 2v9a2 2 0 0 0 2 2h9a2 2 0 0 0 2 -2v-1" />
-                    <path d="M20.385 6.585a2.1 2.1 0 0 0 -2.97 -2.97l-8.415 8.385v3h3l8.385 -8.415z" />
-                    <path d="M16 5l3 3" />
-                  </svg>
-                </button>
-                <button className="bg-red-500 text-white px-4 py-2 rounded-lg mt-2">
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    width="24"
-                    height="24"
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    stroke="currentColor"
-                    stroke-width="2"
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                    class="icon icon-tabler icons-tabler-outline icon-tabler-circle-minus"
-                  >
-                    <path stroke="none" d="M0 0h24v24H0z" fill="none" />
-                    <path d="M12 12m-9 0a9 9 0 1 0 18 0a9 9 0 1 0 -18 0" />
-                    <path d="M9 12l6 0" />
-                  </svg>
-                </button>
-              </div>
-            </div>
+            ))}
           </div>
         </div>
-          <div className="mt-10 grid grid-cols-1 md:grid-cols-2   w-full  justify-center items-center gap-10">
-            <div className="flex flex-col items-center justify-center bg-fuchsia-800 p-4 rounded-xl shadow-lg">
-            <h3 className="text-xl font-semibold mb-5">Métricas y Estadísticas</h3>
-            <div>
-              {/* Botones para cambiar la métrica */}
-              <div className="flex justify-center space-x-4 mb-5 ">
-                <button
-                  className={`px-4 py-2 rounded-lg ${
-                    selectedMetric === "daily" ? "bg-white text-black" : "bg-black text-white"
-                  }`}
-                  onClick={() => setSelectedMetric("daily")}
-                >
-                  Diario
-                </button>
-                <button
-                  className={`px-4 py-2 rounded-lg ${
-                    selectedMetric === "weekly" ? "bg-white text-black" : "bg-black text-white"
-                  }`}
-                  onClick={() => setSelectedMetric("weekly")}
-                >
-                  Semanal
-                </button>
-                <button
-                  className={`px-4 py-2 rounded-lg ${
-                    selectedMetric === "monthly" ? "bg-white text-black" : "bg-black text-white"
-                  }`}
-                  onClick={() => setSelectedMetric("monthly")}
-                >
-                  Mensual
-                </button>
-              </div>
-              </div>
 
-              {/* Renderizar el gráfico */}
-              <MetricChart data={metricData[selectedMetric]} />
-            </div>
-          
-
-          {/* Sección del producto más visto */}
-          <div className="flex flex-col items-center justify-center p-6 bg-sky-500 rounded-xl shadow-lg">
-            <h3 className="text-xl font-semibold mb-5">Producto Más Visto</h3>
-            <div className="text-center p-5 bg-gray-100 rounded-lg shadow-lg">
-              <Image
-                src={mostViewedProduct.image}
-                alt={mostViewedProduct.name}
-                width={200}
-                height={150}
-                className="mx-auto"
+        {isModalOpen && (
+          <div className="fixed inset-0 flex items-center justify-center bg-gray-900 bg-opacity-50 z-50">
+            <div className="bg-white p-6 rounded-lg shadow-lg max-w-md w-full">
+              <h3 className="text-2xl font-semibold mb-4">{currentProduct.id ? "Editar Producto" : "Agregar Producto"}</h3>
+              <input
+                type="text"
+                name="name"
+                value={currentProduct.name}
+                onChange={handleInputChange}
+                placeholder="Nombre del producto"
+                className="text-black border p-2 rounded w-full mb-4"
               />
+              <textarea
+                name="description"
+                value={currentProduct.description}
+                onChange={handleInputChange}
+                placeholder="Descripción"
+                className="text-black border p-2 rounded w-full mb-4"
+              />
+              <input
+                type="number"
+                name="price"
+                value={currentProduct.price}
+                onChange={handleInputChange}
+                placeholder="Precio"
+                className="text-black border p-2 rounded w-full mb-4"
+              />
+              <input
+                type="number"
+                name="stock"
+                value={currentProduct.stock || 0}
+                onChange={handleInputChange}
+                placeholder="Stock disponible"
+                className="text-black border p-2 rounded w-full mb-4"
+              />
+              <button onClick={handleSaveProduct} className="bg-blue-500 text-white px-4 py-2 rounded-lg mr-2">Guardar</button>
+              <button onClick={() => setIsModalOpen(false)} className="bg-gray-500 text-white px-4 py-2 rounded-lg">Cancelar</button>
+            </div>
+          </div>
+        )}
+
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
+          <div className="bg-fuchsia-800 p-6 rounded-xl shadow-lg">
+            <h3 className="text-center text-xl font-semibold mb-5 text-white">Métricas y Estadísticas</h3>
+            <div className="flex justify-center space-x-4 mb-5">
+              <button
+                className={`px-4 py-2 rounded-lg ${selectedMetric === "daily" ? "bg-white text-black" : "bg-black text-white"}`}
+                onClick={() => setSelectedMetric("daily")}
+              >
+                Diario
+              </button>
+              <button
+                className={`px-4 py-2 rounded-lg ${selectedMetric === "weekly" ? "bg-white text-black" : "bg-black text-white"}`}
+                onClick={() => setSelectedMetric("weekly")}
+              >
+                Semanal
+              </button>
+              <button
+                className={`px-4 py-2 rounded-lg ${selectedMetric === "monthly" ? "bg-white text-black" : "bg-black text-white"}`}
+                onClick={() => setSelectedMetric("monthly")}
+              >
+                Mensual
+              </button>
+            </div>
+            <MetricChart data={metricData[selectedMetric]} />
+          </div>
+
+          <div className="bg-sky-500 p-6 rounded-xl shadow-lg">
+            <h3 className="text-center text-xl font-semibold mb-5 text-white">Producto Más Visto</h3>
+            <div className="text-center bg-white p-4 rounded-lg shadow-md">
+              <Image src={mostViewedProduct.image} alt={mostViewedProduct.name} width={200} height={150} className="mx-auto" />
               <h4 className="text-lg font-semibold mt-3 text-black">{mostViewedProduct.name}</h4>
               <p className="text-black">Vistas: {mostViewedProduct.views}</p>
               <p className="text-black font-semibold mt-2">{mostViewedProduct.price}</p>
-              <a
-                href="#"
-                className="text-sm text-blue-500 hover:underline mt-2 inline-block"
-              >
-                Ver más
-              </a>
-            </div>
-
-            </div>
+              <a href="#" className="text-sm text-blue-500 hover:underline mt-2 inline-block">Ver más</a>
             </div>
           </div>
+        </div>
+      </div>
     </>
   );
 }
