@@ -1,11 +1,11 @@
 -- phpMyAdmin SQL Dump
--- version 5.2.0
+-- version 5.2.1
 -- https://www.phpmyadmin.net/
 --
--- Servidor: localhost
--- Tiempo de generación: 31-10-2024 a las 19:36:56
--- Versión del servidor: 10.4.27-MariaDB
--- Versión de PHP: 7.4.33
+-- Servidor: 127.0.0.1
+-- Tiempo de generación: 01-11-2024 a las 23:22:50
+-- Versión del servidor: 10.4.32-MariaDB
+-- Versión de PHP: 8.2.12
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 START TRANSACTION;
@@ -174,7 +174,15 @@ CREATE TABLE `imagen_publicacion` (
 --
 
 INSERT INTO `imagen_publicacion` (`id_imagen`, `id_post`, `url_imagen`, `tiempo_creacion`) VALUES
-(1, NULL, 'https://assets.adidas.com/images/w_600,f_auto,q_auto/02cd9a97ce874d89ba17ae2b003ebe50_9366/Zapatillas_adidas_Grand_Court_Lifestyle_para_Tenis_con_Cordones_Blanco_GW6511_01_standard.jpg', '2024-10-30 23:15:15');
+(1, NULL, 'https://assets.adidas.com/images/w_600,f_auto,q_auto/02cd9a97ce874d89ba17ae2b003ebe50_9366/Zapatillas_adidas_Grand_Court_Lifestyle_para_Tenis_con_Cordones_Blanco_GW6511_01_standard.jpg', '2024-10-30 23:15:15'),
+(2, NULL, 'https://chilecultura.gob.cl/uploads/cropped_SOTkYrh.png', '2024-10-31 20:00:11'),
+(3, NULL, 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRXSCdX3pVcKLUyQ511oyaDDufnC9apP-5nwQ&s', '2024-10-31 20:09:44'),
+(4, NULL, 'https://imagedelivery.net/4fYuQyy-r8_rpBpcY7lH_A/falabellaCL/17113173_1/w=800,h=800,fit=pad', '2024-10-31 20:21:37'),
+(5, NULL, 'https://2356021.fs1.hubspotusercontent-na1.net/hubfs/2356021/iStock-506514230%20(1).jpg', '2024-10-31 20:31:35'),
+(6, NULL, 'https://hairhuntersco.com/cdn/shop/files/p_800x.png?v=1725225888', '2024-11-01 16:26:50'),
+(7, NULL, 'https://cdnx.jumpseller.com/catron-el-autentico-traje-de-huaso/image/35717554/resize/1000/1000?1685039134', '2024-11-01 16:44:37'),
+(8, NULL, 'https://cdn.milenio.com/uploads/media/2022/02/14/venta-flores-disminuido-pandemia-araceli.jpeg', '2024-11-01 22:11:32'),
+(9, NULL, 'https://www.eljardindeamanda.cl/wp-content/uploads/2016/11/ramo-24-rosa.jpg', '2024-11-01 22:16:34');
 
 -- --------------------------------------------------------
 
@@ -242,6 +250,15 @@ CREATE TABLE `perfil_negocio` (
   `tiempo_creacion` timestamp NOT NULL DEFAULT current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
+--
+-- Volcado de datos para la tabla `perfil_negocio`
+--
+
+INSERT INTO `perfil_negocio` (`id_perfil`, `id_usuario`, `id_imagen`, `nombre_negocio`, `descripcion`, `direccion`, `telefono`, `sitioweb_url`, `tipo_perfil`, `id_metricas`, `id_foro`, `tiempo_creacion`) VALUES
+(1, 9, NULL, 'malumabeiby', NULL, NULL, NULL, NULL, 'Free', NULL, NULL, '2024-10-31 20:07:09'),
+(2, 10, NULL, 'barbershopking', NULL, NULL, NULL, NULL, 'Free', NULL, NULL, '2024-10-31 20:30:09'),
+(3, 11, NULL, 'flower', NULL, NULL, NULL, NULL, 'Free', NULL, NULL, '2024-11-01 22:09:47');
+
 -- --------------------------------------------------------
 
 --
@@ -278,6 +295,20 @@ CREATE TABLE `productos` (
   `stock` int(11) NOT NULL,
   `tiempo_creacion` timestamp NOT NULL DEFAULT current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Volcado de datos para la tabla `productos`
+--
+
+INSERT INTO `productos` (`id_producto`, `id_perfil`, `nombre`, `descripcion`, `id_imagen`, `precio`, `stock`, `tiempo_creacion`) VALUES
+(4, 1, 'artesania', 'artesania local echa a mano ', 2, 59990.00, 10, '2024-10-31 20:08:04'),
+(5, 1, 'torta', 'torta de chocolate relleno con manjar', 3, 12990.00, 8, '2024-10-31 20:13:04'),
+(6, 1, 'Notebook HP Victus ', ' Notebook gamer procesador i7°13Genreacion 8Gb RAM 512 SSD', 4, 899990.00, 5, '2024-10-31 20:25:07'),
+(7, 2, 'babershopking', 'cortes de pelo y perfilado de barba en la mejor barberia de rancagua', 5, 10000.00, 0, '2024-10-31 20:36:03'),
+(8, 2, 'insumos barbershop', 'insumos de barberia  los mejores a muy buen precio ', 6, 19990.00, 20, '2024-11-01 16:30:03'),
+(9, 1, 'Poncho de Huaso', 'poncho de huaso echo a mano artesania regional ', 7, 32990.00, 5, '2024-11-01 16:46:40'),
+(10, 3, 'flores ', 'L as flores mas exlcusivas y hermosas de la ciudad ', 8, 15990.00, 22, '2024-11-01 22:13:24'),
+(11, 3, 'rosas', 'rosas rojas para el dia del amor', 9, 10000.00, 25, '2024-11-01 22:18:04');
 
 -- --------------------------------------------------------
 
@@ -333,7 +364,10 @@ INSERT INTO `usuarios` (`id_usuario`, `id_preferencias`, `nombre_usuario`, `tipo
 (3, 1, 'malumaaaa', 'user', 'malumaweko@gmail.com', '1345', '2024-10-29 00:19:25'),
 (6, 1, 'hola', 'user', 'hola@gmail.com', 'hola', '2024-10-30 03:34:43'),
 (7, 1, 'eric', 'user', 'eric@gmail.com', 'eric', '2024-10-30 22:21:00'),
-(8, 1, 'xd', 'emprendedor', 'x@x.x', '123', '2024-10-31 21:35:24');
+(8, 1, 'xd', 'emprendedor', 'x@x.x', '123', '2024-10-31 21:35:24'),
+(9, 1, 'malumabeiby', 'emprendedor', 'm1@gmail.com', '12345', '2024-10-31 23:07:09'),
+(10, 1, 'barbershopking', 'emprendedor', 'barber@xd.cl', '54321', '2024-10-31 23:30:09'),
+(11, 1, 'flower', 'emprendedor', 'flower@xd.com', '12345', '2024-11-02 01:09:47');
 
 -- --------------------------------------------------------
 
@@ -558,7 +592,7 @@ ALTER TABLE `hilos_foro`
 -- AUTO_INCREMENT de la tabla `imagen_publicacion`
 --
 ALTER TABLE `imagen_publicacion`
-  MODIFY `id_imagen` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+  MODIFY `id_imagen` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=10;
 
 --
 -- AUTO_INCREMENT de la tabla `interacciones`
@@ -582,7 +616,7 @@ ALTER TABLE `notificaciones`
 -- AUTO_INCREMENT de la tabla `perfil_negocio`
 --
 ALTER TABLE `perfil_negocio`
-  MODIFY `id_perfil` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `id_perfil` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
 
 --
 -- AUTO_INCREMENT de la tabla `preferencias`
@@ -594,7 +628,7 @@ ALTER TABLE `preferencias`
 -- AUTO_INCREMENT de la tabla `productos`
 --
 ALTER TABLE `productos`
-  MODIFY `id_producto` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+  MODIFY `id_producto` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=12;
 
 --
 -- AUTO_INCREMENT de la tabla `promociones`
@@ -612,7 +646,7 @@ ALTER TABLE `publicaciones_foro`
 -- AUTO_INCREMENT de la tabla `usuarios`
 --
 ALTER TABLE `usuarios`
-  MODIFY `id_usuario` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
+  MODIFY `id_usuario` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=12;
 
 --
 -- AUTO_INCREMENT de la tabla `visibilidad_busqueda`
