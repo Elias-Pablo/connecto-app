@@ -13,7 +13,7 @@ export default function EmprendedorProfile() {
     name: "",
     description: "",
     price: "",
-    image: "",
+    image: "/placeholder.jpg", // Placeholder image by default
     stock: 0,
     id_imagen: null,
   });
@@ -40,56 +40,13 @@ export default function EmprendedorProfile() {
       name: "",
       description: "",
       price: "",
-      image: "",
+      image: "/placeholder.jpg",
       stock: 0,
-      id_imagen: "",
+      id_imagen: null,
     }
   ) => {
     setCurrentProduct(product);
     setIsModalOpen(true);
-  };
-
-  useEffect(() => {
-    const fetchProducts = async () => {
-      try {
-        const response = await fetch("/api/auth/products", { method: "GET" });
-        if (response.ok) {
-          const data = await response.json();
-          // Mapear productos con la URL de la imagen
-          const formattedProducts = data.products.map((product) => ({
-            id: product.id,
-            name: product.name,
-            description: product.description,
-            price: product.price,
-            stock: product.stock,
-            image: product.image, // URL de la imagen
-          }));
-          setProducts(formattedProducts);
-        } else {
-          console.error("Error al cargar productos");
-        }
-      } catch (error) {
-        console.error("Error en la solicitud:", error);
-      }
-    };
-
-    fetchProducts();
-  }, []);
-
-  const handleDeleteProduct = async (productId) => {
-    try {
-      const response = await fetch(`/api/auth/products?id=${productId}`, {
-        method: "DELETE",
-      });
-      if (response.ok) {
-        setProducts(products.filter((product) => product.id !== productId));
-        console.log("Producto eliminado exitosamente");
-      } else {
-        console.error("Error al eliminar el producto");
-      }
-    } catch (error) {
-      console.error("Error en la solicitud:", error);
-    }
   };
 
   const handleSaveProduct = async () => {
@@ -106,7 +63,7 @@ export default function EmprendedorProfile() {
         },
         body: JSON.stringify({
           id: currentProduct.id,
-          id_perfil: 1,
+          id_perfil: 1, // Placeholder for profile id; replace as necessary
           name: currentProduct.name,
           description: currentProduct.description,
           price: currentProduct.price,
@@ -137,6 +94,22 @@ export default function EmprendedorProfile() {
     setIsModalOpen(false);
   };
 
+  const handleDeleteProduct = async (productId) => {
+    try {
+      const response = await fetch(`/api/auth/products?id=${productId}`, {
+        method: "DELETE",
+      });
+      if (response.ok) {
+        setProducts(products.filter((product) => product.id !== productId));
+        console.log("Producto eliminado exitosamente");
+      } else {
+        console.error("Error al eliminar el producto");
+      }
+    } catch (error) {
+      console.error("Error en la solicitud:", error);
+    }
+  };
+
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     setCurrentProduct((prevProduct) => ({
@@ -144,6 +117,32 @@ export default function EmprendedorProfile() {
       [name]: value,
     }));
   };
+
+  useEffect(() => {
+    const fetchProducts = async () => {
+      try {
+        const response = await fetch("/api/auth/products", { method: "GET" });
+        if (response.ok) {
+          const data = await response.json();
+          const formattedProducts = data.products.map((product) => ({
+            id: product.id,
+            name: product.name,
+            description: product.description,
+            price: product.price,
+            stock: product.stock,
+            image: product.image,
+          }));
+          setProducts(formattedProducts);
+        } else {
+          console.error("Error al cargar productos");
+        }
+      } catch (error) {
+        console.error("Error en la solicitud:", error);
+      }
+    };
+
+    fetchProducts();
+  }, []);
 
   const metricData = {
     daily: {
@@ -295,6 +294,8 @@ export default function EmprendedorProfile() {
             ))}
           </div>
         </div>
+
+        {/* Métricas y Estadísticas */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
           <div className="bg-fuchsia-800 p-6 rounded-xl shadow-lg">
             <h3 className="text-center text-xl font-semibold mb-5 text-white">
