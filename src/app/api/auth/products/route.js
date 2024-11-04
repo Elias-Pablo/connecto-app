@@ -1,9 +1,12 @@
 import connection from "@/lib/db";
+import jwt from "jsonwebtoken";
 
+// Inserción de productos
 export async function POST(req) {
   try {
     const { id_perfil, name, description, price, stock, id_imagen } =
       await req.json();
+
     if (!id_perfil || !name || !description || !price || stock === undefined) {
       return new Response(
         JSON.stringify({ message: "Todos los campos son obligatorios" }),
@@ -55,39 +58,82 @@ export async function POST(req) {
   }
 }
 
+// Obtener productos filtrados por usuario autenticado
 export async function GET(req) {
-  return new Promise((resolve, reject) => {
-    connection.query(
-      `SELECT p.id_producto, p.nombre, p.descripcion, p.precio, p.stock, i.url_imagen
-       FROM productos p
-       LEFT JOIN imagen_publicacion i ON p.id_imagen = i.id_imagen`,
-      (error, results) => {
-        if (error) {
-          console.error("Error al cargar productos:", error);
-          reject(
-            new Response(
-              JSON.stringify({
-                message: "Error al cargar productos",
-              }),
-              { status: 500 }
-            )
-          );
-        } else {
-          const products = results.map((product) => ({
-            id: product.id_producto,
-            name: product.nombre,
-            description: product.descripcion,
-            price: product.precio,
-            stock: product.stock,
-            image: product.url_imagen,
-          }));
-          resolve(new Response(JSON.stringify({ products }), { status: 200 }));
+  try {
+    const token = req.cookies.get("token")?.value;
+
+    if (!token) {
+      return new Response(JSON.stringify({ message: "Token no encontrado" }), {
+        status: 401,
+      });
+    }
+
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    const userId = decoded.userId;
+
+    // Consulta para obtener el id_perfil basado en el id_usuario
+    const [profileResult] = await new Promise((resolve, reject) => {
+      connection.query(
+        "SELECT id_perfil FROM perfil_negocio WHERE id_usuario = ?",
+        [userId],
+        (err, results) => {
+          if (err) return reject(err);
+          resolve(results);
         }
-      }
+      );
+    });
+
+    if (!profileResult) {
+      return new Response(
+        JSON.stringify({ message: "Perfil no encontrado para el usuario" }),
+        { status: 404 }
+      );
+    }
+
+    const perfilId = profileResult.id_perfil;
+
+    // Consulta para obtener productos de este perfil
+    const products = await new Promise((resolve, reject) => {
+      connection.query(
+        `SELECT p.id_producto, p.nombre, p.descripcion, p.precio, p.stock, i.url_imagen
+         FROM productos p
+         LEFT JOIN imagen_publicacion i ON p.id_imagen = i.id_imagen
+         WHERE p.id_perfil = ?`,
+        [perfilId],
+        (err, results) => {
+          if (err) return reject(err);
+          resolve(results);
+        }
+      );
+    });
+
+    const formattedProducts = products.map((product) => ({
+      id: product.id_producto,
+      name: product.nombre,
+      description: product.descripcion,
+      price: product.precio,
+      stock: product.stock,
+      image: product.url_imagen,
+    }));
+
+    return new Response(JSON.stringify({ products: formattedProducts }), {
+      status: 200,
+      headers: { "Content-Type": "application/json" },
+    });
+  } catch (error) {
+    console.error("Error al cargar productos:", error);
+    return new Response(
+      JSON.stringify({
+        message: "Error al cargar productos",
+        error: error.message,
+      }),
+      { status: 500 }
     );
-  });
+  }
 }
 
+// Eliminar productos
 export async function DELETE(req) {
   const { searchParams } = new URL(req.url);
   const id = searchParams.get("id");
