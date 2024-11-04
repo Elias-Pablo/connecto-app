@@ -295,6 +295,74 @@ export default function EmprendedorProfile() {
             ))}
           </div>
         </div>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
+          <div className="bg-fuchsia-800 p-6 rounded-xl shadow-lg">
+            <h3 className="text-center text-xl font-semibold mb-5 text-white">
+              Métricas y Estadísticas
+            </h3>
+            <div className="flex justify-center space-x-4 mb-5">
+              <button
+                className={`px-4 py-2 rounded-lg ${
+                  selectedMetric === "daily"
+                    ? "bg-white text-black"
+                    : "bg-black text-white"
+                }`}
+                onClick={() => setSelectedMetric("daily")}
+              >
+                Diario
+              </button>
+              <button
+                className={`px-4 py-2 rounded-lg ${
+                  selectedMetric === "weekly"
+                    ? "bg-white text-black"
+                    : "bg-black text-white"
+                }`}
+                onClick={() => setSelectedMetric("weekly")}
+              >
+                Semanal
+              </button>
+              <button
+                className={`px-4 py-2 rounded-lg ${
+                  selectedMetric === "monthly"
+                    ? "bg-white text-black"
+                    : "bg-black text-white"
+                }`}
+                onClick={() => setSelectedMetric("monthly")}
+              >
+                Mensual
+              </button>
+            </div>
+            <MetricChart data={metricData[selectedMetric]} />
+          </div>
+
+          <div className="bg-sky-500 p-6 rounded-xl shadow-lg">
+            <h3 className="text-center text-xl font-semibold mb-5 text-white">
+              Producto Más Visto
+            </h3>
+            <div className="text-center bg-white p-4 rounded-lg shadow-md">
+              <Image
+                src={mostViewedProduct.image}
+                alt={mostViewedProduct.name}
+                width={200}
+                height={150}
+                className="mx-auto"
+              />
+              <h4 className="text-lg font-semibold mt-3 text-black">
+                {mostViewedProduct.name}
+              </h4>
+              <p className="text-black">Vistas: {mostViewedProduct.views}</p>
+              <p className="text-black font-semibold mt-2">
+                {mostViewedProduct.price}
+              </p>
+              <a
+                href="#"
+                className="text-sm text-blue-500 hover:underline mt-2 inline-block"
+              >
+                Ver más
+              </a>
+            </div>
+          </div>
+        </div>
       </div>
     </>
   );
