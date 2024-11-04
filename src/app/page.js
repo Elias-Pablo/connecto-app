@@ -6,7 +6,7 @@ import Image from "next/image";
 import SearchBar from "@/components/Searchbar";
 import Header from "@/components/Header-us";
 import SearchedProducts from "@/components/Searched-Products";
-import { useCart, CartProvider } from '../../src/app/context/CartContext';
+import { useCart, CartProvider } from "../../src/app/context/CartContext";
 
 export default function Home() {
   const router = useRouter();
@@ -132,8 +132,6 @@ export default function Home() {
                     width={128}
                     height={128}
                     alt={profile.name}
-                    layout="responsive"
-                    objectFit="cover"
                   />
                 </div>
                 <h3 className="text-lg font-semibold text-black mt-2">
