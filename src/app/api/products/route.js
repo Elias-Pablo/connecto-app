@@ -2,9 +2,16 @@
 import connection from "@/lib/db";
 
 export async function GET(req) {
+  const { searchParams } = new URL(req.url);
+  const searchTerm = searchParams.get("query") || "";
+
   return new Promise((resolve, reject) => {
     connection.query(
-      "SELECT p.id_producto, p.nombre, p.descripcion, p.precio, p.stock, i.url_imagen FROM productos p LEFT JOIN imagen_publicacion i ON p.id_imagen = i.id_imagen",
+      `SELECT p.id_producto, p.nombre, p.descripcion, p.precio, p.stock, i.url_imagen
+       FROM productos p
+       LEFT JOIN imagen_publicacion i ON p.id_imagen = i.id_imagen
+       WHERE p.nombre LIKE ? OR p.descripcion LIKE ?`,
+      [`%${searchTerm}%`, `%${searchTerm}%`],
       (error, results) => {
         if (error) {
           console.error("Error al cargar productos:", error);

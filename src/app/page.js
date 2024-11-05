@@ -1,6 +1,5 @@
-// app/page.js
 "use client";
-import { useState, Suspense } from "react";
+import { useState, useEffect, Suspense } from "react";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
 import SearchBar from "@/components/Searchbar";
@@ -14,38 +13,6 @@ export default function Home() {
   const handleFAQClick = () => {
     router.push("/emprendedores/faq");
   };
-
-  // Datos de productos
-  const products = [
-    {
-      image: "/imagenpromo.jpeg",
-      name: "Producto 1",
-      description: "Descripción 1",
-      price: 10.0,
-      id: 1,
-    },
-    {
-      image: "/imagenpromo.jpeg",
-      name: "Producto 2",
-      description: "Descripción 2",
-      price: 20.0,
-      id: 2,
-    },
-    {
-      image: "/imagenpromo.jpeg",
-      name: "Producto 3",
-      description: "Descripción 3",
-      price: 30.0,
-      id: 3,
-    },
-    {
-      image: "/imagenpromo.jpeg",
-      name: "Producto 4",
-      description: "Descripción 4",
-      price: 40.0,
-      id: 4,
-    },
-  ];
 
   // Datos de perfiles de emprendedores
   const profiles = [
@@ -73,6 +40,32 @@ export default function Home() {
   // Componente de Productos Destacados con carrito de compras
   const ProductSection = () => {
     const { addToCart } = useCart();
+    const [products, setProducts] = useState([]); // Estado para productos cargados desde el backend
+
+    useEffect(() => {
+      const fetchProducts = async () => {
+        try {
+          const response = await fetch("/api/products"); // Asegúrate de que el endpoint esté correctamente configurado
+          if (response.ok) {
+            const data = await response.json();
+            setProducts(data.products);
+          } else {
+            console.error("Error al cargar productos");
+          }
+        } catch (error) {
+          console.error("Error en la solicitud:", error);
+        }
+      };
+
+      fetchProducts();
+    }, []);
+    const formatPrice = (price) => {
+      return new Intl.NumberFormat("es-CL", {
+        style: "currency",
+        currency: "CLP",
+        minimumFractionDigits: 0,
+      }).format(price);
+    };
 
     return (
       <section className="bg-white p-10">
@@ -89,17 +82,18 @@ export default function Home() {
                 key={product.id}
                 className="bg-white p-5 rounded-lg shadow-lg text-center"
               >
-                <Image
-                  src={product.image}
+                <img
+                  src={product.image || "/placeholder.jpg"}
                   width={350}
                   height={200}
                   alt={product.name}
-                  layout="responsive"
                 />
                 <h3 className="text-lg font-semibold mt-2 text-black">
                   {product.name}
                 </h3>
-                <p className="text-sm text-gray-600">${product.price}</p>
+                <p className="text-sm text-gray-600">
+                  {formatPrice(product.price)}
+                </p>
                 <p className="text-sm text-black">{product.description}</p>
                 <button
                   onClick={() => addToCart(product)}
