@@ -1,201 +1,225 @@
 "use client";
-import { useState, useEffect, Suspense } from "react";
+import { useState } from "react";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
-import SearchBar from "@/components/Searchbar";
-import Header from "@/components/Header-us";
-import SearchedProducts from "@/components/Searched-Products";
-import { useCart, CartProvider } from "../../src/app/context/CartContext";
+import Link from "next/link";
 
 export default function Home() {
   const router = useRouter();
 
-  const handleFAQClick = () => {
-    router.push("/emprendedores/faq");
+  const handleLoginClick = () => {
+    router.push("auth/login");
   };
 
-  // Datos de perfiles de emprendedores
-  const profiles = [
-    { image: "/imagenpromo.jpeg", name: "Nombre 1", profession: "Profesión 1" },
-    { image: "/imagenpromo.jpeg", name: "Nombre 2", profession: "Profesión 2" },
-    { image: "/imagenpromo.jpeg", name: "Nombre 3", profession: "Profesión 3" },
-    { image: "/imagenpromo.jpeg", name: "Nombre 4", profession: "Profesión 4" },
-  ];
+  const handleRegisterClick = () => {
+    router.push("auth/emregister");
+  };
 
-  // Datos de preguntas frecuentes
-  const FAQ = [
+  const [expandedIndex, setExpandedIndex] = useState(null);
+
+  const services = [
     {
-      question: "¿Qué es ConnecTo y cómo funciona?",
-      answer:
-        "ConnecTo es una plataforma que facilita la conexión entre emprendedores y clientes mediante perfiles personalizados, productos destacados y planes de suscripción.",
+      title: "Networking Efectivo",
+      description: "Descripción detallada de Networking Efectivo.",
     },
     {
-      question: "¿Es ConnecTo fácil de usar?",
-      answer:
-        "Sí, ConnecTo está diseñado para ser accesible y fácil de usar. La plataforma proporciona una navegación sencilla con secciones claramente definidas.",
+      title: "Recomendaciones Personalizadas",
+      description: "Descripción detallada de Recomendaciones Personalizadas.",
     },
-    // Agrega más preguntas aquí...
+    {
+      title: "Gestión de Proyectos y Publicaciones",
+      description:
+        "Descripción detallada de Gestión de Proyectos y Publicaciones.",
+    },
+    {
+      title: "Comunicación Directa",
+      description: "Descripción detallada de Comunicación Directa.",
+    },
   ];
 
-  // Componente de Productos Destacados con carrito de compras
-  const ProductSection = () => {
-    const { addToCart } = useCart();
-    const [products, setProducts] = useState([]); // Estado para productos cargados desde el backend
+  const handleToggle = (index) => {
+    setExpandedIndex(expandedIndex === index ? null : index);
+  };
 
-    useEffect(() => {
-      const fetchProducts = async () => {
-        try {
-          const response = await fetch("/api/products"); // Asegúrate de que el endpoint esté correctamente configurado
-          if (response.ok) {
-            const data = await response.json();
-            setProducts(data.products);
-          } else {
-            console.error("Error al cargar productos");
-          }
-        } catch (error) {
-          console.error("Error en la solicitud:", error);
-        }
-      };
-
-      fetchProducts();
-    }, []);
-
-    return (
-      <section className="bg-white p-10">
-        <div className="container mx-auto">
-          <div className="flex ">
-            <SearchedProducts />
-          </div>
-          <h2 className="text-2xl font-semibold mb-5 text-center text-black">
-            Productos Destacados
-          </h2>
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-            {products.map((product) => (
-              <div
-                key={product.id}
-                className="bg-white p-5 rounded-lg shadow-lg text-center"
+  return (
+    <>
+      <div className="bg-zinc-800 w-full min-h-screen">
+        <header className="bg-zinc-800 w-dvw px-6 shadow-lg">
+          <div className="flex h-20 items-center justify-between w-full">
+            <Link href="/">
+              <Image
+                src="/ConnecTo-logo-horizontal2.png"
+                alt="ConnecTo Logo"
+                width={250}
+                height={50}
+              />
+            </Link>
+            <div className="flex items-center">
+              <button
+                className="bg-fuchsia-700 px-4 py-2 rounded-xl font-semibold text-zinc-800 mr-2 hover:bg-sky-400 hover:text-fuchsia-700 transition-colors duration-300 ease-in-out"
+                onClick={handleRegisterClick}
               >
-                <Image
-                  src={product.image || "/placeholder.jpg"}
-                  width={350}
-                  height={200}
-                  alt={product.name}
-                  layout="responsive"
-                />
-                <h3 className="text-lg font-semibold mt-2 text-black">
-                  {product.name}
-                </h3>
-                <p className="text-sm text-gray-600">${product.price}</p>
-                <p className="text-sm text-black">{product.description}</p>
+                Registrarse
+              </button>
+              <button
+                className="bg-sky-400 px-4 py-2 rounded-xl font-semibold text-zinc-800 hover:bg-fuchsia-700 hover:text-sky-400 transition-colors duration-300 ease-in-out"
+                onClick={handleLoginClick}
+              >
+                Iniciar Sesión
+              </button>
+            </div>
+          </div>
+        </header>
+
+        <section className="bg-fuchsia-700 w-full flex items-center justify-center py-20">
+          <div className="w-full md:w-4/5 rounded-3xl bg-zinc-800 p-5 md:p-10 m-2 md:m-5 text-sky-400 shadow-xl transition transform hover:scale-105 duration-300 ease-in-out flex flex-col md:flex-row justify-center items-center">
+            <div className="flex flex-col justify-center items-start w-full md:w-1/2">
+              <p className="text-3xl md:text-4xl">
+                Tu plataforma ideal para gestionar tu negocio y aumentar tu
+                visibilidad.
+              </p>
+              <p className="text-xs md:text-sm pt-2 md:pt-6">
+                En ConnecTo, entendemos la importancia de visibilizar tu
+                proyecto y encontrar las oportunidades adecuadas para crecer.
+                Nuestra plataforma te ofrece una experiencia única y
+                personalizada, diseñada para potenciar tus conexiones y ayudarte
+                a alcanzar tus metas.
+              </p>
+              <button
+                className="mt-5 md:mt-10 bg-white p-2 md:p-4 w-full md:w-80 rounded-xl shadow-lg font-bold text-lg md:text-xl text-fuchsia-700 hover:bg-fuchsia-700 hover:text-zinc-900 transition-colors duration-300 ease-in-out"
+                onClick={handleRegisterClick}
+              >
+                Regístrate Gratis
+              </button>
+            </div>
+            <div className="mt-5 md:mt-0 w-full md:w-1/2 flex justify-center">
+              <Image
+                src="/imagenpromo.jpeg"
+                alt="connecto-emprendedores"
+                width={1500}
+                height={1500}
+                className="rounded-3xl shadow-xl object-cover"
+              />
+            </div>
+          </div>
+        </section>
+
+        <section className="bg-zinc-800 w-full flex flex-col items-center justify-center py-20">
+          <p className="text-fuchsia-700 font-extrabold text-3xl pb-7 drop-shadow-lg">
+            ¿Qué ofrecemos?
+          </p>
+          <div className="flex flex-wrap justify-around w-full px-5">
+            {services.map((service, index) => (
+              <div
+                key={index}
+                className="w-72 bg-sky-300 text-zinc-800 px-6 py-5 rounded-2xl shadow-xl mb-4 hover:text-white cursor-pointer hover:shadow-2xl transition-transform transform hover:scale-105 duration-300 ease-in-out"
+              >
+                <p className="text-xl font-bold">{service.title}</p>
+                {expandedIndex === index && (
+                  <p className="text-sm mt-2">{service.description}</p>
+                )}
                 <button
-                  onClick={() => addToCart(product)}
-                  className="mt-2 bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600"
+                  className="mt-2 bg-white p-2 w-full rounded-xl shadow-lg font-bold text-sm text-fuchsia-700 hover:bg-fuchsia-700 hover:text-white transition-colors duration-300 ease-in-out"
+                  onClick={() => handleToggle(index)}
                 >
-                  Agregar al Carrito
+                  {expandedIndex === index ? "Mostrar menos" : "Saber más"}
                 </button>
               </div>
             ))}
           </div>
-        </div>
-      </section>
-    );
-  };
+        </section>
 
-  // Componente de Perfiles de Emprendedores
-  const ProfileSection = () => (
-    <section className="p-10 bg-white">
-      <div className="container mx-auto">
-        <h2 className="text-2xl font-semibold mb-5 text-center text-black">
-          Perfiles de Emprendedores
-        </h2>
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-          {profiles.map((profile, index) => (
-            <div key={index} className="text-center">
-              <div className="cursor-pointer hover:opacity-80 transition-opacity duration-300 inline-block">
-                <div className="w-32 h-32 mx-auto rounded-full shadow-lg overflow-hidden hover:scale-105 duration-300">
-                  <Image
-                    src={profile.image}
-                    width={128}
-                    height={128}
-                    alt={profile.name}
-                  />
-                </div>
-                <h3 className="text-lg font-semibold text-black mt-2">
-                  {profile.name}
-                </h3>
-                <p className="text-sm text-black">{profile.profession}</p>
-              </div>
-            </div>
-          ))}
-        </div>
-      </div>
-    </section>
-  );
-
-  // Componente de Preguntas Frecuentes
-  const FAQSection = () => {
-    const [expandedQuestion, setExpandedQuestion] = useState(null);
-
-    const handleToggleAnswer = (index) => {
-      setExpandedQuestion(expandedQuestion === index ? null : index);
-    };
-
-    return (
-      <section className="p-10 bg-white">
-        <div className="container mx-auto">
-          <h2 className="text-2xl font-semibold mb-5 text-center text-black">
-            Preguntas Frecuentes
-          </h2>
-          <div className="space-y-4">
-            {FAQ.map((faq, index) => (
-              <div key={index} className="border-b border-gray-500 pb-4">
-                <div
-                  className="flex justify-between items-center cursor-pointer"
-                  onClick={() => handleToggleAnswer(index)}
-                >
-                  <h3 className="text-lg font-semibold text-black">
-                    {faq.question}
-                  </h3>
-                  <button
-                    className="text-black text-xl"
-                    aria-expanded={expandedQuestion === index}
-                  >
-                    {expandedQuestion === index ? "-" : "+"}
-                  </button>
-                </div>
-                {expandedQuestion === index && (
-                  <p className="text-sm text-black mt-2">{faq.answer}</p>
-                )}
+        <section className="bg-sky-400 w-full flex flex-col items-center justify-center py-20">
+          <p className="text-zinc-800 text-3xl font-bold pb-5 drop-shadow-lg">
+            Elige el Plan Perfecto para Ti
+          </p>
+          <div className="flex flex-wrap justify-around w-full px-5">
+            {[
+              {
+                name: "Free",
+                color: "bg-zinc-800",
+                items: [
+                  "Perfil básico de negocio",
+                  "Catálogo de productos limitado",
+                  "Redirección a la página del negocio",
+                  "Acceso a la red de Emprendedores",
+                  "Gestor de redes sociales básico",
+                  "Visibilidad Básica en buscadores internos",
+                ],
+              },
+              {
+                name: "💎 Premium 💎",
+                color: "bg-fuchsia-700",
+                items: [
+                  "Perfil avanzado de negocio",
+                  "Catálogo de productos ilimitado",
+                  "Analíticas de interacciones",
+                  "Gestor de redes sociales con IA",
+                  "Promociones destacadas",
+                  "Visibilidad Mejorada en buscadores internos",
+                ],
+              },
+            ].map((plan, index) => (
+              <div
+                key={index}
+                className={`w-auto ${plan.color} text-white px-6 py-5 rounded-2xl shadow-xl mb-4 flex flex-col items-center transition-transform transform hover:scale-105 duration-300 ease-in-out`}
+              >
+                <p className="text-4xl m-4 font-bold">{plan.name}</p>
+                <ul className="text-sm font-light list-disc list-inside">
+                  {plan.items.map((item, i) => (
+                    <li key={i}>{item}</li>
+                  ))}
+                </ul>
               </div>
             ))}
           </div>
-          <div className="flex justify-center mt-6">
+        </section>
+
+        <section className="bg-fuchsia-700 w-full flex flex-col items-center justify-center py-20">
+          <p className="text-white text-3xl font-bold pb-5 drop-shadow-lg">
+            ¿Por Qué Elegirnos?
+          </p>
+          <div className="flex flex-wrap justify-around w-full px-5 text-sky-400">
+            {[
+              "Herramientas Avanzadas para Negocios",
+              "Conexión con Emprendedores",
+              "Gestión Eficiente de Redes Sociales",
+              "Análisis y Estadísticas Precisas",
+            ].map((reason, index) => (
+              <div
+                key={index}
+                className="w-72 px-6 py-5 rounded-2xl shadow-xl mb-4 bg-zinc-800 transition-transform transform hover:scale-105 duration-300 ease-in-out"
+              >
+                <p className="text-xl font-bold">{reason}</p>
+              </div>
+            ))}
+          </div>
+        </section>
+
+        <section className="bg-zinc-600 w-full flex flex-col items-center justify-center py-20">
+          <p className="text-white font-extrabold text-3xl pb-7 drop-shadow-lg">
+            ¿Listo para Empezar?
+          </p>
+          <div className="flex flex-col items-center">
+            <p className="text-white text-lg text-center">
+              Únete a nuestra plataforma hoy mismo y lleva tu negocio al
+              siguiente nivel.
+            </p>
             <button
-              className="bg-sky-400 text-white px-6 py-2 rounded-lg hover:bg-sky-500 transition-colors hover:scale-105 duration-500"
-              onClick={handleFAQClick}
+              className="mt-4 bg-white px-6 py-2 rounded-xl shadow-lg text-fuchsia-700 hover:bg-fuchsia-700 hover:text-zinc-900 transition-colors duration-300 ease-in-out"
+              onClick={handleRegisterClick}
             >
-              Ver Más
+              Regístrate Gratis
+            </button>
+            <button
+              className="mt-4 bg-white px-6 py-2 rounded-xl shadow-lg text-fuchsia-700 hover:bg-fuchsia-700 hover:text-zinc-900 transition-colors duration-300 ease-in-out"
+              onClick={handleLoginClick}
+            >
+              Contacta con Nosotros
             </button>
           </div>
-        </div>
-      </section>
-    );
-  };
-
-  return (
-    <CartProvider>
-      <Header />
-      <section className="w-full h-full flex flex-col items-center justify-center p-5 bg-sky-400">
-        <h1 className="p-5 text-2xl font-semibold text-white text-center">
-          Busca lo que quieres de nuestros emprendedores...
-        </h1>
-        <Suspense fallback={<div>Loading...</div>}>
-          <SearchBar />
-        </Suspense>
-      </section>
-      <ProductSection />
-      <ProfileSection />
-      <FAQSection />
-    </CartProvider>
+        </section>
+      </div>
+    </>
   );
 }
