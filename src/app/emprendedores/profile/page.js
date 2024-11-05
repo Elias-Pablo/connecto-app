@@ -13,7 +13,7 @@ export default function EmprendedorProfile() {
     name: "",
     description: "",
     price: "",
-    image: "/placeholder.jpg", // Placeholder image by default
+    image: "/placeholder.webp", // Placeholder image by default
     stock: 0,
     id_imagen: null,
   });
@@ -40,7 +40,7 @@ export default function EmprendedorProfile() {
       name: "",
       description: "",
       price: "",
-      image: "/placeholder.jpg",
+      image: "/placeholder.webp",
       stock: 0,
       id_imagen: null,
     }
