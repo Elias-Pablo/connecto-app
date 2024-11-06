@@ -13,9 +13,8 @@ export default function EmprendedorProfile() {
     name: "",
     description: "",
     price: "",
-    image: "/placeholder.webp", // Placeholder image by default
+    url_imagen: "", // Campo para URL de imagen en lugar de id_imagen
     stock: 0,
-    id_imagen: null,
   });
   const [profileInfo, setProfileInfo] = useState({
     avatar: "/avatar.jpg",
@@ -33,6 +32,13 @@ export default function EmprendedorProfile() {
   const saveProfileInfo = () => {
     setIsEditingProfile(false);
   };
+  const formatPrice = (price) => {
+    return new Intl.NumberFormat("es-CL", {
+      style: "currency",
+      currency: "CLP",
+      minimumFractionDigits: 0,
+    }).format(price);
+  };
 
   const openProductModal = (
     product = {
@@ -40,13 +46,16 @@ export default function EmprendedorProfile() {
       name: "",
       description: "",
       price: "",
-      image: "/placeholder.webp",
+      url_imagen: "", // Resetear la URL de la imagen al abrir el modal
       stock: 0,
-      id_imagen: null,
     }
   ) => {
     setCurrentProduct(product);
     setIsModalOpen(true);
+  };
+
+  const closeProductModal = () => {
+    setIsModalOpen(false);
   };
 
   const handleSaveProduct = async () => {
@@ -63,12 +72,11 @@ export default function EmprendedorProfile() {
         },
         body: JSON.stringify({
           id: currentProduct.id,
-          id_perfil: 1, // Placeholder for profile id; replace as necessary
           name: currentProduct.name,
           description: currentProduct.description,
           price: currentProduct.price,
           stock: currentProduct.stock || 0,
-          id_imagen: currentProduct.id_imagen || null,
+          url_imagen: currentProduct.url_imagen || null, // Enviar la URL de la imagen en la solicitud
         }),
       });
 
@@ -92,22 +100,6 @@ export default function EmprendedorProfile() {
       console.error("Error en la solicitud:", error);
     }
     setIsModalOpen(false);
-  };
-
-  const handleDeleteProduct = async (productId) => {
-    try {
-      const response = await fetch(`/api/auth/products?id=${productId}`, {
-        method: "DELETE",
-      });
-      if (response.ok) {
-        setProducts(products.filter((product) => product.id !== productId));
-        console.log("Producto eliminado exitosamente");
-      } else {
-        console.error("Error al eliminar el producto");
-      }
-    } catch (error) {
-      console.error("Error en la solicitud:", error);
-    }
   };
 
   const handleInputChange = (e) => {
@@ -271,10 +263,12 @@ export default function EmprendedorProfile() {
                   height={150}
                   className="mx-auto"
                 />
-                <h4 className="text-lg font-semibold mt-3">{product.name}</h4>
-                <p className="text-gray-600">{product.description}</p>
+                <h4 className="text-black text-xl  font-semibold mt-3">
+                  {product.name}
+                </h4>
+                <p className="text-gray-600 text-sm">{product.description}</p>
                 <p className="text-blue-500 font-semibold mt-2">
-                  ${product.price}
+                  {formatPrice(product.price)}
                 </p>
                 <div className="mt-3">
                   <button
@@ -294,6 +288,69 @@ export default function EmprendedorProfile() {
             ))}
           </div>
         </div>
+
+        {/* Modal de Agregar/Editar Producto */}
+        {isModalOpen && (
+          <div className="fixed inset-0 flex items-center justify-center bg-gray-900 bg-opacity-50 z-50">
+            <div className="bg-white p-6 rounded-lg shadow-lg max-w-md w-full">
+              <h3 className="text-2xl font-semibold mb-4">
+                {currentProduct.id ? "Editar Producto" : "Agregar Producto"}
+              </h3>
+
+              <input
+                type="text"
+                name="name"
+                value={currentProduct.name}
+                onChange={handleInputChange}
+                placeholder="Nombre del producto"
+                className="text-black border p-2 rounded w-full mb-4"
+              />
+              <textarea
+                name="description"
+                value={currentProduct.description}
+                onChange={handleInputChange}
+                placeholder="Descripción"
+                className="text-black border p-2 rounded w-full mb-4"
+              />
+              <input
+                type="number"
+                name="price"
+                value={currentProduct.price}
+                onChange={handleInputChange}
+                placeholder="Precio"
+                className="text-black border p-2 rounded w-full mb-4"
+              />
+              <input
+                type="text"
+                name="url_imagen" // Asegúrate de que el nombre coincida con el back-end
+                value={currentProduct.url_imagen}
+                onChange={handleInputChange}
+                placeholder="URL de la imagen"
+                className="text-black border p-2 rounded w-full mb-4"
+              />
+              <input
+                type="number"
+                name="stock"
+                value={currentProduct.stock || 0}
+                onChange={handleInputChange}
+                placeholder="Stock disponible"
+                className="text-black border p-2 rounded w-full mb-4"
+              />
+              <button
+                onClick={handleSaveProduct}
+                className="bg-blue-500 text-white px-4 py-2 rounded-lg mr-2"
+              >
+                Guardar
+              </button>
+              <button
+                onClick={closeProductModal}
+                className="bg-gray-500 text-white px-4 py-2 rounded-lg"
+              >
+                Cancelar
+              </button>
+            </div>
+          </div>
+        )}
 
         {/* Métricas y Estadísticas */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
