@@ -76,16 +76,17 @@ export default function Home() {
           <h2 className="text-2xl font-semibold mb-5 text-center text-black">
             Productos Destacados
           </h2>
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 ">
             {products.map((product) => (
               <div
                 key={product.id}
-                className="bg-white p-5 rounded-lg shadow-lg text-center"
+                className="bg-zinc-100 p-5 rounded-lg shadow-lg text-center flex flex-col items-center justify-around"
               >
                 <img
                   src={product.image || "/placeholder.jpg"}
-                  width={350}
-                  height={200}
+                  width={250}
+                  height={100}
+                  className="rounded-lg drop-shadow-md"
                   alt={product.name}
                 />
                 <h3 className="text-lg font-semibold mt-2 text-black">

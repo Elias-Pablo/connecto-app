@@ -185,7 +185,7 @@ export default function Header() {
                   className="flex justify-between items-center border-b pb-4"
                 >
                   <div className="flex items-center">
-                    <Image
+                    <img
                       src={item.image}
                       alt={item.name}
                       width={50}
@@ -195,7 +195,7 @@ export default function Header() {
                     <div>
                       <p className="font-semibold">{item.name}</p>
                       <p className="text-sm text-gray-600">
-                        Precio: ${item.price.toFixed(2)}
+                        Precio: ${item.price}
                       </p>
                       <div className="flex items-center mt-2">
                         <button
