@@ -9,9 +9,24 @@ import { useCart, CartProvider } from "../../src/app/context/CartContext";
 
 export default function Home() {
   const router = useRouter();
+  const [searchedProducts, setSearchedProducts] = useState([]);
 
   const handleFAQClick = () => {
     router.push("/emprendedores/faq");
+  };
+
+  const handleSearch = async (query) => {
+    try {
+      const response = await fetch(`/api/products?query=${query}`);
+      if (response.ok) {
+        const data = await response.json();
+        setSearchedProducts(data.products);
+      } else {
+        console.error("Error al buscar productos");
+      }
+    } catch (error) {
+      console.error("Error en la solicitud de búsqueda:", error);
+    }
   };
 
   // Datos de perfiles de emprendedores
@@ -34,18 +49,17 @@ export default function Home() {
       answer:
         "Sí, ConnecTo está diseñado para ser accesible y fácil de usar. La plataforma proporciona una navegación sencilla con secciones claramente definidas.",
     },
-    // Agrega más preguntas aquí...
   ];
 
   // Componente de Productos Destacados con carrito de compras
   const ProductSection = () => {
     const { addToCart } = useCart();
-    const [products, setProducts] = useState([]); // Estado para productos cargados desde el backend
+    const [products, setProducts] = useState([]);
 
     useEffect(() => {
       const fetchProducts = async () => {
         try {
-          const response = await fetch("/api/products"); // Asegúrate de que el endpoint esté correctamente configurado
+          const response = await fetch("/api/products");
           if (response.ok) {
             const data = await response.json();
             setProducts(data.products);
@@ -59,6 +73,7 @@ export default function Home() {
 
       fetchProducts();
     }, []);
+
     const formatPrice = (price) => {
       return new Intl.NumberFormat("es-CL", {
         style: "currency",
@@ -70,13 +85,10 @@ export default function Home() {
     return (
       <section className="bg-white p-10">
         <div className="container mx-auto">
-          <div className="flex ">
-            <SearchedProducts />
-          </div>
           <h2 className="text-2xl font-semibold mb-5 text-center text-black">
             Productos Destacados
           </h2>
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 ">
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
             {products.map((product) => (
               <div
                 key={product.id}
@@ -199,8 +211,11 @@ export default function Home() {
           Busca lo que quieres de nuestros emprendedores...
         </h1>
         <Suspense fallback={<div>Loading...</div>}>
-          <SearchBar />
+          <SearchBar onSearch={handleSearch} />
         </Suspense>
+        {searchedProducts.length > 0 && (
+          <SearchedProducts products={searchedProducts} />
+        )}
       </section>
       <ProductSection />
       <ProfileSection />

@@ -1,33 +1,27 @@
-"use client";
-import { MagnifyingGlassIcon } from "@heroicons/react/24/outline";
-import { useSearchParams, usePathname, useRouter } from "next/navigation";
+import { useState, useEffect } from "react";
 
-export default function SearchBar({ placeholder }) {
-  const searchParams = useSearchParams();
-  const pathname = usePathname();
-  const { replace } = useRouter();
+export default function SearchBar({ onSearch }) {
+  const [searchTerm, setSearchTerm] = useState("");
 
-  const handleSearch = (term) => {
-    const params = new URLSearchParams(searchParams);
-    if (term) {
-      params.set("query", term);
-    } else {
-      params.delete("query");
-    }
-    replace(`${pathname}?${params.toString()}`);
-  };
+  useEffect(() => {
+    const delayDebounceFn = setTimeout(() => {
+      if (searchTerm) {
+        onSearch(searchTerm);
+      }
+    }, 300); // Retraso para esperar que el usuario deje de escribir
+
+    return () => clearTimeout(delayDebounceFn);
+  }, [searchTerm, onSearch]);
+
   return (
-    <div className="flex items-center justify-center w-full">
+    <div className="flex items-center justify-center w-full relative">
       <input
-        onChange={(event) => handleSearch(event.target.value)}
+        onChange={(event) => setSearchTerm(event.target.value)}
         type="text"
-        placeholder={placeholder}
-        className="bg-white border-2 border-sky-400 shadow-xl text-black p-2 rounded-lg w-1/2"
-        defaultValue={searchParams.get("query")?.toString()}
+        placeholder="Buscar productos..."
+        className="bg-white border-2 border-sky-400 shadow-xl text-black p-2 pr-10 rounded-lg w-1/2"
+        value={searchTerm}
       />
-      <button className=" p-2 rounded-lg">
-        <MagnifyingGlassIcon className="drop-shadow-xl h-7 w-7 text-fuchsia-400" />
-      </button>
     </div>
   );
 }
