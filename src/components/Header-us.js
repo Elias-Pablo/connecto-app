@@ -63,8 +63,8 @@ export default function Header() {
             {user ? (
               <div className="flex items-center">
                 <Link href="/user/profile" passHref>
-                  <Image
-                    src="/avatar.jpg"
+                  <img
+                    src={user.profilePicture || "/avatar.jpg"}
                     alt="User Avatar"
                     width={40}
                     height={40}

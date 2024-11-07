@@ -6,6 +6,7 @@ import SearchBar from "@/components/Searchbar";
 import Header from "@/components/Header-us";
 import SearchedProducts from "@/components/Searched-Products";
 import { useCart, CartProvider } from "../../src/app/context/CartContext";
+import Link from "next/link";
 
 export default function Home() {
   const router = useRouter();
@@ -92,7 +93,7 @@ export default function Home() {
             {products.map((product) => (
               <div
                 key={product.id}
-                className="bg-zinc-100 p-5 rounded-lg shadow-lg text-center flex flex-col items-center justify-around"
+                className="bg-zinc-300 p-5 rounded-lg shadow-lg text-center flex flex-col items-center justify-around"
               >
                 <img
                   src={product.image || "/placeholder.jpg"}
@@ -107,7 +108,19 @@ export default function Home() {
                 <p className="text-sm text-gray-600">
                   {formatPrice(product.price)}
                 </p>
-                <p className="text-sm text-black">{product.description}</p>
+                <p className="text-sm text-black text-wrap">
+                  {product.description}
+                </p>
+                <p className="text-xs text-gray-500 my-2">
+                  Vendedor:{" "}
+                  <Link
+                    href={`/user/emprendedores/profile?id_perfil=${product.id_perfil}`}
+                    className="text-sky-500"
+                  >
+                    {product.businessName}
+                  </Link>
+                </p>
+
                 <button
                   onClick={() => addToCart(product)}
                   className="mt-2 bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600"

@@ -1,5 +1,6 @@
 import Image from "next/image";
 import { useCart } from "../../src/app/context/CartContext";
+import Link from "next/link";
 
 export default function SearchedProducts({ products }) {
   const { addToCart } = useCart();
@@ -32,6 +33,12 @@ export default function SearchedProducts({ products }) {
             <p className="text-sm text-gray-500 mt-2">{product.description}</p>
             <p className="text-lg font-bold text-gray-800 mt-2">
               Precio: {formatPrice(product.price)}
+            </p>
+            <p className="text-xs text-gray-500 my-2">
+              Vendedor:{" "}
+              <Link href="/user/emprendedores/profile" className="text-sky-500">
+                {product.businessName}
+              </Link>
             </p>
             <button
               onClick={() => addToCart(product)}
