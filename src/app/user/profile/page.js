@@ -115,7 +115,7 @@ export default function HeaderUser() {
                   {userInfo.name}
                 </h1>
                 <p className="text-sm gap-2">
-                  <span className="text-zinc-600 text-base">Correo:{""}</span>
+                  <span className="text-zinc-600 text-base ">Correo:{""}</span>
                   {userInfo.email}
                 </p>
               </>
