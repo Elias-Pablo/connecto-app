@@ -53,7 +53,7 @@ export default function EmprendedorProfile() {
       <section className="p-10">
         <div className="bg-white p-6 rounded-lg shadow-lg text-center">
           <img
-            src={emprendedorData.url_imagen || "/placeholder.jpg"}
+            src={emprendedorData.url_imagen || "/placeholder.webp"}
             alt={emprendedorData.nombre_negocio || "Emprendedor"}
             width={150}
             height={150}
