@@ -11,6 +11,7 @@ import Link from "next/link";
 export default function Home() {
   const router = useRouter();
   const [searchedProducts, setSearchedProducts] = useState([]);
+  const [favorites, setFavorites] = useState([]); // Estado para productos favoritos
 
   const handleFAQClick = () => {
     router.push("/emprendedores/faq");
@@ -30,7 +31,44 @@ export default function Home() {
     }
   };
 
-  // Datos de perfiles de emprendedores
+  const handleAddToFavorites = async (product) => {
+    // Añadir a los favoritos en el estado
+    setFavorites((prevFavorites) => [...prevFavorites, product]);
+  
+    // Enviar la solicitud para guardar el producto en la base de datos
+    try {
+      const response = await fetch(`/api/user/favorites`, {
+        method: "POST",
+        body: JSON.stringify(product),
+        headers: { "Content-Type": "application/json" },
+      });
+  
+      if (!response.ok) {
+        console.error("Error al agregar producto a favoritos en la base de datos");
+      }
+    } catch (error) {
+      console.error("Error en la solicitud de agregar a favoritos:", error);
+    }
+  };
+  
+  const handleRemoveFromFavorites = async (productId) => {
+    setFavorites((prevFavorites) =>
+      prevFavorites.filter((item) => item.id !== productId)
+    );
+
+    // Enviar la solicitud para eliminar el producto de favoritos en la base de datos
+    try {
+      const response = await fetch(`/api/favorites/${productId}`, {
+        method: "DELETE",
+      });
+      if (!response.ok) {
+        console.error("Error al eliminar el producto de favoritos en la base de datos");
+      }
+    } catch (error) {
+      console.error("Error en la solicitud de eliminar de favoritos:", error);
+    }
+  };
+
   const profiles = [
     { image: "/imagenpromo.jpeg", name: "Nombre 1", profession: "Profesión 1" },
     { image: "/imagenpromo.jpeg", name: "Nombre 2", profession: "Profesión 2" },
@@ -38,7 +76,6 @@ export default function Home() {
     { image: "/imagenpromo.jpeg", name: "Nombre 4", profession: "Profesión 4" },
   ];
 
-  // Datos de preguntas frecuentes
   const FAQ = [
     {
       question: "¿Qué es ConnecTo y cómo funciona?",
@@ -52,7 +89,6 @@ export default function Home() {
     },
   ];
 
-  // Componente de Productos Destacados con carrito de compras
   const ProductSection = () => {
     const { addToCart } = useCart();
     const [products, setProducts] = useState([]);
@@ -108,25 +144,28 @@ export default function Home() {
                 <p className="text-sm text-gray-600">
                   {formatPrice(product.price)}
                 </p>
-                <p className="text-sm text-black text-wrap">
-                  {product.description}
-                </p>
-                <p className="text-xs text-gray-500 my-2">
-                  Vendedor:{" "}
-                  <Link
-                    href={`/user/emprendedores/profile?id_perfil=${product.id_perfil}`}
-                    className="text-sky-500"
-                  >
-                    {product.businessName}
-                  </Link>
-                </p>
 
-                <button
-                  onClick={() => addToCart(product)}
-                  className="mt-2 bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600"
-                >
-                  Agregar al Carrito
-                </button>
+                <p className="text-sm text-black">{product.description}</p>
+                <div className="flex flex-col space-y-2 mt-2">
+                  <button
+                    onClick={() => addToCart(product)}
+                    className="bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600"
+                  >
+                    Agregar al Carrito
+                  </button>
+                  <button
+                    onClick={() =>
+                      favorites.some((fav) => fav.id === product.id)
+                        ? handleRemoveFromFavorites(product.id)
+                        : handleAddToFavorites(product)
+                    }
+                    className="bg-yellow-500 text-white px-4 py-2 rounded-lg hover:bg-yellow-600"
+                  >
+                    {favorites.some((fav) => fav.id === product.id)
+                      ? "Eliminar de Favoritos"
+                      : "Agregar a Favoritos"}
+                  </button>
+                </div>
               </div>
             ))}
           </div>
@@ -135,7 +174,6 @@ export default function Home() {
     );
   };
 
-  // Componente de Perfiles de Emprendedores
   const ProfileSection = () => (
     <section className="p-10 bg-white">
       <div className="container mx-auto">
@@ -166,7 +204,6 @@ export default function Home() {
     </section>
   );
 
-  // Componente de Preguntas Frecuentes
   const FAQSection = () => {
     const [expandedQuestion, setExpandedQuestion] = useState(null);
 
