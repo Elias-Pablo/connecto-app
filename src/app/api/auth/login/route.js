@@ -39,6 +39,7 @@ export async function POST(req) {
           userId: user.id_usuario,
           username: user.nombre_usuario,
           tipo_usuario: user.tipo_usuario,
+          profilePicture: user.usuario_imagen,
         },
         process.env.JWT_SECRET,
         { expiresIn: "1h" }

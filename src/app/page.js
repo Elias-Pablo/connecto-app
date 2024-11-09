@@ -5,7 +5,8 @@ import Image from "next/image";
 import SearchBar from "@/components/Searchbar";
 import Header from "@/components/Header-us";
 import SearchedProducts from "@/components/Searched-Products";
-import { useCart, CartProvider } from "@/app/context/CartContext";
+import { useCart, CartProvider } from "../../src/app/context/CartContext";
+import Link from "next/link";
 
 export default function Home() {
   const router = useRouter();
@@ -128,7 +129,7 @@ export default function Home() {
             {products.map((product) => (
               <div
                 key={product.id}
-                className="bg-zinc-100 p-5 rounded-lg shadow-lg text-center flex flex-col items-center justify-around"
+                className="bg-zinc-300 p-5 rounded-lg shadow-lg text-center flex flex-col items-center justify-around"
               >
                 <img
                   src={product.image || "/placeholder.jpg"}
@@ -143,6 +144,7 @@ export default function Home() {
                 <p className="text-sm text-gray-600">
                   {formatPrice(product.price)}
                 </p>
+
                 <p className="text-sm text-black">{product.description}</p>
                 <div className="flex flex-col space-y-2 mt-2">
                   <button

@@ -1,7 +1,9 @@
 "use client";
 import { useState } from "react";
+import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { jwtDecode } from "jwt-decode"; // Importar decodificador de JWT
+import Link from "next/link";
 
 export default function LoginPage() {
   const [email, setEmail] = useState("");
@@ -48,6 +50,12 @@ export default function LoginPage() {
 
   return (
     <div className="flex flex-col items-center justify-center h-screen bg-neutral-900 p-5">
+      <Image
+        src="/ConnecTo-logo-horizontal2.png"
+        width={100}
+        height={150}
+        alt="Logo"
+      />
       <h1 className="text-2xl font-bold text-white mb-6">Iniciar Sesión</h1>
       <form
         onSubmit={handleLogin}
@@ -67,7 +75,7 @@ export default function LoginPage() {
             required
           />
         </div>
-        <div className="mb-6 relative ">
+        <div className="mb-6 relative">
           <label htmlFor="password" className="block text-white mb-2">
             Contraseña
           </label>
@@ -83,7 +91,8 @@ export default function LoginPage() {
           <button
             type="button"
             onClick={() => setShowPassword(!showPassword)} // Alterna visibilidad
-            className="absolute right-3 top-10"
+            className="absolute right-3 top-1/2 transform -translate-y-1/2"
+            aria-label="Toggle password visibility"
           >
             {showPassword ? (
               <svg
@@ -92,11 +101,11 @@ export default function LoginPage() {
                 height="24"
                 viewBox="0 0 24 24"
                 fill="none"
-                stroke="currentColor"
+                stroke="black"
                 strokeWidth="2"
                 strokeLinecap="round"
                 strokeLinejoin="round"
-                className="icon icon-tabler icons-tabler-outline icon-tabler-eye-off"
+                className="mt-8"
               >
                 <path stroke="none" d="M0 0h24v24H0z" fill="none" />
                 <path d="M10.585 10.587a2 2 0 0 0 2.829 2.828" />
@@ -110,11 +119,11 @@ export default function LoginPage() {
                 height="24"
                 viewBox="0 0 24 24"
                 fill="none"
-                stroke="currentColor"
+                stroke="black"
                 strokeWidth="2"
                 strokeLinecap="round"
                 strokeLinejoin="round"
-                className="icon icon-tabler icons-tabler-outline icon-tabler-eye"
+                className="mt-8"
               >
                 <path stroke="none" d="M0 0h24v24H0z" fill="none" />
                 <path d="M10 12a2 2 0 1 0 4 0a2 2 0 0 0 -4 0" />
@@ -130,6 +139,16 @@ export default function LoginPage() {
           Iniciar Sesión
         </button>
         {error && <p className="mt-4 text-red-400 text-center">{error}</p>}
+        <span className="text-xs flex justify-center gap-1 mt-5">
+          ¿No tienes cuenta?
+          <Link
+            href="/auth/register"
+            className="text-sky-400 font-bold hover:text-sky-600"
+          >
+            {" "}
+            Registrate aquí
+          </Link>
+        </span>
       </form>
     </div>
   );
