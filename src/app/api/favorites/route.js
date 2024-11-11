@@ -1,50 +1,56 @@
-// src/app/api/favorites/route.js
 import connection from "@/lib/db";
-const express = require('express');
-const router = express.Router();
-const Favorite = require('../models/Favorite'); // Importa el modelo favorito
 
-// Ruta para agregar un producto a los favoritos
-router.post('/', async (req, res) => {
-  const { userId, product } = req.body;
+// Obtener los favoritos del usuario (GET)
+export async function GET(req) {
+  const { searchParams } = new URL(req.url);
+  const userId = searchParams.get("userId");
 
-  try {
-    const newFavorite = await Favorite.create({
-      userId,
-      productId: product.id,
-      productName: product.name,
-      productPrice: product.price,
-      productImage: product.image,
+  if (!userId) {
+    return new Response(JSON.stringify({ message: "User ID is required" }), {
+      status: 400,
     });
-    res.status(201).json(newFavorite);
-  } catch (error) {
-    res.status(500).json({ message: 'Error al agregar producto a favoritos' });
   }
-});
 
-// Ruta para obtener los favoritos del usuario
-router.get('/', async (req, res) => {
-  const { userId } = req.query;
+  return new Promise((resolve, reject) => {
+    const query = `
+      SELECT f.id_favorito, p.id_producto, p.nombre, p.precio, i.url_imagen AS image 
+      FROM favoritos f
+      INNER JOIN productos p ON f.id_producto = p.id_producto
+      LEFT JOIN imagen_publicacion i ON p.id_imagen = i.id_imagen
+      WHERE f.id_usuario = ?
+    `;
 
-  try {
-    const favorites = await Favorite.find({ userId });
-    res.status(200).json({ favorites });
-  } catch (error) {
-    res.status(500).json({ message: 'Error al obtener los favoritos' });
+    connection.query(query, [userId], (error, results) => {
+      if (error) {
+        console.error("Error al obtener favoritos:", error);
+        reject(new Response(JSON.stringify({ message: "Error al obtener favoritos" }), { status: 500 }));
+      } else {
+        resolve(new Response(JSON.stringify({ favorites: results }), { status: 200 }));
+      }
+    });
+  });
+}
+
+// Agregar un producto a favoritos (POST)
+export async function POST(req) {
+  const { userId, productId } = await req.json();
+
+  if (!userId || !productId) {
+    return new Response(JSON.stringify({ message: "User ID and Product ID are required" }), {
+      status: 400,
+    });
   }
-});
 
-// Ruta para eliminar un producto de los favoritos
-router.delete('/:productId', async (req, res) => {
-  const { userId } = req.query;
-  const { productId } = req.params;
+  return new Promise((resolve, reject) => {
+    const query = "INSERT INTO favoritos (id_usuario, id_producto, fecha_creacion) VALUES (?, ?, NOW())";
 
-  try {
-    await Favorite.deleteOne({ userId, productId });
-    res.status(200).json({ message: 'Producto eliminado de favoritos' });
-  } catch (error) {
-    res.status(500).json({ message: 'Error al eliminar producto de favoritos' });
-  }
-});
-
-module.exports = router;
+    connection.query(query, [userId, productId], (error, results) => {
+      if (error) {
+        console.error("Error al agregar producto a favoritos:", error);
+        reject(new Response(JSON.stringify({ message: "Error al agregar producto a favoritos" }), { status: 500 }));
+      } else {
+        resolve(new Response(JSON.stringify({ message: "Producto agregado a favoritos", id: results.insertId }), { status: 201 }));
+      }
+    });
+  });
+}
