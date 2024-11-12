@@ -7,12 +7,25 @@ import Header from "@/components/Header-us";
 import SearchedProducts from "@/components/Searched-Products";
 import { useCart, CartProvider } from "../../src/app/context/CartContext";
 import Link from "next/link";
+import { jwtDecode } from "jwt-decode";
 
 export default function Home() {
   const router = useRouter();
   const [searchedProducts, setSearchedProducts] = useState([]);
-  const [favorites, setFavorites] = useState([]); // Estado para productos favoritos
-  const userId = 1; // Aquí se define el ID del usuario actual; reemplaza con la lógica adecuada para obtener el ID real
+  const [favorites, setFavorites] = useState([]);
+  const [user, setUser] = useState(null);
+
+  useEffect(() => {
+    const token = localStorage.getItem("token");
+    console.log("Token recuperado:", token);
+
+    if (token) {
+      const decoded = jwtDecode(token);
+      setUser(decoded);
+    }
+  }, []);
+
+  const userId = user?.userId;
 
   const handleFAQClick = () => {
     router.push("/emprendedores/faq");
@@ -45,7 +58,9 @@ export default function Home() {
       });
 
       if (!response.ok) {
-        console.error("Error al agregar producto a favoritos en la base de datos");
+        console.error(
+          "Error al agregar producto a favoritos en la base de datos"
+        );
       }
     } catch (error) {
       console.error("Error en la solicitud de agregar a favoritos:", error);
@@ -59,34 +74,21 @@ export default function Home() {
 
     // Enviar la solicitud para eliminar el producto de favoritos en la base de datos
     try {
-      const response = await fetch(`/api/favorites/${productId}?userId=${userId}`, {
-        method: "DELETE",
-      });
+      const response = await fetch(
+        `/api/favorites/${productId}?userId=${userId}`,
+        {
+          method: "DELETE",
+        }
+      );
       if (!response.ok) {
-        console.error("Error al eliminar el producto de favoritos en la base de datos");
+        console.error(
+          "Error al eliminar el producto de favoritos en la base de datos"
+        );
       }
     } catch (error) {
       console.error("Error en la solicitud de eliminar de favoritos:", error);
     }
   };
-
-  useEffect(() => {
-    const fetchFavorites = async () => {
-      try {
-        const response = await fetch(`/api/favorites?userId=${userId}`);
-        if (response.ok) {
-          const data = await response.json();
-          setFavorites(data.favorites);
-        } else {
-          console.error("Error al obtener los productos favoritos");
-        }
-      } catch (error) {
-        console.error("Error en la solicitud para obtener favoritos:", error);
-      }
-    };
-
-    fetchFavorites();
-  }, [userId]);
 
   const profiles = [
     { image: "/imagenpromo.jpeg", name: "Nombre 1", profession: "Profesión 1" },
@@ -151,7 +153,7 @@ export default function Home() {
                 className="bg-zinc-300 p-5 rounded-lg shadow-lg text-center flex flex-col items-center justify-around"
               >
                 <img
-                  src={product.image || "/placeholder.jpg"}
+                  src={product.image || "/placeholder.webp"}
                   width={250}
                   height={100}
                   className="rounded-lg drop-shadow-md"
