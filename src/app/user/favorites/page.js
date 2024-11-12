@@ -5,14 +5,15 @@ import React, { useState, useEffect } from "react";
 
 const FavoritesPage = () => {
   const [favorites, setFavorites] = useState([]);
+  const userId = 1; // Asigna el ID del usuario actual
 
   useEffect(() => {
     const fetchFavorites = async () => {
       try {
-        const response = await fetch("/api/user/favorites");
+        const response = await fetch(`/api/favorites?userId=${userId}`);
         if (response.ok) {
           const data = await response.json();
-          setFavorites(data.favorites); // Los datos de los favoritos se actualizan desde la base de datos
+          setFavorites(data.favorites);
         } else {
           console.error("Error al obtener los productos favoritos");
         }
@@ -22,19 +23,18 @@ const FavoritesPage = () => {
     };
 
     fetchFavorites();
-  }, []);
+  }, [userId]);
 
-  const handleRemoveFromFavorites = async (productId) => {
+  const handleRemoveFromFavorites = async (idFavorito) => {
     setFavorites((prevFavorites) =>
-      prevFavorites.filter((item) => item.id !== productId)
+      prevFavorites.filter((item) => item.id_favorito !== idFavorito)
     );
-
-    // Enviar la solicitud para eliminar el producto de favoritos en la base de datos
+  
     try {
-      const response = await fetch(`/api/user/favorites/${productId}`, {
+      const response = await fetch(`/api/favorites/${idFavorito}`, {
         method: "DELETE",
       });
-
+  
       if (!response.ok) {
         console.error("Error al eliminar el producto de favoritos en la base de datos");
       }
@@ -42,6 +42,7 @@ const FavoritesPage = () => {
       console.error("Error en la solicitud de eliminar de favoritos:", error);
     }
   };
+  
 
   return (
     <CartProvider>
@@ -54,17 +55,17 @@ const FavoritesPage = () => {
         ) : (
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
             {favorites.map((product) => (
-              <div key={product.id} className="bg-white p-4 rounded-lg shadow-lg hover:shadow-xl transition-shadow">
+              <div key={product.id_favorito} className="bg-white p-4 rounded-lg shadow-lg hover:shadow-xl transition-shadow">
                 <img
                   src={product.image}
-                  alt={product.name}
+                  alt={product.nombre}
                   className="w-full h-40 object-cover rounded-md mb-4"
                 />
-                <h2 className="text-lg font-semibold">{product.name}</h2>
-                <p className="text-gray-500">${product.price}</p>
+                <h2 className="text-lg font-semibold">{product.nombre}</h2>
+                <p className="text-gray-500">${product.precio}</p>
                 <button
                   className="mt-4 w-full bg-red-500 text-white py-2 rounded-md hover:bg-red-600 transition-colors"
-                  onClick={() => handleRemoveFromFavorites(product.id)}
+                  onClick={() => handleRemoveFromFavorites(product.id_favorito)}
                 >
                   Quitar de Favoritos
                 </button>

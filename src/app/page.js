@@ -12,6 +12,7 @@ export default function Home() {
   const router = useRouter();
   const [searchedProducts, setSearchedProducts] = useState([]);
   const [favorites, setFavorites] = useState([]); // Estado para productos favoritos
+  const userId = 1; // Aquí se define el ID del usuario actual; reemplaza con la lógica adecuada para obtener el ID real
 
   const handleFAQClick = () => {
     router.push("/emprendedores/faq");
@@ -34,15 +35,15 @@ export default function Home() {
   const handleAddToFavorites = async (product) => {
     // Añadir a los favoritos en el estado
     setFavorites((prevFavorites) => [...prevFavorites, product]);
-  
+
     // Enviar la solicitud para guardar el producto en la base de datos
     try {
-      const response = await fetch(`/api/user/favorites`, {
+      const response = await fetch(`/api/favorites`, {
         method: "POST",
-        body: JSON.stringify(product),
         headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ userId, productId: product.id }),
       });
-  
+
       if (!response.ok) {
         console.error("Error al agregar producto a favoritos en la base de datos");
       }
@@ -50,7 +51,7 @@ export default function Home() {
       console.error("Error en la solicitud de agregar a favoritos:", error);
     }
   };
-  
+
   const handleRemoveFromFavorites = async (productId) => {
     setFavorites((prevFavorites) =>
       prevFavorites.filter((item) => item.id !== productId)
@@ -58,7 +59,7 @@ export default function Home() {
 
     // Enviar la solicitud para eliminar el producto de favoritos en la base de datos
     try {
-      const response = await fetch(`/api/favorites/${productId}`, {
+      const response = await fetch(`/api/favorites/${productId}?userId=${userId}`, {
         method: "DELETE",
       });
       if (!response.ok) {
@@ -68,6 +69,24 @@ export default function Home() {
       console.error("Error en la solicitud de eliminar de favoritos:", error);
     }
   };
+
+  useEffect(() => {
+    const fetchFavorites = async () => {
+      try {
+        const response = await fetch(`/api/favorites?userId=${userId}`);
+        if (response.ok) {
+          const data = await response.json();
+          setFavorites(data.favorites);
+        } else {
+          console.error("Error al obtener los productos favoritos");
+        }
+      } catch (error) {
+        console.error("Error en la solicitud para obtener favoritos:", error);
+      }
+    };
+
+    fetchFavorites();
+  }, [userId]);
 
   const profiles = [
     { image: "/imagenpromo.jpeg", name: "Nombre 1", profession: "Profesión 1" },
