@@ -1,6 +1,6 @@
 import connection from "@/lib/db";
 import jwt from "jsonwebtoken";
-
+import { cookies } from "next/headers";
 // Obtener datos de usuario
 export async function GET(req) {
   try {
