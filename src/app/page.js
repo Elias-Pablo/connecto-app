@@ -168,6 +168,15 @@ export default function Home() {
 
                 <p className="text-sm text-black">{product.description}</p>
                 <div className="flex flex-col space-y-2 mt-2">
+                  <p className="text-xs text-gray-500 my-2">
+                    Vendedor:{" "}
+                    <Link
+                      href={`/user/emprendedores/profile?id_perfil=${product.id_perfil}`}
+                      className="text-sky-500"
+                    >
+                      {product.businessName}
+                    </Link>
+                  </p>
                   <button
                     onClick={() => addToCart(product)}
                     className="bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600"
@@ -180,7 +189,7 @@ export default function Home() {
                         ? handleRemoveFromFavorites(product.id)
                         : handleAddToFavorites(product)
                     }
-                    className="bg-yellow-500 text-white px-4 py-2 rounded-lg hover:bg-yellow-600"
+                    className="bg-red-500 text-white px-4 py-2 rounded-lg hover:bg-red-600"
                   >
                     {favorites.some((fav) => fav.id === product.id)
                       ? "Eliminar de Favoritos"

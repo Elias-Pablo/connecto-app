@@ -2,10 +2,9 @@
 import { CartProvider } from "@/app/context/CartContext";
 import Header from "@/components/Header-us";
 import React, { useState, useEffect } from "react";
-
 import { jwtDecode } from "jwt-decode";
 
-const FavoritesPage = () => {
+export default function FavoritesPage() {
   const [favorites, setFavorites] = useState([]);
   const [userId, setUserId] = useState(null); // Nuevo estado para almacenar userId
 
@@ -109,6 +108,4 @@ const FavoritesPage = () => {
       </div>
     </CartProvider>
   );
-};
-
-export default FavoritesPage;
+}
