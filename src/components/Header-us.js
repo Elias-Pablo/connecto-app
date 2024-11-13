@@ -9,6 +9,7 @@ export default function Header() {
   const [user, setUser] = useState(null);
   const [menuOpen, setMenuOpen] = useState(false);
   const router = useRouter();
+  const [profilePicture, setProfilePicture] = useState("/avatar.jpg");
 
   const [cartVisible, setCartVisible] = useState(false);
   const {
@@ -46,6 +47,25 @@ export default function Header() {
 
   const toggleMenu = () => setMenuOpen(!menuOpen);
 
+  useEffect(() => {
+    if (user) {
+      const fetchUserAvatar = async () => {
+        try {
+          const response = await fetch("/api/userAvatar");
+          if (response.ok) {
+            const data = await response.json();
+            setProfilePicture(data.profilePicture || "/avatar.jpg");
+          } else {
+            console.error("Error al obtener la imagen de perfil");
+          }
+        } catch (error) {
+          console.error("Error en la solicitud de imagen de perfil:", error);
+        }
+      };
+      fetchUserAvatar();
+    }
+  }, [user]);
+
   return (
     <>
       <header className="bg-fuchsia-800 px-6 flex items-center justify-center">
@@ -62,18 +82,23 @@ export default function Header() {
           <div className="flex items-center">
             {user ? (
               <div className="flex items-center">
-                <Link href="/user/profile" passHref>
+                <Link
+                  href="/user/profile"
+                  className="flex justify-center items-center gap-2"
+                  passHref
+                >
                   <img
-                    src={user.profilePicture || "/avatar.jpg"}
+                    src={profilePicture || "/avatar.jpg"}
                     alt="User Avatar"
                     width={40}
                     height={40}
-                    className="rounded-full mr-2 cursor-pointer"
+                    className="rounded-full cursor-pointer"
                   />
+
+                  <span className="text-white font-semibold mr-4">
+                    {user.username}
+                  </span>
                 </Link>
-                <span className="text-white font-semibold mr-4">
-                  {user.username}
-                </span>
                 <button
                   onClick={handleLogout}
                   className="text-white bg-red-500 px-4 py-2 rounded-md hover:bg-red-600 transition-colors duration-300"

@@ -42,7 +42,7 @@ export async function POST(req) {
           profilePicture: user.usuario_imagen,
         },
         process.env.JWT_SECRET,
-        { expiresIn: "1h" }
+        { expiresIn: "12h" }
       );
       return new Response(
         JSON.stringify({

@@ -9,7 +9,7 @@ export default function HeaderUser() {
   const [userInfo, setUserInfo] = useState({
     name: "",
     email: "",
-    profilePicture: "/default-profile.jpg", // Ruta predeterminada para la foto de perfil
+    profilePicture: "/avatar.jpg", // Ruta predeterminada para la foto de perfil
   });
 
   useEffect(() => {
@@ -19,9 +19,9 @@ export default function HeaderUser() {
         if (response.ok) {
           const data = await response.json();
           setUserInfo({
-            name: data.name,
-            email: data.email,
-            profilePicture: data.profilePicture || "/avatar.jpg",
+            name: data?.name,
+            email: data?.email,
+            profilePicture: data?.profilePicture || "/avatar.jpg",
           });
         } else {
           console.error("Error al cargar los datos del usuario");
@@ -70,12 +70,7 @@ export default function HeaderUser() {
         <div className="user-profile-principal bg-white p-6 rounded-lg shadow-lg text-center w-full max-w-lg flex flex-col items-center ">
           <div className="user-profile-principal-image mx-auto mb-4">
             <div className="relative w-40 h-40 rounded-full overflow-hidden border-4 border-fuchsia-700 shadow-lg">
-              <img
-                src={userInfo.profilePicture}
-                alt="User Profile"
-                layout="fill"
-                objectFit="cover"
-              />
+              <img src={userInfo.profilePicture} alt="User Profile" />
             </div>
           </div>
           <div className="user-profile-principal-info text-black">

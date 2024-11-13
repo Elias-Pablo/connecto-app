@@ -3,11 +3,13 @@ import Image from "next/image";
 import { useState, useEffect } from "react";
 import Header from "@/components/Header-em";
 import MetricChart from "@/components/MetricChart";
+import { jwtDecode } from "jwt-decode";
 
 export default function EmprendedorProfile() {
   const [selectedMetric, setSelectedMetric] = useState("weekly");
   const [products, setProducts] = useState([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
+
   const [currentProduct, setCurrentProduct] = useState({
     id: null,
     name: "",
@@ -18,20 +20,130 @@ export default function EmprendedorProfile() {
   });
   const [profileInfo, setProfileInfo] = useState({
     avatar: "/avatar.jpg",
-    name: "Avatar",
-    description: "Lorem ipsum dolor sit amet, consectetur adipiscing elit.",
+    name: "Nombre del Negocio",
+    description: "Descripción del negocio",
     website: "",
+    direccion: "",
+    telefono: "",
   });
   const [isEditingProfile, setIsEditingProfile] = useState(false);
+  const [user, setUser] = useState(null);
+
+  useEffect(() => {
+    const token = localStorage.getItem("token");
+    console.log("Token recuperado:", token);
+
+    if (token) {
+      try {
+        const decoded = jwtDecode(token);
+        setUser(decoded);
+      } catch (error) {
+        console.error("Token inválido:", error);
+        localStorage.removeItem("token");
+      }
+    }
+  }, []);
+
+  useEffect(() => {
+    if (user) {
+      const fetchProfileInfo = async () => {
+        try {
+          const profileResponse = await fetch("/api/emprendedores/profile", {
+            method: "GET",
+            headers: {
+              "Content-Type": "application/json",
+            },
+          });
+          if (profileResponse.ok) {
+            const data = await profileResponse.json();
+            setProfileInfo((prev) => ({
+              ...prev,
+              name: data.nombre_negocio,
+              description: data.descripcion,
+              website: data.sitioweb_url,
+              direccion: data.direccion,
+              telefono: data.telefono,
+            }));
+          } else {
+            console.error("Error al cargar los datos del perfil");
+          }
+
+          // Fetch avatar
+          const avatarResponse = await fetch("/api/userAvatar", {
+            method: "GET",
+            headers: {
+              "Content-Type": "application/json",
+            },
+          });
+          if (avatarResponse.ok) {
+            const avatarData = await avatarResponse.json();
+            setProfileInfo((prev) => ({
+              ...prev,
+              avatar: avatarData.usuario_imagen || "/avatar.jpg",
+            }));
+          } else {
+            console.error("Error al cargar el avatar");
+          }
+        } catch (error) {
+          console.error("Error en la solicitud para obtener perfil:", error);
+        }
+      };
+
+      fetchProfileInfo();
+    }
+  }, [user]);
 
   const handleProfileChange = (e) => {
     const { name, value } = e.target;
     setProfileInfo({ ...profileInfo, [name]: value });
   };
 
-  const saveProfileInfo = () => {
-    setIsEditingProfile(false);
+  const saveProfileInfo = async () => {
+    try {
+      // Update Profile Info
+      const profileResponse = await fetch("/api/emprendedores/profile", {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          nombre_negocio: profileInfo.name,
+          descripcion: profileInfo.description,
+          direccion: profileInfo.direccion,
+          telefono: profileInfo.telefono,
+          sitioweb_url: profileInfo.website,
+        }),
+      });
+
+      if (profileResponse.ok) {
+        console.log("Perfil de negocio actualizado correctamente");
+      } else {
+        console.error("Error al actualizar el perfil de negocio");
+      }
+
+      // Update Avatar
+      const avatarResponse = await fetch("/api/userAvatar", {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          usuario_imagen: profileInfo.avatar,
+        }),
+      });
+
+      if (avatarResponse.ok) {
+        console.log("Avatar actualizado correctamente");
+      } else {
+        console.error("Error al actualizar el avatar");
+      }
+
+      setIsEditingProfile(false);
+    } catch (error) {
+      console.error("Error en la solicitud para actualizar perfil:", error);
+    }
   };
+
   const formatPrice = (price) => {
     return new Intl.NumberFormat("es-CL", {
       style: "currency",
@@ -172,7 +284,7 @@ export default function EmprendedorProfile() {
         </div>
 
         <div className="text-center mb-12">
-          <Image
+          <img
             src={profileInfo.avatar}
             alt="avatar"
             width={128}
@@ -202,8 +314,38 @@ export default function EmprendedorProfile() {
                 value={profileInfo.website}
                 onChange={handleProfileChange}
                 placeholder="URL de la tienda en línea"
-                className=" text-center mt-2 text-blue-500 border-b-2 border-gray-300 p-2 rounded-md w-full"
+                className="text-center mt-2 text-blue-500 border-b-2 border-gray-300 p-2 rounded-md w-full"
               />
+              <input
+                type="text"
+                name="direccion"
+                value={profileInfo.direccion}
+                onChange={handleProfileChange}
+                placeholder="Dirección"
+                className="text-center mt-2 text-black border-b-2 border-gray-300 p-2 rounded-md w-full"
+              />
+              <input
+                type="text"
+                name="telefono"
+                value={profileInfo.telefono}
+                onChange={handleProfileChange}
+                placeholder="Teléfono"
+                className="text-center mt-2 text-black border-b-2 border-gray-300 p-2 rounded-md w-full"
+              />
+              <input
+                type="url"
+                name="avatar"
+                value={profileInfo.avatar}
+                onChange={handleProfileChange}
+                placeholder="URL de la foto de perfil"
+                className="text-center mt-2 text-black border-b-2 border-gray-300 p-2 rounded-md w-full"
+              />
+              <button
+                onClick={saveProfileInfo}
+                className="bg-blue-500 text-white px-4 py-2 rounded-lg mt-4"
+              >
+                Guardar
+              </button>
             </>
           ) : (
             <>
@@ -221,6 +363,8 @@ export default function EmprendedorProfile() {
                   {profileInfo.website}
                 </a>
               )}
+              <p className="text-black mt-2">{profileInfo.direccion}</p>
+              <p className="text-black mt-2">{profileInfo.telefono}</p>
             </>
           )}
         </div>
