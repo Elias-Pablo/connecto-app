@@ -15,6 +15,7 @@ export default function Home() {
   const [favorites, setFavorites] = useState([]);
   const [user, setUser] = useState(null);
 
+
   useEffect(() => {
     const token = localStorage.getItem("token");
     console.log("Token recuperado:", token);
@@ -89,13 +90,6 @@ export default function Home() {
       console.error("Error en la solicitud de eliminar de favoritos:", error);
     }
   };
-
-  const profiles = [
-    { image: "/imagenpromo.jpeg", name: "Nombre 1", profession: "Profesión 1" },
-    { image: "/imagenpromo.jpeg", name: "Nombre 2", profession: "Profesión 2" },
-    { image: "/imagenpromo.jpeg", name: "Nombre 3", profession: "Profesión 3" },
-    { image: "/imagenpromo.jpeg", name: "Nombre 4", profession: "Profesión 4" },
-  ];
 
   const FAQ = [
     {
@@ -203,36 +197,59 @@ export default function Home() {
       </section>
     );
   };
-
-  const ProfileSection = () => (
-    <section className="p-10 bg-white">
-      <div className="container mx-auto">
-        <h2 className="text-2xl font-semibold mb-5 text-center text-black">
-          Perfiles de Emprendedores
-        </h2>
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-          {profiles.map((profile, index) => (
-            <div key={index} className="text-center">
-              <div className="cursor-pointer hover:opacity-80 transition-opacity duration-300 inline-block">
-                <div className="w-32 h-32 mx-auto rounded-full shadow-lg overflow-hidden hover:scale-105 duration-300">
-                  <Image
-                    src={profile.image}
-                    width={128}
-                    height={128}
-                    alt={profile.name}
-                  />
+  const ProfileSection = () => {
+    const [profileData, setProfileData] = useState([]);
+  
+    useEffect(() => {
+      const fetchProfiles = async () => {
+        try {
+          const response = await fetch(`/api/user/emprendedores`);
+          if (response.ok) {
+            const data = await response.json();
+            console.log("Datos de los perfiles recibidos:", data);
+            setProfileData(data.perfiles); // Guardamos todos los perfiles
+          } else {
+            console.error("Error al cargar los perfiles de emprendedores");
+          }
+        } catch (error) {
+          console.error("Error en la solicitud de los perfiles:", error);
+        }
+      };
+  
+      fetchProfiles();
+    }, []);
+  
+    return (
+      <section className="p-10 bg-white">
+        <div className="container mx-auto">
+          <h2 className="text-2xl font-semibold mb-5 text-center text-black">
+            Perfiles de Emprendedores
+          </h2>
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+            {profileData.map((profile) => (
+              <div key={profile.id} className="text-center p-5 bg-gray-100 rounded-lg shadow-md">
+                <div className="cursor-pointer hover:opacity-80 transition-opacity duration-300 inline-block">
+                  <div className="w-32 h-32 mx-auto rounded-full shadow-lg overflow-hidden hover:scale-105 duration-300">
+                    <img
+                      src={profile.idImagen || "/placeholder.webp"}
+                      width={128}
+                      height={128}
+                      alt={profile.nombreNegocio}
+                    />
+                  </div>
+                  <h3 className="text-lg font-semibold text-black mt-2">
+                    {profile.nombreNegocio}
+                  </h3>
+                  <p className="text-sm text-black">{profile.descripcion}</p>
                 </div>
-                <h3 className="text-lg font-semibold text-black mt-2">
-                  {profile.name}
-                </h3>
-                <p className="text-sm text-black">{profile.profession}</p>
               </div>
-            </div>
-          ))}
+            ))}
+          </div>
         </div>
-      </div>
-    </section>
-  );
+      </section>
+    );
+  };
+  
 
   const FAQSection = () => {
     const [expandedQuestion, setExpandedQuestion] = useState(null);

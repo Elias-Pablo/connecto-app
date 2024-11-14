@@ -13,7 +13,7 @@ export async function GET(req, { params }) {
       );
     }
 
-    // Obtener datos del emprendedor
+    // Obtener datos del emprendedor (nombre, profesión e imagen)
     const emprendedorData = await obtenerDatosEmprendedor(profileId);
 
     if (!emprendedorData) {
@@ -39,14 +39,13 @@ export async function GET(req, { params }) {
   }
 }
 
-// Función para obtener los datos del emprendedor
+// Función para obtener los datos del emprendedor (nombre, profesión, e imagen)
 async function obtenerDatosEmprendedor(profileId) {
   return new Promise((resolve, reject) => {
     connection.query(
-      `SELECT e.nombre_negocio, e.descripcion, e.direccion, e.telefono, e.sitioweb_url, i.url_imagen
-       FROM perfil_negocio e
-       LEFT JOIN imagen_publicacion i ON e.id_imagen = i.id_imagen
-       WHERE e.id_perfil = ?`,
+      `SELECT nombre AS name, profesion AS profession, url_imagen AS image
+       FROM perfil_emprendedor
+       WHERE id_perfil = ?`,
       [profileId],
       (error, results) => {
         if (error) {
