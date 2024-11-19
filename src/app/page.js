@@ -140,6 +140,33 @@ export default function Home() {
       }).format(price);
     };
 
+    const handleInteraction = async (type, id_perfil, id_producto) => {
+      const token = localStorage.getItem("token");
+      if (!token) return;
+    
+      // Decodificar el token para extraer el `userId`
+      const { userId } = jwtDecode(token);
+    
+      try {
+        await fetch("/api/interactions", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+          body: JSON.stringify({
+            userId, // Incluye el usuario que realiza la interacción
+            tipo_interaccion: type,
+            id_perfil,
+            id_producto,
+          }),
+        });
+        console.log(`Interacción de tipo ${type} registrada con éxito.`);
+      } catch (error) {
+        console.error("Error al registrar la interacción:", error);
+      }
+    };
+
     return (
       <section className="bg-white p-10">
         <div className="container mx-auto">
@@ -173,12 +200,17 @@ export default function Home() {
                     <Link
                       href={`/user/emprendedores/profile?id_perfil=${product.id_perfil}`}
                       className="text-sky-500"
+                      onClick={() => handleInteraction("View", product.id_perfil, null)}
                     >
                       {product.businessName}
                     </Link>
+
                   </p>
                   <button
-                    onClick={() => addToCart(product)}
+                    onClick={() => {
+                      handleInteraction("Click", product.id_perfil, product.id); // Registrar interacción
+                      addToCart(product);
+                    }}
                     className="bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600"
                   >
                     Agregar al Carrito

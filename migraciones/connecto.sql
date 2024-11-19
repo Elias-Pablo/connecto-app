@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Servidor: 127.0.0.1
--- Tiempo de generación: 08-11-2024 a las 00:38:54
+-- Tiempo de generación: 19-11-2024 a las 01:13:46
 -- Versión del servidor: 10.4.32-MariaDB
 -- Versión de PHP: 8.2.12
 
@@ -132,6 +132,21 @@ CREATE TABLE `favoritos` (
   `fecha_creacion` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
+--
+-- Volcado de datos para la tabla `favoritos`
+--
+
+INSERT INTO `favoritos` (`id_favorito`, `id_usuario`, `id_producto`, `fecha_creacion`) VALUES
+(2, 1, 5, '2024-11-11 19:16:27'),
+(3, 1, 4, '2024-11-11 19:17:10'),
+(5, 1, 7, '2024-11-11 19:21:09'),
+(6, 1, 10, '2024-11-11 19:21:43'),
+(7, 1, 8, '2024-11-11 19:24:06'),
+(8, 1, 11, '2024-11-11 19:24:09'),
+(9, 1, 5, '2024-11-11 19:52:09'),
+(10, 1, 6, '2024-11-11 20:06:09'),
+(14, 13, 4, '2024-11-18 18:41:24');
+
 -- --------------------------------------------------------
 
 --
@@ -217,7 +232,8 @@ INSERT INTO `imagen_publicacion` (`id_imagen`, `id_post`, `url_imagen`, `tiempo_
 (9, NULL, 'https://www.eljardindeamanda.cl/wp-content/uploads/2016/11/ramo-24-rosa.jpg', '2024-11-01 22:16:34'),
 (10, NULL, 'https://images.app.goo.gl/cJChz3f9vDDrs3rS9', '2024-11-07 22:38:20'),
 (11, NULL, 'https://2356021.fs1.hubspotusercontent-na1.net/hubfs/2356021/iStock-506514230%20(1).jpg', '2024-11-07 22:46:00'),
-(12, NULL, 'https://2356021.fs1.hubspotusercontent-na1.net/hubfs/2356021/iStock-506514230%20(1).jpg', '2024-11-07 22:49:04');
+(12, NULL, 'https://2356021.fs1.hubspotusercontent-na1.net/hubfs/2356021/iStock-506514230%20(1).jpg', '2024-11-07 22:49:04'),
+(13, NULL, 'j', '2024-11-17 16:06:09');
 
 -- --------------------------------------------------------
 
@@ -228,10 +244,22 @@ INSERT INTO `imagen_publicacion` (`id_imagen`, `id_post`, `url_imagen`, `tiempo_
 CREATE TABLE `interacciones` (
   `id_interaccion` int(11) NOT NULL,
   `id_perfil` int(11) NOT NULL,
-  `id_producto` int(11) NOT NULL,
+  `id_producto` int(11) DEFAULT NULL,
   `tipo_interaccion` enum('View','Click','Purchase') NOT NULL,
   `fecha_interaccion` timestamp NOT NULL DEFAULT current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Volcado de datos para la tabla `interacciones`
+--
+
+INSERT INTO `interacciones` (`id_interaccion`, `id_perfil`, `id_producto`, `tipo_interaccion`, `fecha_interaccion`) VALUES
+(1, 1, 5, 'Click', '2024-11-17 16:37:49'),
+(2, 1, NULL, 'View', '2024-11-17 17:08:55'),
+(3, 2, NULL, 'View', '2024-11-17 17:09:16'),
+(4, 1, 5, 'Click', '2024-11-17 17:09:55'),
+(5, 3, 11, 'Click', '2024-11-17 17:10:09'),
+(6, 1, NULL, 'View', '2024-11-18 18:43:06');
 
 -- --------------------------------------------------------
 
@@ -241,11 +269,25 @@ CREATE TABLE `interacciones` (
 
 CREATE TABLE `metricas` (
   `id_metricas` int(11) NOT NULL,
-  `visitas` enum('diarias','semanales','mensuales') NOT NULL,
-  `ventas` enum('diarias','semanales','mensuales') NOT NULL,
+  `id_perfil` int(11) NOT NULL,
+  `tipo_metrica` enum('visitas','ventas') NOT NULL,
+  `intervalo` enum('diarias','semanales','mensuales') NOT NULL,
+  `cantidad` int(11) NOT NULL DEFAULT 0,
   `producto_mas_vendido` varchar(255) NOT NULL,
   `fecha_creacion` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Volcado de datos para la tabla `metricas`
+--
+
+INSERT INTO `metricas` (`id_metricas`, `id_perfil`, `tipo_metrica`, `intervalo`, `cantidad`, `producto_mas_vendido`, `fecha_creacion`) VALUES
+(2, 4, 'visitas', 'diarias', 150, 'Producto XYZ', '2024-11-14 12:47:10'),
+(3, 4, 'visitas', 'semanales', 950, 'Producto XYZ', '2024-11-14 12:47:10'),
+(4, 4, 'visitas', 'mensuales', 3500, 'Producto XYZ', '2024-11-14 12:47:10'),
+(5, 4, 'ventas', 'diarias', 20, 'Producto XYZ', '2024-11-14 12:47:10'),
+(6, 4, 'ventas', 'semanales', 120, 'Producto XYZ', '2024-11-14 12:47:10'),
+(7, 4, 'ventas', 'mensuales', 450, 'Producto XYZ', '2024-11-14 12:47:10');
 
 -- --------------------------------------------------------
 
@@ -280,7 +322,6 @@ CREATE TABLE `perfil_negocio` (
   `telefono` varchar(20) DEFAULT NULL,
   `sitioweb_url` varchar(255) DEFAULT NULL,
   `tipo_perfil` enum('Free','Premium') DEFAULT 'Free',
-  `id_metricas` int(11) DEFAULT NULL,
   `id_foro` int(11) DEFAULT NULL,
   `tiempo_creacion` timestamp NOT NULL DEFAULT current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
@@ -289,30 +330,11 @@ CREATE TABLE `perfil_negocio` (
 -- Volcado de datos para la tabla `perfil_negocio`
 --
 
-INSERT INTO `perfil_negocio` (`id_perfil`, `id_usuario`, `id_imagen`, `nombre_negocio`, `descripcion`, `direccion`, `telefono`, `sitioweb_url`, `tipo_perfil`, `id_metricas`, `id_foro`, `tiempo_creacion`) VALUES
-(1, 9, NULL, 'malumabeiby', NULL, NULL, NULL, NULL, 'Free', NULL, NULL, '2024-10-31 20:07:09'),
-(2, 10, NULL, 'barbershopking', NULL, NULL, NULL, NULL, 'Free', NULL, NULL, '2024-10-31 20:30:09'),
-(3, 11, NULL, 'flower', NULL, NULL, NULL, NULL, 'Free', NULL, NULL, '2024-11-01 22:09:47');
-
--- --------------------------------------------------------
-
---
--- Estructura de tabla para la tabla `preferencias`
---
-
-CREATE TABLE `preferencias` (
-  `id_preferencias` int(11) NOT NULL,
-  `productos_fav` varchar(255) NOT NULL,
-  `fecha_interaccion` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
-  `fecha_creacion` datetime NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
-
---
--- Volcado de datos para la tabla `preferencias`
---
-
-INSERT INTO `preferencias` (`id_preferencias`, `productos_fav`, `fecha_interaccion`, `fecha_creacion`) VALUES
-(1, '', '2024-10-28 21:19:25', '2024-10-28 21:19:25');
+INSERT INTO `perfil_negocio` (`id_perfil`, `id_usuario`, `id_imagen`, `nombre_negocio`, `descripcion`, `direccion`, `telefono`, `sitioweb_url`, `tipo_perfil`, `id_foro`, `tiempo_creacion`) VALUES
+(1, 9, NULL, 'malumabeiby', NULL, NULL, NULL, NULL, 'Free', NULL, '2024-10-31 20:07:09'),
+(2, 10, NULL, 'barbershopking', NULL, NULL, NULL, NULL, 'Free', NULL, '2024-10-31 20:30:09'),
+(3, 11, NULL, 'flower', NULL, NULL, NULL, NULL, 'Free', NULL, '2024-11-01 22:09:47'),
+(4, 13, NULL, 'Productos de Aseo', 'Somos un emprendimiento que empezó hace poco a entrar en este mundo, queremos hacer un cambio', 'Calle Falsa 123', '+56988888888', NULL, 'Free', NULL, '2024-11-14 12:17:02');
 
 -- --------------------------------------------------------
 
@@ -348,7 +370,9 @@ INSERT INTO `productos` (`id_producto`, `id_perfil`, `nombre`, `descripcion`, `i
 (26, 1, 'sdg', 'gsdgs', NULL, 2442.00, 1, '2024-11-02 19:40:47'),
 (27, 1, 'sdg', 'gsdgs', NULL, 2442.00, 1, '2024-11-02 19:41:00'),
 (28, 1, 'sdg', 'gsdgs', NULL, 2442.00, 1, '2024-11-02 19:41:08'),
-(29, 1, 'sdgs', 'sdgs', NULL, 232.00, 1, '2024-11-02 19:42:29');
+(29, 1, 'sdgs', 'sdgs', NULL, 232.00, 1, '2024-11-02 19:42:29'),
+(30, 4, 'Producto 1', 'Descripción del producto 1', 9, 1000.00, 10, '2024-11-18 18:43:06'),
+(31, 4, 'Producto 2', 'Descripción del producto 2', 9, 2000.00, 5, '2024-11-18 18:43:06');
 
 -- --------------------------------------------------------
 
@@ -396,7 +420,8 @@ INSERT INTO `publicaciones_foro` (`id_publicaciones`, `id_usuario`, `id_imagen`,
 (11, 1, NULL, 3, 'ff', 'ff', '2024-11-07 22:25:56'),
 (12, 1, 10, 2, 'ff', 'hola', '2024-11-07 22:38:20'),
 (13, 1, 11, 4, 'prueba', 'hola', '2024-11-07 22:46:00'),
-(14, 1, 12, 2, 'hola', 'dfs', '2024-11-07 22:49:04');
+(14, 1, 12, 2, 'hola', 'dfs', '2024-11-07 22:49:04'),
+(15, 1, 13, 8, 'hola', 'adfafa', '2024-11-17 16:06:09');
 
 -- --------------------------------------------------------
 
@@ -406,11 +431,11 @@ INSERT INTO `publicaciones_foro` (`id_publicaciones`, `id_usuario`, `id_imagen`,
 
 CREATE TABLE `usuarios` (
   `id_usuario` int(11) NOT NULL,
-  `id_preferencias` int(11) NOT NULL,
   `nombre_usuario` varchar(50) NOT NULL,
   `tipo_usuario` varchar(255) NOT NULL,
   `email` varchar(100) NOT NULL,
   `contraseña` varchar(255) NOT NULL,
+  `usuario_imagen` varchar(255) DEFAULT NULL,
   `tiempo_creacion` timestamp NOT NULL DEFAULT current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
@@ -418,15 +443,17 @@ CREATE TABLE `usuarios` (
 -- Volcado de datos para la tabla `usuarios`
 --
 
-INSERT INTO `usuarios` (`id_usuario`, `id_preferencias`, `nombre_usuario`, `tipo_usuario`, `email`, `contraseña`, `tiempo_creacion`) VALUES
-(3, 1, 'malumaaaa', 'user', 'malumaweko@gmail.com', '1345', '2024-10-29 00:19:25'),
-(6, 1, 'hola', 'user', 'hola@gmail.com', 'hola', '2024-10-30 03:34:43'),
-(7, 1, 'eric', 'user', 'eric@gmail.com', 'eric', '2024-10-30 22:21:00'),
-(8, 1, 'xd', 'emprendedor', 'x@x.x', '123', '2024-10-31 21:35:24'),
-(9, 1, 'malumabeiby', 'emprendedor', 'm1@gmail.com', '12345', '2024-10-31 23:07:09'),
-(10, 1, 'barbershopking', 'emprendedor', 'barber@xd.cl', '54321', '2024-10-31 23:30:09'),
-(11, 1, 'flower', 'emprendedor', 'flower@xd.com', '12345', '2024-11-02 01:09:47'),
-(12, 1, 'holaaa', 'user', 'wenas@gmail.com', 'wenas', '2024-11-02 22:16:23');
+INSERT INTO `usuarios` (`id_usuario`, `nombre_usuario`, `tipo_usuario`, `email`, `contraseña`, `usuario_imagen`, `tiempo_creacion`) VALUES
+(1, 'usuario', 'user', 'usuario@example.com', '12345', NULL, '2024-11-02 22:16:23'),
+(3, 'malumaaaa', 'user', 'malumaweko@gmail.com', '1345', NULL, '2024-10-29 00:19:25'),
+(6, 'hola', 'user', 'hola@gmail.com', 'hola', NULL, '2024-10-30 03:34:43'),
+(7, 'eric', 'user', 'eric@gmail.com', 'eric', NULL, '2024-10-30 22:21:00'),
+(8, 'xd', 'emprendedor', 'x@x.x', '123', NULL, '2024-10-31 21:35:24'),
+(9, 'malumabeiby', 'emprendedor', 'm1@gmail.com', '12345', NULL, '2024-10-31 23:07:09'),
+(10, 'barbershopking', 'emprendedor', 'barber@xd.cl', '54321', NULL, '2024-10-31 23:30:09'),
+(11, 'flower', 'emprendedor', 'flower@xd.com', '12345', NULL, '2024-11-02 01:09:47'),
+(12, 'holaaa', 'user', 'wenas@gmail.com', 'wenas', NULL, '2024-11-02 22:16:23'),
+(13, 'Productos de Aseo', 'emprendedor', 'emp@gmailcom', '1234', 'https://images.app.goo.gl/exYe2AVrc3PpwKtZ7', '2024-11-14 15:17:02');
 
 -- --------------------------------------------------------
 
@@ -534,7 +561,8 @@ ALTER TABLE `interacciones`
 -- Indices de la tabla `metricas`
 --
 ALTER TABLE `metricas`
-  ADD PRIMARY KEY (`id_metricas`);
+  ADD PRIMARY KEY (`id_metricas`),
+  ADD KEY `fk_perfil_negocio` (`id_perfil`);
 
 --
 -- Indices de la tabla `notificaciones`
@@ -549,15 +577,8 @@ ALTER TABLE `notificaciones`
 ALTER TABLE `perfil_negocio`
   ADD PRIMARY KEY (`id_perfil`),
   ADD KEY `user_id` (`id_usuario`),
-  ADD KEY `id_metricas` (`id_metricas`),
   ADD KEY `id_foro` (`id_foro`),
   ADD KEY `id_imagen` (`id_imagen`);
-
---
--- Indices de la tabla `preferencias`
---
-ALTER TABLE `preferencias`
-  ADD PRIMARY KEY (`id_preferencias`);
 
 --
 -- Indices de la tabla `productos`
@@ -587,8 +608,7 @@ ALTER TABLE `publicaciones_foro`
 -- Indices de la tabla `usuarios`
 --
 ALTER TABLE `usuarios`
-  ADD PRIMARY KEY (`id_usuario`),
-  ADD KEY `id_preferencias` (`id_preferencias`);
+  ADD PRIMARY KEY (`id_usuario`);
 
 --
 -- Indices de la tabla `visibilidad_busqueda`
@@ -641,7 +661,7 @@ ALTER TABLE `envio`
 -- AUTO_INCREMENT de la tabla `favoritos`
 --
 ALTER TABLE `favoritos`
-  MODIFY `id_favorito` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `id_favorito` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=18;
 
 --
 -- AUTO_INCREMENT de la tabla `foro`
@@ -665,19 +685,19 @@ ALTER TABLE `hilos_foro`
 -- AUTO_INCREMENT de la tabla `imagen_publicacion`
 --
 ALTER TABLE `imagen_publicacion`
-  MODIFY `id_imagen` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=13;
+  MODIFY `id_imagen` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=14;
 
 --
 -- AUTO_INCREMENT de la tabla `interacciones`
 --
 ALTER TABLE `interacciones`
-  MODIFY `id_interaccion` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `id_interaccion` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
 
 --
 -- AUTO_INCREMENT de la tabla `metricas`
 --
 ALTER TABLE `metricas`
-  MODIFY `id_metricas` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `id_metricas` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
 
 --
 -- AUTO_INCREMENT de la tabla `notificaciones`
@@ -689,19 +709,13 @@ ALTER TABLE `notificaciones`
 -- AUTO_INCREMENT de la tabla `perfil_negocio`
 --
 ALTER TABLE `perfil_negocio`
-  MODIFY `id_perfil` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
-
---
--- AUTO_INCREMENT de la tabla `preferencias`
---
-ALTER TABLE `preferencias`
-  MODIFY `id_preferencias` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+  MODIFY `id_perfil` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
 
 --
 -- AUTO_INCREMENT de la tabla `productos`
 --
 ALTER TABLE `productos`
-  MODIFY `id_producto` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=31;
+  MODIFY `id_producto` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=32;
 
 --
 -- AUTO_INCREMENT de la tabla `promociones`
@@ -713,13 +727,13 @@ ALTER TABLE `promociones`
 -- AUTO_INCREMENT de la tabla `publicaciones_foro`
 --
 ALTER TABLE `publicaciones_foro`
-  MODIFY `id_publicaciones` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=15;
+  MODIFY `id_publicaciones` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=16;
 
 --
 -- AUTO_INCREMENT de la tabla `usuarios`
 --
 ALTER TABLE `usuarios`
-  MODIFY `id_usuario` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=13;
+  MODIFY `id_usuario` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=14;
 
 --
 -- AUTO_INCREMENT de la tabla `visibilidad_busqueda`
@@ -785,6 +799,12 @@ ALTER TABLE `interacciones`
   ADD CONSTRAINT `interacciones_ibfk_2` FOREIGN KEY (`id_producto`) REFERENCES `productos` (`id_producto`);
 
 --
+-- Filtros para la tabla `metricas`
+--
+ALTER TABLE `metricas`
+  ADD CONSTRAINT `fk_perfil_negocio` FOREIGN KEY (`id_perfil`) REFERENCES `perfil_negocio` (`id_perfil`);
+
+--
 -- Filtros para la tabla `notificaciones`
 --
 ALTER TABLE `notificaciones`
@@ -795,7 +815,6 @@ ALTER TABLE `notificaciones`
 --
 ALTER TABLE `perfil_negocio`
   ADD CONSTRAINT `perfil_negocio_ibfk_1` FOREIGN KEY (`id_usuario`) REFERENCES `usuarios` (`id_usuario`),
-  ADD CONSTRAINT `perfil_negocio_ibfk_2` FOREIGN KEY (`id_metricas`) REFERENCES `metricas` (`id_metricas`),
   ADD CONSTRAINT `perfil_negocio_ibfk_3` FOREIGN KEY (`id_foro`) REFERENCES `foro` (`id_foro`),
   ADD CONSTRAINT `perfil_negocio_ibfk_4` FOREIGN KEY (`id_imagen`) REFERENCES `imagen_publicacion` (`id_imagen`);
 
@@ -818,12 +837,6 @@ ALTER TABLE `promociones`
 ALTER TABLE `publicaciones_foro`
   ADD CONSTRAINT `publicaciones_foro_ibfk_1` FOREIGN KEY (`id_imagen`) REFERENCES `imagen_publicacion` (`id_imagen`),
   ADD CONSTRAINT `publicaciones_foro_ibfk_2` FOREIGN KEY (`id_foro`) REFERENCES `foro` (`id_foro`);
-
---
--- Filtros para la tabla `usuarios`
---
-ALTER TABLE `usuarios`
-  ADD CONSTRAINT `usuarios_ibfk_1` FOREIGN KEY (`id_preferencias`) REFERENCES `preferencias` (`id_preferencias`);
 
 --
 -- Filtros para la tabla `visibilidad_busqueda`

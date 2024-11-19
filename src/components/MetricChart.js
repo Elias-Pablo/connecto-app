@@ -9,8 +9,20 @@ import {
   Title,
   Tooltip,
   Legend,
-  Colors
+  Colors,
+  Filler,
 } from "chart.js";
+ChartJS.register(
+  CategoryScale,
+  LinearScale,
+  PointElement,
+  LineElement,
+  Title,
+  Tooltip,
+  Legend,
+  Colors,
+  Filler // Registra el plugin Filler
+);
 
 ChartJS.register(CategoryScale, LinearScale, PointElement, LineElement, Title, Tooltip, Legend, Colors);
 

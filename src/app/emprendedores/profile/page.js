@@ -248,20 +248,11 @@ export default function EmprendedorProfile() {
     fetchProducts();
   }, []);
 
-  const metricData = {
-    daily: {
-      visits: [50, 70, 80, 90, 60, 75, 85],
-      sales: [10, 15, 12, 18, 20, 22, 25],
-    },
-    weekly: {
-      visits: [300, 450, 600, 700, 500, 550, 700],
-      sales: [50, 70, 80, 90, 100, 110, 120],
-    },
-    monthly: {
-      visits: [1000, 1200, 1500, 1400, 1300, 1700, 1800],
-      sales: [150, 170, 200, 220, 240, 260, 280],
-    },
-  };
+const [metricData, setMetricData] = useState({
+  daily: { visits: [], sales: [] },
+  weekly: { visits: [], sales: [] },
+  monthly: { visits: [], sales: [] },
+});
 
   const mostViewedProduct = {
     image: "/zapato.jpg",
@@ -269,6 +260,27 @@ export default function EmprendedorProfile() {
     views: 1234,
     price: "$19.99",
   };
+
+  useEffect(() => {
+  const fetchMetrics = async () => {
+    if (user) {
+      try {
+        const response = await fetch(`/api/metrics/4`);
+        if (response.ok) {
+          const data = await response.json();
+          console.log("Métricas recibidas:", data.metrics); // Debug de métricas
+          setMetricData(data.metrics);
+        } else {
+          console.error("Error al obtener métricas:", response.status);
+        }
+      } catch (error) {
+        console.error("Error al hacer la solicitud de métricas:", error);
+      }
+    }
+  };
+
+    fetchMetrics();
+  }, [user]);
 
   return (
     <>
@@ -536,6 +548,7 @@ export default function EmprendedorProfile() {
             </div>
             <MetricChart data={metricData[selectedMetric]} />
           </div>
+
 
           <div className="bg-sky-500 p-6 rounded-xl shadow-lg">
             <h3 className="text-center text-xl font-semibold mb-5 text-white">
