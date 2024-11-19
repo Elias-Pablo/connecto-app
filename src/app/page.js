@@ -143,10 +143,10 @@ export default function Home() {
     const handleInteraction = async (type, id_perfil, id_producto) => {
       const token = localStorage.getItem("token");
       if (!token) return;
-    
+
       // Decodificar el token para extraer el `userId`
       const { userId } = jwtDecode(token);
-    
+
       try {
         await fetch("/api/interactions", {
           method: "POST",
@@ -200,11 +200,12 @@ export default function Home() {
                     <Link
                       href={`/user/emprendedores/profile?id_perfil=${product.id_perfil}`}
                       className="text-sky-500"
-                      onClick={() => handleInteraction("View", product.id_perfil, null)}
+                      onClick={() =>
+                        handleInteraction("View", product.id_perfil, null)
+                      }
                     >
                       {product.businessName}
                     </Link>
-
                   </p>
                   <button
                     onClick={() => {
@@ -236,85 +237,68 @@ export default function Home() {
     );
   };
 
-  const ProfileSection = () => (
-    <section className="p-10 bg-white">
-      <div className="container mx-auto">
-        <h2 className="text-2xl font-semibold mb-5 text-center text-black">
-          Perfiles de Emprendedores
-        </h2>
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-          {profiles.map((profile, index) => (
-            <div key={index} className="text-center">
-              <div className="cursor-pointer hover:opacity-80 transition-opacity duration-300 inline-block">
-                <div className="w-32 h-32 mx-auto rounded-full shadow-lg overflow-hidden hover:scale-105 duration-300">
-                  <Image
-                    src={profile.image}
-                    width={128}
-                    height={128}
-                    alt={profile.name}
-                  />
-                </div>
-                <h3 className="text-lg font-semibold text-black mt-2">
-                  {profile.name}
-                </h3>
-                <p className="text-sm text-black">{profile.profession}</p>
-              </div>
-            </div>
-          ))}
-        </div>
-      </div>
-    </section>
-  );
+  const ProfileSection = () => {
+    const [profileData, setProfileData] = useState([]);
 
+    useEffect(() => {
+      const fetchProfiles = async () => {
+        try {
+          const response = await fetch(`/api/user/emprendedores`);
+          if (response.ok) {
+            const data = await response.json();
+            console.log("Datos de los perfiles recibidos:", data);
+            setProfileData(data.perfiles); // Guardamos todos los perfiles
+          } else {
+            console.error("Error al cargar los perfiles de emprendedores");
+          }
+        } catch (error) {
+          console.error("Error en la solicitud de los perfiles:", error);
+        }
+      };
+
+      fetchProfiles();
+    }, []);
+
+    return (
+      <section className="p-10 bg-white">
+        <div className="container mx-auto">
+          <h2 className="text-2xl font-semibold mb-5 text-center text-black">
+            Perfiles de Emprendedores
+          </h2>
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+            {profileData.map((profile) => (
+              <div
+                key={profile.id}
+                className="text-center p-5 bg-gray-100 rounded-lg shadow-md"
+              >
+                <div className="cursor-pointer hover:opacity-80 transition-opacity duration-300 inline-block">
+                  <div className="w-32 h-32 mx-auto rounded-full shadow-lg overflow-hidden hover:scale-105 duration-300">
+                    <img
+                      src={profile.idImagen || "/placeholder.webp"}
+                      width={128}
+                      height={128}
+                      alt={profile.nombreNegocio}
+                    />
+                  </div>
+                  <h3 className="text-lg font-semibold text-black mt-2">
+                    {profile.nombreNegocio}
+                  </h3>
+                  <p className="text-sm text-black">{profile.descripcion}</p>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+    );
+  };
   const FAQSection = () => {
     const [expandedQuestion, setExpandedQuestion] = useState(null);
 
     const handleToggleAnswer = (index) => {
       setExpandedQuestion(expandedQuestion === index ? null : index);
     };
-
-    return (
-      <section className="p-10 bg-white">
-        <div className="container mx-auto">
-          <h2 className="text-2xl font-semibold mb-5 text-center text-black">
-            Preguntas Frecuentes
-          </h2>
-          <div className="space-y-4">
-            {FAQ.map((faq, index) => (
-              <div key={index} className="border-b border-gray-500 pb-4">
-                <div
-                  className="flex justify-between items-center cursor-pointer"
-                  onClick={() => handleToggleAnswer(index)}
-                >
-                  <h3 className="text-lg font-semibold text-black">
-                    {faq.question}
-                  </h3>
-                  <button
-                    className="text-black text-xl"
-                    aria-expanded={expandedQuestion === index}
-                  >
-                    {expandedQuestion === index ? "-" : "+"}
-                  </button>
-                </div>
-                {expandedQuestion === index && (
-                  <p className="text-sm text-black mt-2">{faq.answer}</p>
-                )}
-              </div>
-            ))}
-          </div>
-          <div className="flex justify-center mt-6">
-            <button
-              className="bg-sky-400 text-white px-6 py-2 rounded-lg hover:bg-sky-500 transition-colors hover:scale-105 duration-500"
-              onClick={handleFAQClick}
-            >
-              Ver Más
-            </button>
-          </div>
-        </div>
-      </section>
-    );
   };
-
   return (
     <CartProvider>
       <Header />
