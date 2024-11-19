@@ -4,11 +4,15 @@ import { useRouter, useSearchParams } from "next/navigation";
 import Image from "next/image";
 import Header from "@/components/Header-us";
 import { useCart, CartProvider } from "../../../context/CartContext";
+import { ChatIcon } from "@heroicons/react/outline"; // Usa un icono de chat de Heroicons
 
 export default function EmprendedorProfile() {
   const [emprendedorData, setEmprendedorData] = useState(null);
   const [productos, setProductos] = useState([]);
   const [resenas, setResenas] = useState([]);
+  const [showChat, setShowChat] = useState(false); // Estado para mostrar/ocultar el chat
+  const [message, setMessage] = useState(""); // Mensaje actual
+  const [messages, setMessages] = useState([]); // Lista de mensajes
   const searchParams = useSearchParams();
   const idPerfil = searchParams.get("id_perfil");
   const router = useRouter();
@@ -47,6 +51,13 @@ export default function EmprendedorProfile() {
     fetchProfileData();
   }, [idPerfil]);
 
+  const handleSendMessage = () => {
+    if (message.trim()) {
+      setMessages([...messages, { text: message, sender: "User" }]); // Agrega el mensaje enviado
+      setMessage(""); // Limpia el input
+    }
+  };
+
   return (
     <CartProvider>
       <Header />
@@ -84,6 +95,29 @@ export default function EmprendedorProfile() {
               ) : (
                 <p className="text-sm text-gray-500">Sitio web no disponible</p>
               )}
+            </div>
+
+            <div className="flex justify-end mt-6">
+              <button
+                className="flex items-center bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600"
+                onClick={() => setShowChat(true)} // Muestra el chat al hacer clic
+              >
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  className="h-6 w-6 mr-2"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                  strokeWidth={2}
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    d="M8 10h.01M12 10h.01M16 10h.01M9 16h6m2-12H7a2 2 0 00-2 2v12l3.5-3.5h9.5a2 2 0 002-2V6a2 2 0 00-2-2z"
+                  />
+                </svg>
+                Chat
+              </button>
             </div>
 
             <div className="mt-10">
@@ -127,33 +161,52 @@ export default function EmprendedorProfile() {
               </div>
             </div>
 
-            <div className="mt-10">
-              <h2 className="text-xl font-semibold mb-4">Reseñas</h2>
-              {resenas.length > 0 ? (
-                <div className="space-y-4">
-                  {resenas.map((resena, index) => (
+            {showChat && (
+              <div className="fixed bottom-0 right-0 w-full md:w-1/3 bg-white border-t shadow-lg">
+                <div className="bg-blue-500 text-white p-4 flex justify-between items-center">
+                  <h2 className="text-lg font-semibold">
+                    Emprendedor: {emprendedorData.nombre_negocio}
+                  </h2>
+                  <button
+                    onClick={() => setShowChat(false)} // Cierra el chat
+                    className="text-white text-xl font-bold"
+                  >
+                    &times;
+                  </button>
+                </div>
+                <div className="p-4 overflow-y-auto h-64">
+                  {messages.map((msg, index) => (
                     <div
                       key={index}
-                      className="bg-white p-4 rounded-lg shadow-md"
+                      className={`mb-4 ${
+                        msg.sender === "User"
+                          ? "text-right"
+                          : "text-left text-gray-700"
+                      }`}
                     >
-                      <p className="text-sm mb-1">
-                        Comentario: {resena.comentario}
-                      </p>
-                      <p className="text-sm text-yellow-500">
-                        Calificación: {resena.calificacion} / 5
-                      </p>
-                      <p className="text-xs text-gray-500">
-                        Por: {resena.usuario}
+                      <p className="inline-block px-4 py-2 rounded-lg bg-gray-200">
+                        {msg.text}
                       </p>
                     </div>
                   ))}
                 </div>
-              ) : (
-                <p className="text-sm text-gray-500">
-                  No hay reseñas disponibles.
-                </p>
-              )}
-            </div>
+                <div className="text-black p-4 flex">
+                  <input
+                    type="text"
+                    placeholder="Escribe tu mensaje..."
+                    className="flex-grow border rounded-l-lg p-2"
+                    value={message}
+                    onChange={(e) => setMessage(e.target.value)}
+                  />
+                  <button
+                    className="bg-blue-500 text-white px-4 rounded-r-lg"
+                    onClick={handleSendMessage}
+                  >
+                    Enviar
+                  </button>
+                </div>
+              </div>
+            )}
           </section>
         ) : (
           <p className="text-center text-gray-500">
