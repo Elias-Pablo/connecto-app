@@ -81,7 +81,9 @@ export default function Foro() {
     <>
       <Header />
       <div className="bg-sky-700 flex flex-col items-center justify-center w-full">
-        <h1 className="text-4xl font-bold text-white mt-4">Foro de Emprendedores</h1>
+        <h1 className="text-4xl font-bold text-white mt-4">
+          Foro de Emprendedores
+        </h1>
         <div className="w-full">
           <div className="bg-white p-4 rounded-lg m-4 shadow-lg">
             <div className="flex items-center justify-end gap-2">
@@ -153,23 +155,36 @@ export default function Foro() {
                   key={categoria.id_foro}
                   className="bg-fuchsia-700 p-3 flex items-center justify-center rounded-lg shadow-lg cursor-pointer hover:scale-95 duration-300"
                 >
-                  <h3 className="text-xl font-semibold text-white mr-3">{categoria.nombre}</h3>
+                  <h3 className="text-xl font-semibold text-white mr-3">
+                    {categoria.nombre}
+                  </h3>
                 </div>
               ))}
             </div>
 
-            <h2 className="text-2xl text-black font-bold mt-4">Publicaciones Destacadas</h2>
+            <h2 className="text-2xl text-black font-bold mt-4">
+              Publicaciones Destacadas
+            </h2>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
               {forosDestacados.map((foro) => (
                 <div
                   key={foro.id_publicaciones}
-                  className="bg-sky-300 p-4 rounded-lg shadow-lg cursor-pointer hover:scale-95 duration-300 flex justify-between items-center"
+                  className="bg-sky-300 p-4 rounded-lg shadow-lg cursor-pointer hover:bg-sky-400 duration-300 flex justify-between items-center"
                 >
-                  <img src={foro.url_imagen || "/placeholder.webp"} width={200} height={70} alt={foro.titulo} />
+                  <img
+                    src={foro.url_imagen || "/placeholder.webp"}
+                    width={200}
+                    height={70}
+                    alt={foro.titulo}
+                  />
                   <div className="ml-4">
-                    <h3 className="text-lg font-semibold mt-2 text-black">{foro.titulo}</h3>
+                    <h3 className="text-lg font-semibold mt-2 text-black">
+                      {foro.titulo}
+                    </h3>
                     <p className="text-sm text-black">{foro.descripcion}</p>
-                    <p className="text-xs text-black italic mt-4">Autor: {foro.id_usuario}</p>
+                    <p className="text-xs text-black italic mt-4">
+                      Autor: {foro.id_usuario}
+                    </p>
                   </div>
                   <ArrowRightCircleIcon className="h-20 w-20 ml-auto text-black hover:text-white" />
                 </div>

@@ -143,6 +143,21 @@ export default function EmprendedorProfile() {
       console.error("Error en la solicitud para actualizar perfil:", error);
     }
   };
+  const handleDeleteProduct = async (productId) => {
+    try {
+      const response = await fetch(`/api/auth/products?id=${productId}`, {
+        method: "DELETE",
+      });
+      if (response.ok) {
+        setProducts(products.filter((product) => product.id !== productId));
+        console.log("Producto eliminado exitosamente");
+      } else {
+        console.error("Error al eliminar el producto");
+      }
+    } catch (error) {
+      console.error("Error en la solicitud:", error);
+    }
+  };
 
   const formatPrice = (price) => {
     return new Intl.NumberFormat("es-CL", {
@@ -248,11 +263,11 @@ export default function EmprendedorProfile() {
     fetchProducts();
   }, []);
 
-const [metricData, setMetricData] = useState({
-  daily: { visits: [], sales: [] },
-  weekly: { visits: [], sales: [] },
-  monthly: { visits: [], sales: [] },
-});
+  const [metricData, setMetricData] = useState({
+    daily: { visits: [], sales: [] },
+    weekly: { visits: [], sales: [] },
+    monthly: { visits: [], sales: [] },
+  });
 
   const mostViewedProduct = {
     image: "/zapato.jpg",
@@ -262,22 +277,22 @@ const [metricData, setMetricData] = useState({
   };
 
   useEffect(() => {
-  const fetchMetrics = async () => {
-    if (user) {
-      try {
-        const response = await fetch(`/api/metrics/4`);
-        if (response.ok) {
-          const data = await response.json();
-          console.log("Métricas recibidas:", data.metrics); // Debug de métricas
-          setMetricData(data.metrics);
-        } else {
-          console.error("Error al obtener métricas:", response.status);
+    const fetchMetrics = async () => {
+      if (user) {
+        try {
+          const response = await fetch(`/api/metrics/4`);
+          if (response.ok) {
+            const data = await response.json();
+            console.log("Métricas recibidas:", data.metrics); // Debug de métricas
+            setMetricData(data.metrics);
+          } else {
+            console.error("Error al obtener métricas:", response.status);
+          }
+        } catch (error) {
+          console.error("Error al hacer la solicitud de métricas:", error);
         }
-      } catch (error) {
-        console.error("Error al hacer la solicitud de métricas:", error);
       }
-    }
-  };
+    };
 
     fetchMetrics();
   }, [user]);
@@ -548,7 +563,6 @@ const [metricData, setMetricData] = useState({
             </div>
             <MetricChart data={metricData[selectedMetric]} />
           </div>
-
 
           <div className="bg-sky-500 p-6 rounded-xl shadow-lg">
             <h3 className="text-center text-xl font-semibold mb-5 text-white">

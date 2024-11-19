@@ -4,6 +4,7 @@ import Image from "next/image";
 import { jwtDecode } from "jwt-decode"; // Cambiado a jwt_decode para evitar errores de importación
 import { useRouter } from "next/navigation";
 import { useCart } from "../../src/app/context/CartContext";
+import { document } from "postcss";
 
 export default function Header() {
   const [user, setUser] = useState(null);
@@ -12,30 +13,34 @@ export default function Header() {
   const [profilePicture, setProfilePicture] = useState("/avatar.jpg");
 
   const [notificationsOpen, setNotificationsOpen] = useState(false);
-const [unreadCount, setUnreadCount] = useState(0);
-const [notifications, setNotifications] = useState([]);
+  const [unreadCount, setUnreadCount] = useState(0);
+  const [notifications, setNotifications] = useState([]);
 
-const toggleNotifications = () => {
-  setNotificationsOpen(!notificationsOpen);
-};
+  const toggleNotifications = () => {
+    setNotificationsOpen(!notificationsOpen);
+  };
 
-const markAsRead = (id) => {
-  setNotifications((prevNotifications) =>
-    prevNotifications.map((notification) =>
-      notification.id === id
-        ? { ...notification, read: true }
-        : notification
-    )
-  );
-  setUnreadCount(unreadCount - 1);
-};
+  const markAsRead = (id) => {
+    setNotifications((prevNotifications) =>
+      prevNotifications.map((notification) =>
+        notification.id === id ? { ...notification, read: true } : notification
+      )
+    );
+    setUnreadCount(unreadCount - 1);
+  };
 
-const deleteNotification = (id) => {
-  setNotifications((prevNotifications) =>
-    prevNotifications.filter((notification) => notification.id !== id)
-  );
-};
-
+  const deleteNotification = (id) => {
+    setNotifications((prevNotifications) =>
+      prevNotifications.filter((notification) => notification.id !== id)
+    );
+  };
+  const formatPrice = (price) => {
+    return new Intl.NumberFormat("es-CL", {
+      style: "currency",
+      currency: "CLP",
+      minimumFractionDigits: 0,
+    }).format(price);
+  };
 
   const [cartVisible, setCartVisible] = useState(false);
   const {
@@ -80,7 +85,8 @@ const deleteNotification = (id) => {
           const response = await fetch("/api/userAvatar");
           if (response.ok) {
             const data = await response.json();
-            setProfilePicture(data.profilePicture || "/avatar.jpg");
+            console.log("Imagen de perfil:", data.usuario_imagen);
+            setProfilePicture(data.usuario_imagen);
           } else {
             console.error("Error al obtener la imagen de perfil");
           }
@@ -221,55 +227,72 @@ const deleteNotification = (id) => {
             </button>
           </div>
         </div>
- {/* Ícono de notificaciones */}
+        {/* Ícono de notificaciones */}
 
- <div className="relative ml-4">
-    <button
-      onClick={toggleNotifications}
-      className="bg-blue-400 px-4 py-2 text-xs md:text-base rounded-xl font-semibold text-white hover:bg-blue-700 transition-colors relative"
-    >
-    <svg  xmlns="http://www.w3.org/2000/svg"  width="24"  height="24"  viewBox="0 0 24 24"  fill="none"  stroke="currentColor"  stroke-width="2"  stroke-linecap="round"  stroke-linejoin="round"  class="icon icon-tabler icons-tabler-outline icon-tabler-bell"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M10 5a2 2 0 1 1 4 0a7 7 0 0 1 4 6v3a4 4 0 0 0 2 3h-16a4 4 0 0 0 2 -3v-3a7 7 0 0 1 4 -6" /><path d="M9 17v1a3 3 0 0 0 6 0v-1" /></svg>
-    </button>
-    {unreadCount > 0 && (
-      <span className="absolute top-0 right-0 bg-red-500 text-white text-xs font-bold rounded-full w-5 h-5 flex items-center justify-center">
-        {unreadCount}
-      </span>
-    )}
-    {notificationsOpen && (
-      <div className="absolute top-12 right-0 bg-white rounded-md shadow-lg p-4 w-64 z-20">
-        <h3 className="text-black font-semibold mb-2">Notificaciones</h3>
-        {notifications.length > 0 ? (
-          notifications.map((notification) => (
-            <div
-              key={notification.id}
-              className={`p-2 border-b ${notification.read ? "bg-gray-100" : "bg-gray-50"}`}
+        <div className="relative ml-4">
+          <button
+            onClick={toggleNotifications}
+            className="bg-blue-400 px-4 py-2 text-xs md:text-base rounded-xl font-semibold text-white hover:bg-blue-700 transition-colors relative"
+          >
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              width="24"
+              height="24"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              class="icon icon-tabler icons-tabler-outline icon-tabler-bell"
             >
-              <p className="text-black">{notification.message}</p>
-              <div className="flex justify-end gap-2 mt-2">
-                {!notification.read && (
-                  <button
-                    onClick={() => markAsRead(notification.id)}
-                    className="text-blue-500 text-sm"
+              <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+              <path d="M10 5a2 2 0 1 1 4 0a7 7 0 0 1 4 6v3a4 4 0 0 0 2 3h-16a4 4 0 0 0 2 -3v-3a7 7 0 0 1 4 -6" />
+              <path d="M9 17v1a3 3 0 0 0 6 0v-1" />
+            </svg>
+          </button>
+          {unreadCount > 0 && (
+            <span className="absolute top-0 right-0 bg-red-500 text-white text-xs font-bold rounded-full w-5 h-5 flex items-center justify-center">
+              {unreadCount}
+            </span>
+          )}
+          {notificationsOpen && (
+            <div className="absolute top-12 right-0 bg-white rounded-md shadow-lg p-4 w-64 z-20">
+              <h3 className="text-black font-semibold mb-2">Notificaciones</h3>
+              {notifications.length > 0 ? (
+                notifications.map((notification) => (
+                  <div
+                    key={notification.id}
+                    className={`p-2 border-b ${
+                      notification.read ? "bg-gray-100" : "bg-gray-50"
+                    }`}
                   >
-                    Marcar como leído
-                  </button>
-                )}
-                <button
-                  onClick={() => deleteNotification(notification.id)}
-                  className="text-red-500 text-sm"
-                >
-                  Eliminar
-                </button>
-              </div>
+                    <p className="text-black">{notification.message}</p>
+                    <div className="flex justify-end gap-2 mt-2">
+                      {!notification.read && (
+                        <button
+                          onClick={() => markAsRead(notification.id)}
+                          className="text-blue-500 text-sm"
+                        >
+                          Marcar como leído
+                        </button>
+                      )}
+                      <button
+                        onClick={() => deleteNotification(notification.id)}
+                        className="text-red-500 text-sm"
+                      >
+                        Eliminar
+                      </button>
+                    </div>
+                  </div>
+                ))
+              ) : (
+                <p className="text-black text-sm">No hay notificaciones</p>
+              )}
             </div>
-          ))
-        ) : (
-          <p className="text-black text-sm">No hay notificaciones</p>
-        )}
-      </div>
-    )}
-  </div>
-  </header>
+          )}
+        </div>
+      </header>
       {cartVisible && (
         <div className="fixed z-20 right-0 top-0 w-full sm:w-1/3 h-full bg-white shadow-lg p-6 overflow-y-auto transition-transform duration-300 ease-in-out transform rounded-xl translate-x-0 border border-neutral-400">
           <h2 className="text-xl text-black font-bold mb-4 flex justify-center items-center gap-2">
@@ -293,7 +316,7 @@ const deleteNotification = (id) => {
                     <div>
                       <p className="font-semibold">{item.name}</p>
                       <p className="text-sm text-gray-600">
-                        Precio: ${item.price}
+                        Precio: {formatPrice(item.price)}
                       </p>
                       <div className="flex items-center mt-2">
                         <button
@@ -315,7 +338,7 @@ const deleteNotification = (id) => {
                     </div>
                   </div>
                   <p className="font-semibold">
-                    ${(item.price * item.quantity).toFixed(2)}
+                    {formatPrice(item.price * item.quantity)}
                   </p>
                 </li>
               ))}
@@ -327,19 +350,19 @@ const deleteNotification = (id) => {
             <div className="flex justify-between">
               <p className="text-gray-600">Subtotal:</p>
               <p className="font-semibold text-black">
-                ${calculateSubtotal().toFixed(2)}
+                {formatPrice(calculateSubtotal())}
               </p>
             </div>
             <div className="flex justify-between mt-2">
               <p className="text-gray-600">Impuesto (19%):</p>
               <p className="font-semibold text-black">
-                ${calculateTax().toFixed(2)}
+                {formatPrice(calculateTax())}
               </p>
             </div>
             <div className="flex justify-between mt-2">
               <p className="text-xl font-bold text-black">Total:</p>
               <p className="text-xl font-bold text-black">
-                ${calculateTotal().toFixed(2)}
+                {formatPrice(calculateTotal())}
               </p>
             </div>
           </div>
