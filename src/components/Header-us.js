@@ -11,6 +11,32 @@ export default function Header() {
   const router = useRouter();
   const [profilePicture, setProfilePicture] = useState("/avatar.jpg");
 
+  const [notificationsOpen, setNotificationsOpen] = useState(false);
+const [unreadCount, setUnreadCount] = useState(0);
+const [notifications, setNotifications] = useState([]);
+
+const toggleNotifications = () => {
+  setNotificationsOpen(!notificationsOpen);
+};
+
+const markAsRead = (id) => {
+  setNotifications((prevNotifications) =>
+    prevNotifications.map((notification) =>
+      notification.id === id
+        ? { ...notification, read: true }
+        : notification
+    )
+  );
+  setUnreadCount(unreadCount - 1);
+};
+
+const deleteNotification = (id) => {
+  setNotifications((prevNotifications) =>
+    prevNotifications.filter((notification) => notification.id !== id)
+  );
+};
+
+
   const [cartVisible, setCartVisible] = useState(false);
   const {
     cartItems,
@@ -195,8 +221,55 @@ export default function Header() {
             </button>
           </div>
         </div>
-      </header>
+ {/* Ícono de notificaciones */}
 
+ <div className="relative ml-4">
+    <button
+      onClick={toggleNotifications}
+      className="bg-blue-400 px-4 py-2 text-xs md:text-base rounded-xl font-semibold text-white hover:bg-blue-700 transition-colors relative"
+    >
+    <svg  xmlns="http://www.w3.org/2000/svg"  width="24"  height="24"  viewBox="0 0 24 24"  fill="none"  stroke="currentColor"  stroke-width="2"  stroke-linecap="round"  stroke-linejoin="round"  class="icon icon-tabler icons-tabler-outline icon-tabler-bell"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M10 5a2 2 0 1 1 4 0a7 7 0 0 1 4 6v3a4 4 0 0 0 2 3h-16a4 4 0 0 0 2 -3v-3a7 7 0 0 1 4 -6" /><path d="M9 17v1a3 3 0 0 0 6 0v-1" /></svg>
+    </button>
+    {unreadCount > 0 && (
+      <span className="absolute top-0 right-0 bg-red-500 text-white text-xs font-bold rounded-full w-5 h-5 flex items-center justify-center">
+        {unreadCount}
+      </span>
+    )}
+    {notificationsOpen && (
+      <div className="absolute top-12 right-0 bg-white rounded-md shadow-lg p-4 w-64 z-20">
+        <h3 className="text-black font-semibold mb-2">Notificaciones</h3>
+        {notifications.length > 0 ? (
+          notifications.map((notification) => (
+            <div
+              key={notification.id}
+              className={`p-2 border-b ${notification.read ? "bg-gray-100" : "bg-gray-50"}`}
+            >
+              <p className="text-black">{notification.message}</p>
+              <div className="flex justify-end gap-2 mt-2">
+                {!notification.read && (
+                  <button
+                    onClick={() => markAsRead(notification.id)}
+                    className="text-blue-500 text-sm"
+                  >
+                    Marcar como leído
+                  </button>
+                )}
+                <button
+                  onClick={() => deleteNotification(notification.id)}
+                  className="text-red-500 text-sm"
+                >
+                  Eliminar
+                </button>
+              </div>
+            </div>
+          ))
+        ) : (
+          <p className="text-black text-sm">No hay notificaciones</p>
+        )}
+      </div>
+    )}
+  </div>
+  </header>
       {cartVisible && (
         <div className="fixed z-20 right-0 top-0 w-full sm:w-1/3 h-full bg-white shadow-lg p-6 overflow-y-auto transition-transform duration-300 ease-in-out transform rounded-xl translate-x-0 border border-neutral-400">
           <h2 className="text-xl text-black font-bold mb-4 flex justify-center items-center gap-2">
