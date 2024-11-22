@@ -6,11 +6,6 @@ export async function POST(req) {
     const { businessName, email, password } = body;
     const fecha = new Date().toISOString().slice(0, 19).replace("T", " "); // Formato de fecha
 
-    // Preferencia predeterminada para el perfil
-    // Ajustar según tu valor predeterminado o lógica
-
-    // Verificar si existe la preferencia predeterminada
-
     // Insertar el usuario con tipo emprendedor
     const insertUserQuery = `INSERT INTO usuarios (nombre_usuario, tipo_usuario, email, contraseña, tiempo_creacion) VALUES (?, 'emprendedor', ?, ?, ?)`;
     const values = [businessName, email, password, fecha];

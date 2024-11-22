@@ -19,6 +19,9 @@ export default function Header() {
   const toggleNotifications = () => {
     setNotificationsOpen(!notificationsOpen);
   };
+  const handleCheckout = () => {
+    router.push("user/checkout");
+  };
 
   const markAsRead = (id) => {
     setNotifications((prevNotifications) =>
@@ -366,7 +369,10 @@ export default function Header() {
               </p>
             </div>
           </div>
-          <button className="mt-4 w-full bg-green-500 px-4 py-2 text-white rounded-lg hover:bg-green-600 transition-colors duration-300 ease-in-out">
+          <button
+            onClick={handleCheckout}
+            className="mt-4 w-full bg-green-500 px-4 py-2 text-white rounded-lg hover:bg-green-600 transition-colors duration-300 ease-in-out"
+          >
             Proceder al Pago
           </button>
           <button
