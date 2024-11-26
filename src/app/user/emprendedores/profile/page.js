@@ -19,6 +19,7 @@ export default function EmprendedorProfile() {
   const router = useRouter();
   const [idDestinatario, setIdDestinatario] = useState(null);
   const [idRemitente, setIdRemitente] = useState(null);
+  const [profilePicture, setProfilePicture] = useState(null);
 
   const lastMessageRef = useRef(null);
 
@@ -55,7 +56,7 @@ export default function EmprendedorProfile() {
           const data = await response.json();
           setEmprendedorData(data.emprendedorData || {});
           setProductos(data.productos || []);
-          setIdDestinatario(data.emprendedorData.id_usuario); // Obtener el `id_usuario` del emprendedor
+          setIdDestinatario(data.emprendedorData.id_usuario);
         } else {
           console.error("Error al cargar los datos del emprendedor");
         }
@@ -66,6 +67,26 @@ export default function EmprendedorProfile() {
 
     fetchProfileData();
   }, [idPerfil]);
+
+  useEffect(() => {
+    const fetchProfilePicture = async () => {
+      try {
+        const response = await fetch(`/api/empAvatar?id_perfil=${idPerfil}`);
+        if (response.ok) {
+          const picProfile = await response.json();
+          setProfilePicture(picProfile.usuario_imagen || "/placeholder.webp");
+        } else {
+          console.error("Error al cargar la imagen de perfil");
+        }
+      } catch (error) {
+        console.error("Error en la solicitud:", error);
+      }
+    };
+
+    if (idPerfil) {
+      fetchProfilePicture();
+    }
+  }, [idPerfil]); // Dependencia correcta para llamar cuando idPerfil cambie
 
   // Obtener o crear la conversación y cargar mensajes
   // Obtener o crear la conversación y cargar mensajes
@@ -173,7 +194,7 @@ export default function EmprendedorProfile() {
           <section className="p-10">
             <div className="bg-white p-6 rounded-lg shadow-lg text-center">
               <img
-                src={emprendedorData.url_imagen || "/placeholder.webp"}
+                src={profilePicture || "/placeholder.webp"}
                 alt={emprendedorData.nombre_negocio || "Emprendedor"}
                 width={150}
                 height={150}

@@ -384,7 +384,6 @@ export default function EmprendedorProfile() {
                 <a
                   href={profileInfo.website}
                   target="_blank"
-                  rel="noopener noreferrer"
                   className="text-blue-500 hover:underline mt-2 block"
                 >
                   {profileInfo.website}
