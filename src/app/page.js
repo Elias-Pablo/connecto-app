@@ -90,13 +90,6 @@ export default function Home() {
     }
   };
 
-  const profiles = [
-    { image: "/imagenpromo.jpeg", name: "Nombre 1", profession: "Profesión 1" },
-    { image: "/imagenpromo.jpeg", name: "Nombre 2", profession: "Profesión 2" },
-    { image: "/imagenpromo.jpeg", name: "Nombre 3", profession: "Profesión 3" },
-    { image: "/imagenpromo.jpeg", name: "Nombre 4", profession: "Profesión 4" },
-  ];
-
   const FAQ = [
     {
       question: "¿Qué es ConnecTo y cómo funciona?",

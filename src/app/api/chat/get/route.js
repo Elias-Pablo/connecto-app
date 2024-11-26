@@ -1,4 +1,5 @@
 import connectionpromise from "@/lib/db2";
+export const dynamic = "force-dynamic";
 
 // Ruta para obtener mensajes de una conversación específica
 export async function GET(req) {

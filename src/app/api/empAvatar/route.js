@@ -1,4 +1,5 @@
 import connection from "@/lib/db";
+export const dynamic = "force-dynamic";
 
 // Obtener el avatar de un negocio
 export async function GET(req) {

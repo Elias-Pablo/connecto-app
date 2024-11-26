@@ -1,5 +1,6 @@
 // src/app/api/products/route.js
 import connection from "@/lib/db";
+export const dynamic = "force-dynamic";
 
 export async function GET(req) {
   const { searchParams } = new URL(req.url);

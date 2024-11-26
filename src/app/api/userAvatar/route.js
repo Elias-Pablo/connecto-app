@@ -1,5 +1,6 @@
 import connection from "@/lib/db";
 import jwt from "jsonwebtoken";
+export const dynamic = "force-dynamic";
 
 // Obtener el avatar del usuario
 export async function GET(req) {

@@ -1,5 +1,6 @@
 import connection from "@/lib/db";
 import jwt from "jsonwebtoken";
+export const dynamic = "force-dynamic";
 
 // Función auxiliar para obtener el id_perfil basado en el userId
 async function getPerfilId(userId) {
