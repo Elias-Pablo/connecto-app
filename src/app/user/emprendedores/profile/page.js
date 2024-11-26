@@ -1,10 +1,13 @@
 "use client";
+
 import { useState, useEffect, Suspense, useRef } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import Image from "next/image";
 import Header from "@/components/Header-us";
 import { useCart, CartProvider } from "../../../context/CartContext";
 import { jwtDecode } from "jwt-decode";
+
+export const dynamic = "force-dynamic"; // Permite la renderización dinámica de la página
 
 export default function EmprendedorProfile() {
   const [emprendedorData, setEmprendedorData] = useState(null);
@@ -14,7 +17,7 @@ export default function EmprendedorProfile() {
   const [messages, setMessages] = useState([]);
   const [idConversacion, setIdConversacion] = useState(null); // Nuevo estado para id_conversacion
   const searchParams = useSearchParams();
-  const idPerfil = searchParams.get("id_perfil");
+  const idPerfil = searchParams?.get("id_perfil"); // Manejo seguro de searchParams
   const [username, setUsername] = useState("");
   const router = useRouter();
   const [idDestinatario, setIdDestinatario] = useState(null);
@@ -65,9 +68,12 @@ export default function EmprendedorProfile() {
       }
     };
 
-    fetchProfileData();
+    if (idPerfil) {
+      fetchProfileData();
+    }
   }, [idPerfil]);
 
+  // Obtener la imagen de perfil del emprendedor
   useEffect(() => {
     const fetchProfilePicture = async () => {
       try {
@@ -88,7 +94,6 @@ export default function EmprendedorProfile() {
     }
   }, [idPerfil]); // Dependencia correcta para llamar cuando idPerfil cambie
 
-  // Obtener o crear la conversación y cargar mensajes
   // Obtener o crear la conversación y cargar mensajes
   useEffect(() => {
     const fetchOrCreateConversation = async () => {
@@ -266,56 +271,6 @@ export default function EmprendedorProfile() {
                 )}
               </div>
             </div>
-
-            {showChat && (
-              <div className="fixed bottom-0 right-0 w-full md:w-1/3 bg-white border-t shadow-lg">
-                <div className="bg-blue-500 text-white p-4 flex justify-between items-center">
-                  <h2 className="text-lg font-semibold">
-                    Chat con {emprendedorData.nombre_negocio}
-                  </h2>
-                  <button
-                    onClick={() => setShowChat(false)}
-                    className="text-white text-xl font-bold"
-                  >
-                    &times;
-                  </button>
-                </div>
-                <div className="p-4 overflow-y-auto h-64">
-                  {messages.map((msg, index) => (
-                    <div
-                      key={index}
-                      ref={
-                        index === messages.length - 1 ? lastMessageRef : null
-                      } // Referencia al último mensaje
-                      className={`mb-4 ${
-                        msg.remitente === username
-                          ? "text-right"
-                          : "text-left text-gray-700"
-                      }`}
-                    >
-                      <p className="inline-block px-4 py-2 rounded-lg bg-gray-200 text-black">
-                        {msg.contenido}
-                      </p>
-                    </div>
-                  ))}
-                </div>
-                <div className="text-black p-4 flex">
-                  <input
-                    type="text"
-                    placeholder="Escribe tu mensaje..."
-                    className="flex-grow border rounded-l-lg p-2"
-                    value={message}
-                    onChange={(e) => setMessage(e.target.value)}
-                  />
-                  <button
-                    className="bg-blue-500 text-white px-4 rounded-r-lg"
-                    onClick={handleSendMessage}
-                  >
-                    Enviar
-                  </button>
-                </div>
-              </div>
-            )}
           </section>
         ) : (
           <p className="text-center text-gray-500">

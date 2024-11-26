@@ -15,7 +15,19 @@ export async function GET(req) {
     }
 
     const token = authHeader.split(" ")[1]; // Asume formato "Bearer <token>"
-    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    let decoded;
+
+    try {
+      decoded = jwt.verify(token, process.env.JWT_SECRET);
+    } catch (error) {
+      return new Response(
+        JSON.stringify({ message: "Token inválido o expirado" }),
+        {
+          status: 401,
+          headers: { "Content-Type": "application/json" },
+        }
+      );
+    }
 
     const userId = decoded.userId; // Extraer el userId del token
 
@@ -28,7 +40,8 @@ export async function GET(req) {
 
     // Consulta para obtener los mensajes no leídos
     const [rows] = await connection.promise().query(
-      `SELECT 
+      `
+      SELECT 
         c.id_conversacion, 
         c.nombre_conversacion, 
         c.id_usuario1, 
@@ -57,7 +70,8 @@ export async function GET(req) {
       WHERE 
         c.id_usuario1 = ? OR c.id_usuario2 = ?
       GROUP BY 
-        c.id_conversacion;`,
+        c.id_conversacion;
+      `,
       [userId, userId, userId, userId, userId]
     );
 
