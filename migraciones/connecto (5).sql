@@ -1,11 +1,11 @@
 -- phpMyAdmin SQL Dump
--- version 5.2.1
+-- version 5.2.0
 -- https://www.phpmyadmin.net/
 --
--- Servidor: 127.0.0.1
--- Tiempo de generación: 19-11-2024 a las 01:13:46
--- Versión del servidor: 10.4.32-MariaDB
--- Versión de PHP: 8.2.12
+-- Servidor: localhost
+-- Tiempo de generación: 26-11-2024 a las 03:38:48
+-- Versión del servidor: 10.4.27-MariaDB
+-- Versión de PHP: 7.4.33
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 START TRANSACTION;
@@ -43,35 +43,41 @@ INSERT INTO `admin` (`id_admin`, `nombre`, `permiso`) VALUES
 -- --------------------------------------------------------
 
 --
--- Estructura de tabla para la tabla `carrito`
---
-
-CREATE TABLE `carrito` (
-  `id_carrito` int(11) NOT NULL,
-  `id_usuario` int(11) NOT NULL,
-  `id_producto` int(11) NOT NULL,
-  `cantidad` int(11) NOT NULL,
-  `estado` tinyint(1) NOT NULL,
-  `fecha_creacion` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp()
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
-
--- --------------------------------------------------------
-
---
 -- Estructura de tabla para la tabla `compra`
 --
 
 CREATE TABLE `compra` (
   `id_compra` int(11) NOT NULL,
   `id_documento` int(11) DEFAULT NULL,
-  `id_carrito` int(11) NOT NULL,
   `id_envio` int(11) DEFAULT NULL,
+  `id_usuario` int(11) DEFAULT NULL,
   `detalle` varchar(255) DEFAULT NULL,
   `cantidad` int(11) DEFAULT NULL,
   `estado` tinyint(1) DEFAULT NULL,
   `total` int(11) DEFAULT NULL,
   `fecha_creacion` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Estructura de tabla para la tabla `conversaciones`
+--
+
+CREATE TABLE `conversaciones` (
+  `id_conversacion` int(11) NOT NULL,
+  `nombre_conversacion` varchar(255) NOT NULL,
+  `id_usuario1` int(11) NOT NULL,
+  `id_usuario2` int(11) NOT NULL,
+  `fecha_creacion` timestamp NOT NULL DEFAULT current_timestamp()
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Volcado de datos para la tabla `conversaciones`
+--
+
+INSERT INTO `conversaciones` (`id_conversacion`, `nombre_conversacion`, `id_usuario1`, `id_usuario2`, `fecha_creacion`) VALUES
+(1, 'Chat entre 7 y 9', 7, 9, '2024-11-26 01:21:51');
 
 -- --------------------------------------------------------
 
@@ -145,7 +151,10 @@ INSERT INTO `favoritos` (`id_favorito`, `id_usuario`, `id_producto`, `fecha_crea
 (8, 1, 11, '2024-11-11 19:24:09'),
 (9, 1, 5, '2024-11-11 19:52:09'),
 (10, 1, 6, '2024-11-11 20:06:09'),
-(14, 13, 4, '2024-11-18 18:41:24');
+(14, 13, 4, '2024-11-18 18:41:24'),
+(19, 11, 11, '2024-11-19 18:06:37'),
+(20, 11, 31, '2024-11-19 18:06:38'),
+(21, 16, 6, '2024-11-19 23:57:20');
 
 -- --------------------------------------------------------
 
@@ -233,7 +242,10 @@ INSERT INTO `imagen_publicacion` (`id_imagen`, `id_post`, `url_imagen`, `tiempo_
 (10, NULL, 'https://images.app.goo.gl/cJChz3f9vDDrs3rS9', '2024-11-07 22:38:20'),
 (11, NULL, 'https://2356021.fs1.hubspotusercontent-na1.net/hubfs/2356021/iStock-506514230%20(1).jpg', '2024-11-07 22:46:00'),
 (12, NULL, 'https://2356021.fs1.hubspotusercontent-na1.net/hubfs/2356021/iStock-506514230%20(1).jpg', '2024-11-07 22:49:04'),
-(13, NULL, 'j', '2024-11-17 16:06:09');
+(13, NULL, 'j', '2024-11-17 16:06:09'),
+(14, NULL, 'https://yt3.googleusercontent.com/ytc/AIdro_nQDRMfNCBCUumCBMlgwAwrVCNYZPmI6wnUME9B5EmxYNY=s900-c-k-c0x00ffffff-no-rj', '2024-11-19 17:53:29'),
+(15, NULL, 'https://elcomercio.pe/resizer/5oYD1gjh8HJ9bkviH3ODRHD448Q=/1200x800/smart/filters:format(jpeg):quality(75)/arc-anglerfish-arc2-prod-elcomercio.s3.amazonaws.com/public/CLVESG4AJRFX3E7TRTJI45R2MQ.jpg', '2024-11-19 23:58:38'),
+(16, NULL, '/placeholder.webp', '2024-11-20 00:05:49');
 
 -- --------------------------------------------------------
 
@@ -259,7 +271,64 @@ INSERT INTO `interacciones` (`id_interaccion`, `id_perfil`, `id_producto`, `tipo
 (3, 2, NULL, 'View', '2024-11-17 17:09:16'),
 (4, 1, 5, 'Click', '2024-11-17 17:09:55'),
 (5, 3, 11, 'Click', '2024-11-17 17:10:09'),
-(6, 1, NULL, 'View', '2024-11-18 18:43:06');
+(6, 1, NULL, 'View', '2024-11-18 18:43:06'),
+(7, 4, 30, 'Click', '2024-11-19 18:02:03'),
+(8, 1, 9, 'Click', '2024-11-19 18:02:09'),
+(9, 1, 9, 'Click', '2024-11-19 18:02:10'),
+(10, 1, 9, 'Click', '2024-11-19 18:02:10'),
+(11, 1, 9, 'Click', '2024-11-19 18:02:11'),
+(12, 1, 9, 'Click', '2024-11-19 18:02:11'),
+(13, 1, 9, 'Click', '2024-11-19 18:02:11'),
+(14, 1, 9, 'Click', '2024-11-19 18:03:47'),
+(15, 1, 5, 'Click', '2024-11-19 18:04:25'),
+(16, 1, 6, 'Click', '2024-11-19 18:04:34'),
+(17, 1, 6, 'Click', '2024-11-19 18:04:40'),
+(18, 1, 5, 'Click', '2024-11-19 18:06:08'),
+(19, 1, 9, 'Click', '2024-11-19 18:06:16'),
+(20, 4, NULL, 'View', '2024-11-19 18:06:39'),
+(21, 1, NULL, 'View', '2024-11-19 22:53:20'),
+(22, 1, NULL, 'View', '2024-11-19 23:01:01'),
+(23, 1, 6, 'Click', '2024-11-19 23:57:10'),
+(24, 3, 33, 'Click', '2024-11-20 00:00:12'),
+(25, 4, 30, 'Click', '2024-11-20 00:01:26'),
+(26, 1, NULL, 'View', '2024-11-20 00:04:52'),
+(27, 3, 33, 'Click', '2024-11-22 21:40:29'),
+(28, 1, 6, 'Click', '2024-11-22 21:48:13'),
+(29, 1, 6, 'Click', '2024-11-22 21:48:14'),
+(30, 1, NULL, 'View', '2024-11-22 22:04:26'),
+(31, 1, NULL, 'View', '2024-11-26 01:01:28'),
+(32, 1, NULL, 'View', '2024-11-26 01:18:10'),
+(33, 1, NULL, 'View', '2024-11-26 01:28:39'),
+(34, 1, NULL, 'View', '2024-11-26 02:37:23');
+
+-- --------------------------------------------------------
+
+--
+-- Estructura de tabla para la tabla `mensajes`
+--
+
+CREATE TABLE `mensajes` (
+  `id_mensaje` int(11) NOT NULL,
+  `id_conversacion` int(11) NOT NULL,
+  `id_remitente` int(11) NOT NULL,
+  `id_destinatario` int(11) NOT NULL,
+  `contenido` text NOT NULL,
+  `leido` tinyint(1) DEFAULT 0,
+  `fecha_envio` timestamp NOT NULL DEFAULT current_timestamp()
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Volcado de datos para la tabla `mensajes`
+--
+
+INSERT INTO `mensajes` (`id_mensaje`, `id_conversacion`, `id_remitente`, `id_destinatario`, `contenido`, `leido`, `fecha_envio`) VALUES
+(1, 1, 7, 9, 'xd', 0, '2024-11-26 01:21:56'),
+(2, 1, 7, 9, 'xd', 0, '2024-11-26 01:25:25'),
+(3, 1, 7, 9, 'xd', 0, '2024-11-26 01:31:44'),
+(4, 1, 7, 9, 'hola', 0, '2024-11-26 01:44:54'),
+(5, 1, 7, 9, 'hola', 0, '2024-11-26 01:46:18'),
+(6, 1, 7, 9, 'xd', 0, '2024-11-26 01:49:26'),
+(7, 1, 9, 9, 'hola', 0, '2024-11-26 02:27:13');
 
 -- --------------------------------------------------------
 
@@ -334,7 +403,8 @@ INSERT INTO `perfil_negocio` (`id_perfil`, `id_usuario`, `id_imagen`, `nombre_ne
 (1, 9, NULL, 'malumabeiby', NULL, NULL, NULL, NULL, 'Free', NULL, '2024-10-31 20:07:09'),
 (2, 10, NULL, 'barbershopking', NULL, NULL, NULL, NULL, 'Free', NULL, '2024-10-31 20:30:09'),
 (3, 11, NULL, 'flower', NULL, NULL, NULL, NULL, 'Free', NULL, '2024-11-01 22:09:47'),
-(4, 13, NULL, 'Productos de Aseo', 'Somos un emprendimiento que empezó hace poco a entrar en este mundo, queremos hacer un cambio', 'Calle Falsa 123', '+56988888888', NULL, 'Free', NULL, '2024-11-14 12:17:02');
+(4, 13, NULL, 'Productos de Aseo', 'Somos un emprendimiento que empezó hace poco a entrar en este mundo, queremos hacer un cambio', 'Calle Falsa 123', '+56988888888', NULL, 'Free', NULL, '2024-11-14 12:17:02'),
+(5, 15, NULL, 'xddd', NULL, NULL, NULL, NULL, 'Free', NULL, '2024-11-19 23:40:56');
 
 -- --------------------------------------------------------
 
@@ -358,21 +428,22 @@ CREATE TABLE `productos` (
 --
 
 INSERT INTO `productos` (`id_producto`, `id_perfil`, `nombre`, `descripcion`, `id_imagen`, `precio`, `stock`, `tiempo_creacion`) VALUES
-(4, 1, 'artesania', 'artesania local echa a mano ', 2, 59990.00, 10, '2024-10-31 20:08:04'),
-(5, 1, 'torta', 'torta de chocolate relleno con manjar', 3, 12990.00, 8, '2024-10-31 20:13:04'),
-(6, 1, 'Notebook HP Victus ', ' Notebook gamer procesador i7°13Genreacion 8Gb RAM 512 SSD', 4, 899990.00, 5, '2024-10-31 20:25:07'),
-(7, 2, 'babershopking', 'cortes de pelo y perfilado de barba en la mejor barberia de rancagua', 5, 10000.00, 0, '2024-10-31 20:36:03'),
-(8, 2, 'insumos barbershop', 'insumos de barberia  los mejores a muy buen precio ', 6, 19990.00, 20, '2024-11-01 16:30:03'),
-(9, 1, 'Poncho de Huaso', 'poncho de huaso echo a mano artesania regional ', 7, 32990.00, 5, '2024-11-01 16:46:40'),
-(10, 3, 'flores ', 'L as flores mas exlcusivas y hermosas de la ciudad ', 8, 15990.00, 22, '2024-11-01 22:13:24'),
-(11, 3, 'rosas', 'rosas rojas para el dia del amor', 9, 10000.00, 25, '2024-11-01 22:18:04'),
-(25, 1, 'sdg', 'gsdgs', NULL, 2442.00, 1, '2024-11-02 19:40:46'),
-(26, 1, 'sdg', 'gsdgs', NULL, 2442.00, 1, '2024-11-02 19:40:47'),
-(27, 1, 'sdg', 'gsdgs', NULL, 2442.00, 1, '2024-11-02 19:41:00'),
-(28, 1, 'sdg', 'gsdgs', NULL, 2442.00, 1, '2024-11-02 19:41:08'),
-(29, 1, 'sdgs', 'sdgs', NULL, 232.00, 1, '2024-11-02 19:42:29'),
-(30, 4, 'Producto 1', 'Descripción del producto 1', 9, 1000.00, 10, '2024-11-18 18:43:06'),
-(31, 4, 'Producto 2', 'Descripción del producto 2', 9, 2000.00, 5, '2024-11-18 18:43:06');
+(4, 1, 'artesania', 'artesania local echa a mano ', 2, '59990.00', 10, '2024-10-31 20:08:04'),
+(5, 1, 'torta', 'torta de chocolate relleno con manjar', 3, '12990.00', 8, '2024-10-31 20:13:04'),
+(6, 1, 'Notebook HP Victus ', ' Notebook gamer procesador i7°13Genreacion 8Gb RAM 512 SSD', 4, '899990.00', 5, '2024-10-31 20:25:07'),
+(7, 2, 'babershopking', 'cortes de pelo y perfilado de barba en la mejor barberia de rancagua', 5, '10000.00', 0, '2024-10-31 20:36:03'),
+(8, 2, 'insumos barbershop', 'insumos de barberia  los mejores a muy buen precio ', 6, '19990.00', 20, '2024-11-01 16:30:03'),
+(9, 1, 'Poncho de Huaso', 'poncho de huaso echo a mano artesania regional ', 7, '32990.00', 5, '2024-11-01 16:46:40'),
+(10, 3, 'flores ', 'L as flores mas exlcusivas y hermosas de la ciudad ', 8, '15990.00', 22, '2024-11-01 22:13:24'),
+(11, 3, 'rosas', 'rosas rojas para el dia del amor', 9, '10000.00', 25, '2024-11-01 22:18:04'),
+(25, 1, 'sdg', 'gsdgs', NULL, '2442.00', 1, '2024-11-02 19:40:46'),
+(26, 1, 'sdg', 'gsdgs', NULL, '2442.00', 1, '2024-11-02 19:40:47'),
+(27, 1, 'sdg', 'gsdgs', NULL, '2442.00', 1, '2024-11-02 19:41:00'),
+(28, 1, 'sdg', 'gsdgs', NULL, '2442.00', 1, '2024-11-02 19:41:08'),
+(29, 1, 'sdgs', 'sdgs', NULL, '232.00', 1, '2024-11-02 19:42:29'),
+(30, 4, 'Producto 1', 'Descripción del producto 1', 9, '1000.00', 10, '2024-11-18 18:43:06'),
+(31, 4, 'Producto 2', 'Descripción del producto 2', 9, '2000.00', 5, '2024-11-18 18:43:06'),
+(33, 3, 'hola', 'djasjkdajskdjasjdjaskjdjk', 15, '50000.00', 55, '2024-11-19 23:58:38');
 
 -- --------------------------------------------------------
 
@@ -421,7 +492,8 @@ INSERT INTO `publicaciones_foro` (`id_publicaciones`, `id_usuario`, `id_imagen`,
 (12, 1, 10, 2, 'ff', 'hola', '2024-11-07 22:38:20'),
 (13, 1, 11, 4, 'prueba', 'hola', '2024-11-07 22:46:00'),
 (14, 1, 12, 2, 'hola', 'dfs', '2024-11-07 22:49:04'),
-(15, 1, 13, 8, 'hola', 'adfafa', '2024-11-17 16:06:09');
+(15, 1, 13, 8, 'hola', 'adfafa', '2024-11-17 16:06:09'),
+(16, 1, 16, 2, 'xd', 'xd', '2024-11-20 00:05:49');
 
 -- --------------------------------------------------------
 
@@ -447,13 +519,15 @@ INSERT INTO `usuarios` (`id_usuario`, `nombre_usuario`, `tipo_usuario`, `email`,
 (1, 'usuario', 'user', 'usuario@example.com', '12345', NULL, '2024-11-02 22:16:23'),
 (3, 'malumaaaa', 'user', 'malumaweko@gmail.com', '1345', NULL, '2024-10-29 00:19:25'),
 (6, 'hola', 'user', 'hola@gmail.com', 'hola', NULL, '2024-10-30 03:34:43'),
-(7, 'eric', 'user', 'eric@gmail.com', 'eric', NULL, '2024-10-30 22:21:00'),
+(7, 'eric', 'user', 'eric@gmail.com', 'eric', 'https://i.pinimg.com/736x/17/df/b7/17dfb7ccd910388cf96aed0c23173e7b.jpg', '2024-10-30 22:21:00'),
 (8, 'xd', 'emprendedor', 'x@x.x', '123', NULL, '2024-10-31 21:35:24'),
 (9, 'malumabeiby', 'emprendedor', 'm1@gmail.com', '12345', NULL, '2024-10-31 23:07:09'),
 (10, 'barbershopking', 'emprendedor', 'barber@xd.cl', '54321', NULL, '2024-10-31 23:30:09'),
-(11, 'flower', 'emprendedor', 'flower@xd.com', '12345', NULL, '2024-11-02 01:09:47'),
+(11, 'flower', 'emprendedor', 'flower@xd.com', '12345', 'https://img.freepik.com/vector-premium/dibujo-flores-coloridas-colores-arco-iris_761413-3871.jpg', '2024-11-02 01:09:47'),
 (12, 'holaaa', 'user', 'wenas@gmail.com', 'wenas', NULL, '2024-11-02 22:16:23'),
-(13, 'Productos de Aseo', 'emprendedor', 'emp@gmailcom', '1234', 'https://images.app.goo.gl/exYe2AVrc3PpwKtZ7', '2024-11-14 15:17:02');
+(13, 'Productos de Aseo', 'emprendedor', 'emp@gmailcom', '1234', 'https://images.app.goo.gl/exYe2AVrc3PpwKtZ7', '2024-11-14 15:17:02'),
+(15, 'xddd', 'emprendedor', 'xddd@gmail.com', '123', NULL, '2024-11-20 02:40:56'),
+(16, 'duque', 'user', 'duque@gmail.com', '123', NULL, '2024-11-20 02:56:45');
 
 -- --------------------------------------------------------
 
@@ -478,21 +552,21 @@ ALTER TABLE `admin`
   ADD PRIMARY KEY (`id_admin`);
 
 --
--- Indices de la tabla `carrito`
---
-ALTER TABLE `carrito`
-  ADD PRIMARY KEY (`id_carrito`),
-  ADD KEY `id_producto` (`id_producto`),
-  ADD KEY `id_usuario` (`id_usuario`);
-
---
 -- Indices de la tabla `compra`
 --
 ALTER TABLE `compra`
   ADD PRIMARY KEY (`id_compra`),
   ADD KEY `id_documento` (`id_documento`),
   ADD KEY `id_envio` (`id_envio`),
-  ADD KEY `id_carrito` (`id_carrito`);
+  ADD KEY `id_usuario` (`id_usuario`);
+
+--
+-- Indices de la tabla `conversaciones`
+--
+ALTER TABLE `conversaciones`
+  ADD PRIMARY KEY (`id_conversacion`),
+  ADD KEY `fk_usuario1` (`id_usuario1`),
+  ADD KEY `fk_usuario2` (`id_usuario2`);
 
 --
 -- Indices de la tabla `detalle_compra`
@@ -556,6 +630,15 @@ ALTER TABLE `interacciones`
   ADD PRIMARY KEY (`id_interaccion`),
   ADD KEY `profile_id` (`id_perfil`),
   ADD KEY `id_producto` (`id_producto`);
+
+--
+-- Indices de la tabla `mensajes`
+--
+ALTER TABLE `mensajes`
+  ADD PRIMARY KEY (`id_mensaje`),
+  ADD KEY `id_conversacion` (`id_conversacion`),
+  ADD KEY `id_remitente` (`id_remitente`),
+  ADD KEY `id_destinatario` (`id_destinatario`);
 
 --
 -- Indices de la tabla `metricas`
@@ -628,16 +711,16 @@ ALTER TABLE `admin`
   MODIFY `id_admin` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
 
 --
--- AUTO_INCREMENT de la tabla `carrito`
---
-ALTER TABLE `carrito`
-  MODIFY `id_carrito` int(11) NOT NULL AUTO_INCREMENT;
-
---
 -- AUTO_INCREMENT de la tabla `compra`
 --
 ALTER TABLE `compra`
   MODIFY `id_compra` int(11) NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT de la tabla `conversaciones`
+--
+ALTER TABLE `conversaciones`
+  MODIFY `id_conversacion` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
 
 --
 -- AUTO_INCREMENT de la tabla `detalle_compra`
@@ -661,7 +744,7 @@ ALTER TABLE `envio`
 -- AUTO_INCREMENT de la tabla `favoritos`
 --
 ALTER TABLE `favoritos`
-  MODIFY `id_favorito` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=18;
+  MODIFY `id_favorito` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=22;
 
 --
 -- AUTO_INCREMENT de la tabla `foro`
@@ -685,13 +768,19 @@ ALTER TABLE `hilos_foro`
 -- AUTO_INCREMENT de la tabla `imagen_publicacion`
 --
 ALTER TABLE `imagen_publicacion`
-  MODIFY `id_imagen` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=14;
+  MODIFY `id_imagen` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=17;
 
 --
 -- AUTO_INCREMENT de la tabla `interacciones`
 --
 ALTER TABLE `interacciones`
-  MODIFY `id_interaccion` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
+  MODIFY `id_interaccion` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=35;
+
+--
+-- AUTO_INCREMENT de la tabla `mensajes`
+--
+ALTER TABLE `mensajes`
+  MODIFY `id_mensaje` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
 
 --
 -- AUTO_INCREMENT de la tabla `metricas`
@@ -709,13 +798,13 @@ ALTER TABLE `notificaciones`
 -- AUTO_INCREMENT de la tabla `perfil_negocio`
 --
 ALTER TABLE `perfil_negocio`
-  MODIFY `id_perfil` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
+  MODIFY `id_perfil` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
 
 --
 -- AUTO_INCREMENT de la tabla `productos`
 --
 ALTER TABLE `productos`
-  MODIFY `id_producto` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=32;
+  MODIFY `id_producto` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=34;
 
 --
 -- AUTO_INCREMENT de la tabla `promociones`
@@ -727,13 +816,13 @@ ALTER TABLE `promociones`
 -- AUTO_INCREMENT de la tabla `publicaciones_foro`
 --
 ALTER TABLE `publicaciones_foro`
-  MODIFY `id_publicaciones` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=16;
+  MODIFY `id_publicaciones` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=17;
 
 --
 -- AUTO_INCREMENT de la tabla `usuarios`
 --
 ALTER TABLE `usuarios`
-  MODIFY `id_usuario` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=14;
+  MODIFY `id_usuario` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=17;
 
 --
 -- AUTO_INCREMENT de la tabla `visibilidad_busqueda`
@@ -746,19 +835,19 @@ ALTER TABLE `visibilidad_busqueda`
 --
 
 --
--- Filtros para la tabla `carrito`
---
-ALTER TABLE `carrito`
-  ADD CONSTRAINT `carrito_ibfk_1` FOREIGN KEY (`id_producto`) REFERENCES `productos` (`id_producto`),
-  ADD CONSTRAINT `carrito_ibfk_2` FOREIGN KEY (`id_usuario`) REFERENCES `usuarios` (`id_usuario`);
-
---
 -- Filtros para la tabla `compra`
 --
 ALTER TABLE `compra`
   ADD CONSTRAINT `compra_ibfk_1` FOREIGN KEY (`id_envio`) REFERENCES `envio` (`id_envio`),
   ADD CONSTRAINT `compra_ibfk_2` FOREIGN KEY (`id_documento`) REFERENCES `documento` (`id_documento`),
-  ADD CONSTRAINT `compra_ibfk_3` FOREIGN KEY (`id_carrito`) REFERENCES `carrito` (`id_carrito`);
+  ADD CONSTRAINT `compra_ibfk_3` FOREIGN KEY (`id_usuario`) REFERENCES `usuarios` (`id_usuario`);
+
+--
+-- Filtros para la tabla `conversaciones`
+--
+ALTER TABLE `conversaciones`
+  ADD CONSTRAINT `fk_usuario1` FOREIGN KEY (`id_usuario1`) REFERENCES `usuarios` (`id_usuario`),
+  ADD CONSTRAINT `fk_usuario2` FOREIGN KEY (`id_usuario2`) REFERENCES `usuarios` (`id_usuario`);
 
 --
 -- Filtros para la tabla `detalle_compra`
@@ -797,6 +886,14 @@ ALTER TABLE `hilos_foro`
 ALTER TABLE `interacciones`
   ADD CONSTRAINT `interacciones_ibfk_1` FOREIGN KEY (`id_perfil`) REFERENCES `perfil_negocio` (`id_perfil`),
   ADD CONSTRAINT `interacciones_ibfk_2` FOREIGN KEY (`id_producto`) REFERENCES `productos` (`id_producto`);
+
+--
+-- Filtros para la tabla `mensajes`
+--
+ALTER TABLE `mensajes`
+  ADD CONSTRAINT `mensajes_ibfk_1` FOREIGN KEY (`id_conversacion`) REFERENCES `conversaciones` (`id_conversacion`),
+  ADD CONSTRAINT `mensajes_ibfk_2` FOREIGN KEY (`id_remitente`) REFERENCES `usuarios` (`id_usuario`),
+  ADD CONSTRAINT `mensajes_ibfk_3` FOREIGN KEY (`id_destinatario`) REFERENCES `usuarios` (`id_usuario`);
 
 --
 -- Filtros para la tabla `metricas`

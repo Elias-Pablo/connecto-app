@@ -1,21 +1,26 @@
 "use client";
-import { useState, useEffect, Suspense } from "react";
+import { useState, useEffect, Suspense, useRef } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import Image from "next/image";
 import Header from "@/components/Header-us";
 import { useCart, CartProvider } from "../../../context/CartContext";
-import { ChatIcon } from "@heroicons/react/outline"; // Usa un icono de chat de Heroicons
+import { jwtDecode } from "jwt-decode";
 
 export default function EmprendedorProfile() {
   const [emprendedorData, setEmprendedorData] = useState(null);
   const [productos, setProductos] = useState([]);
-  const [resenas, setResenas] = useState([]);
-  const [showChat, setShowChat] = useState(false); // Estado para mostrar/ocultar el chat
-  const [message, setMessage] = useState(""); // Mensaje actual
-  const [messages, setMessages] = useState([]); // Lista de mensajes
+  const [showChat, setShowChat] = useState(false);
+  const [message, setMessage] = useState("");
+  const [messages, setMessages] = useState([]);
+  const [idConversacion, setIdConversacion] = useState(null); // Nuevo estado para id_conversacion
   const searchParams = useSearchParams();
   const idPerfil = searchParams.get("id_perfil");
+  const [username, setUsername] = useState("");
   const router = useRouter();
+  const [idDestinatario, setIdDestinatario] = useState(null);
+  const [idRemitente, setIdRemitente] = useState(null);
+
+  const lastMessageRef = useRef(null);
 
   const formatPrice = (price) => {
     return new Intl.NumberFormat("es-CL", {
@@ -25,6 +30,17 @@ export default function EmprendedorProfile() {
     }).format(price);
   };
 
+  // Obtener `id_usuario` del cliente desde el token JWT
+  useEffect(() => {
+    const token = localStorage.getItem("token");
+    if (token) {
+      const decoded = jwtDecode(token);
+      setIdRemitente(decoded.userId);
+      setUsername(decoded.username);
+    }
+  }, []);
+
+  // Obtener los datos del emprendedor y su `id_usuario` a partir de `id_perfil`
   useEffect(() => {
     const fetchProfileData = async () => {
       if (!idPerfil) {
@@ -39,7 +55,7 @@ export default function EmprendedorProfile() {
           const data = await response.json();
           setEmprendedorData(data.emprendedorData || {});
           setProductos(data.productos || []);
-          setResenas(data.resenas || []);
+          setIdDestinatario(data.emprendedorData.id_usuario); // Obtener el `id_usuario` del emprendedor
         } else {
           console.error("Error al cargar los datos del emprendedor");
         }
@@ -51,10 +67,99 @@ export default function EmprendedorProfile() {
     fetchProfileData();
   }, [idPerfil]);
 
-  const handleSendMessage = () => {
-    if (message.trim()) {
-      setMessages([...messages, { text: message, sender: "User" }]); // Agrega el mensaje enviado
-      setMessage(""); // Limpia el input
+  // Obtener o crear la conversación y cargar mensajes
+  // Obtener o crear la conversación y cargar mensajes
+  useEffect(() => {
+    const fetchOrCreateConversation = async () => {
+      if (idRemitente && idDestinatario) {
+        try {
+          const response = await fetch("/api/chat/conversation", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              id_remitente: idRemitente,
+              id_destinatario: idDestinatario,
+            }),
+          });
+
+          if (response.ok) {
+            const data = await response.json();
+            setIdConversacion(data.id_conversacion);
+
+            // Cargar mensajes de la conversación
+            const messagesResponse = await fetch(
+              `/api/chat/get?id_conversacion=${data.id_conversacion}`
+            );
+
+            if (messagesResponse.ok) {
+              const messagesData = await messagesResponse.json();
+              setMessages(messagesData.mensajes || []);
+              setTimeout(() => {
+                lastMessageRef.current?.scrollIntoView({ behavior: "smooth" });
+              }, 0);
+            } else {
+              console.error("Error al cargar los mensajes");
+            }
+          } else {
+            console.error("Error al obtener o crear la conversación");
+          }
+        } catch (error) {
+          console.error("Error al obtener o crear la conversación:", error);
+        }
+      }
+    };
+
+    fetchOrCreateConversation();
+  }, [idRemitente, idDestinatario]);
+
+  const handleSendMessage = async () => {
+    if (!idConversacion) {
+      console.error(
+        "No se puede enviar el mensaje sin una conversación activa"
+      );
+      return;
+    }
+
+    console.log("Enviando mensaje:", {
+      idRemitente,
+      idDestinatario,
+      idConversacion,
+      message,
+    });
+
+    try {
+      const response = await fetch("/api/chat/send", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          id_remitente: idRemitente,
+          id_destinatario: idDestinatario,
+          id_conversacion: idConversacion,
+          contenido: message,
+        }),
+      });
+
+      if (response.ok) {
+        // Construir el mensaje con el formato correcto
+        const newMessage = {
+          contenido: message, // El texto del mensaje enviado
+          remitente: username, // Usuario actual que envió el mensaje
+          fecha_envio: new Date().toISOString(), // Fecha y hora actuales
+        };
+
+        // Agregar el nuevo mensaje al estado
+        setMessages((prevMessages) => [...prevMessages, newMessage]);
+
+        // Limpia el campo de entrada
+        setMessage("");
+        setTimeout(() => {
+          lastMessageRef.current?.scrollIntoView({ behavior: "smooth" });
+        }, 0);
+      } else {
+        console.error("Error al enviar el mensaje al servidor");
+      }
+    } catch (error) {
+      console.error("Error al intentar enviar el mensaje:", error);
     }
   };
 
@@ -100,22 +205,8 @@ export default function EmprendedorProfile() {
             <div className="flex justify-end mt-6">
               <button
                 className="flex items-center bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600"
-                onClick={() => setShowChat(true)} // Muestra el chat al hacer clic
+                onClick={() => setShowChat(true)}
               >
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  className="h-6 w-6 mr-2"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  stroke="currentColor"
-                  strokeWidth={2}
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    d="M8 10h.01M12 10h.01M16 10h.01M9 16h6m2-12H7a2 2 0 00-2 2v12l3.5-3.5h9.5a2 2 0 002-2V6a2 2 0 00-2-2z"
-                  />
-                </svg>
                 Chat
               </button>
             </div>
@@ -130,7 +221,7 @@ export default function EmprendedorProfile() {
                       className="bg-gray-100 p-4 rounded-lg shadow-md flex flex-col items-center justify-around"
                     >
                       <img
-                        src={producto.url_imagen || "/placeholder.jpg"}
+                        src={producto.url_imagen || "/placeholder.webp"}
                         alt={producto.producto_nombre}
                         width={200}
                         height={150}
@@ -145,12 +236,6 @@ export default function EmprendedorProfile() {
                       <p className="text-blue-500 font-semibold">
                         {formatPrice(producto.precio)}
                       </p>
-                      <button
-                        onClick={() => addToCart(producto)}
-                        className="mt-2 bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600"
-                      >
-                        Agregar al Carrito
-                      </button>
                     </div>
                   ))
                 ) : (
@@ -165,10 +250,10 @@ export default function EmprendedorProfile() {
               <div className="fixed bottom-0 right-0 w-full md:w-1/3 bg-white border-t shadow-lg">
                 <div className="bg-blue-500 text-white p-4 flex justify-between items-center">
                   <h2 className="text-lg font-semibold">
-                    Emprendedor: {emprendedorData.nombre_negocio}
+                    Chat con {emprendedorData.nombre_negocio}
                   </h2>
                   <button
-                    onClick={() => setShowChat(false)} // Cierra el chat
+                    onClick={() => setShowChat(false)}
                     className="text-white text-xl font-bold"
                   >
                     &times;
@@ -178,14 +263,17 @@ export default function EmprendedorProfile() {
                   {messages.map((msg, index) => (
                     <div
                       key={index}
+                      ref={
+                        index === messages.length - 1 ? lastMessageRef : null
+                      } // Referencia al último mensaje
                       className={`mb-4 ${
-                        msg.sender === "User"
+                        msg.remitente === username
                           ? "text-right"
                           : "text-left text-gray-700"
                       }`}
                     >
-                      <p className="inline-block px-4 py-2 rounded-lg bg-gray-200">
-                        {msg.text}
+                      <p className="inline-block px-4 py-2 rounded-lg bg-gray-200 text-black">
+                        {msg.contenido}
                       </p>
                     </div>
                   ))}
