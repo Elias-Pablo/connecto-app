@@ -49,7 +49,7 @@ jobs:
       - name: Set up database
         run: |
           mysql -h 127.0.0.1 -u root -e 'CREATE DATABASE IF NOT EXISTS testdb;'
-          mysqldump -h localhost -u root --no-password --databases connecto > migraciones/connecto.sql
+          mysqldump -u root -p connecto > connecto.sql
 
       - name: Run esLint
         run: npm run lint
