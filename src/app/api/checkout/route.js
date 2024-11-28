@@ -106,7 +106,7 @@ export async function POST(req) {
       // Descontar stock del producto
       await new Promise((resolve, reject) => {
         connection.query(
-          `UPDATE products SET stock = stock - ? WHERE id = ?`,
+          `UPDATE productos SET stock = stock - ? WHERE id = ?`,
           [item.quantity, item.id],
           (error) => {
             if (error) return reject(error);

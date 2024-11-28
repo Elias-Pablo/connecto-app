@@ -5,6 +5,9 @@ import { jwtDecode } from "jwt-decode"; // Cambiado a jwt_decode para evitar err
 import { useRouter } from "next/navigation";
 import { useCart } from "../../src/app/context/CartContext";
 import { document } from "postcss";
+import { toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+
 
 export default function Header() {
   const [user, setUser] = useState(null);
@@ -53,6 +56,7 @@ export default function Header() {
     calculateSubtotal,
     calculateTax,
     calculateTotal,
+    updateQuantity,
   } = useCart();
   const toggleCart = () => setCartVisible(!cartVisible);
 
@@ -321,21 +325,39 @@ export default function Header() {
                       <p className="text-sm text-gray-600">
                         Precio: {formatPrice(item.price)}
                       </p>
-                      <div className="flex items-center mt-2">
-                        <button
-                          onClick={() => addToCart(item)}
-                          className="bg-gray-300 px-2 py-1 rounded"
-                        >
-                          +
-                        </button>
-                        <span className="bg-gray-100 px-4 py-1 text-sm">
-                          {item.quantity}
-                        </span>
+                      <div className="flex items-center mt-2 gap-2">
                         <button
                           onClick={() => decreaseQuantity(item.id)}
                           className="bg-gray-300 px-2 py-1 rounded"
                         >
                           -
+                        </button>
+                        {/* Input para escribir la cantidad */}
+                        <input
+                          type="number"
+                          min="1"
+                          max={item.stock}
+                          value={item.quantity}
+                          onChange={(e) => {
+                            const newQuantity = Number(e.target.value);
+                            if (newQuantity > 0 && newQuantity <= item.stock) {
+                              updateQuantity(item.id, newQuantity);
+                            } else if (newQuantity > item.stock) {
+                              toast.error(
+                                "No puedes superar el stock disponible.",
+                                {
+                                  position: "top-center",
+                                }
+                              );
+                            }
+                          }}
+                          className="border rounded w-12 text-center"
+                        />
+                        <button
+                          onClick={() => addToCart(item)}
+                          className="bg-gray-300 px-2 py-1 rounded"
+                        >
+                          +
                         </button>
                       </div>
                     </div>

@@ -2,6 +2,9 @@ import { Inter } from "next/font/google";
 import "./globals.css";
 import Image from "next/image";
 import Link from "next/link";
+import { CartProvider } from "@/app/context/CartContext"; // Importa el CartProvider
+import { ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -15,7 +18,20 @@ export default function RootLayout({ children }) {
   return (
     <html lang="es">
       <body className={inter.className}>
-        {children}
+        {/* Envuelve el contenido con CartProvider */}
+        <CartProvider>
+          {children}
+          <ToastContainer
+            position="top-center"
+            autoClose={3000}
+            hideProgressBar={false}
+            newestOnTop={false}
+            closeOnClick
+            rtl={false}
+            pauseOnFocusLoss
+            draggable
+            pauseOnHover
+          />
         <footer className="bg-neutral-800 p-4 text-white text-center flex  justify-center items-center w-full h-auto">
           <Link href="/">
             <Image
@@ -27,6 +43,7 @@ export default function RootLayout({ children }) {
           </Link>
           &copy; 2024 ConnecTo. Todos los derechos reservados.
         </footer>
+        </CartProvider>
       </body>
     </html>
   );

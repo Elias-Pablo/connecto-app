@@ -4,9 +4,10 @@ export async function GET(req) {
   const userId = decoded.userId;
 
   try {
+    // Recuperar los pedidos del usuario
     const orders = await new Promise((resolve, reject) => {
       connection.query(
-        "SELECT * FROM orders WHERE user_id = ?",
+        "SELECT * FROM compra WHERE id_usuario = ?",
         [userId],
         (error, results) => {
           if (error) return reject(error);
@@ -15,12 +16,13 @@ export async function GET(req) {
       );
     });
 
+    // Recuperar los detalles de cada pedido
     const orderItems = await Promise.all(
       orders.map(async (order) => {
         const items = await new Promise((resolve, reject) => {
           connection.query(
-            "SELECT * FROM order_items WHERE order_id = ?",
-            [order.id],
+            "SELECT * FROM detalle_compra WHERE id_compra = ?",
+            [order.id_compra],
             (error, results) => {
               if (error) return reject(error);
               resolve(results);

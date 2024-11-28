@@ -1,21 +1,57 @@
-// src/context/CartContext.js
-import { createContext, useContext, useState } from "react";
+"use client";
+import { createContext, useContext, useState, useEffect } from "react";
+import { toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 const CartContext = createContext();
 
 export const CartProvider = ({ children }) => {
-  const [cartItems, setCartItems] = useState([]);
+  const [cartItems, setCartItems] = useState(() => {
+    if (typeof window !== "undefined") {
+      const storedCart = localStorage.getItem("cart");
+      return storedCart ? JSON.parse(storedCart) : [];
+    }
+    return [];
+  });
+
+  useEffect(() => {
+    // Solo accede a localStorage si estamos en el lado cliente
+    if (typeof window !== "undefined") {
+      const storedCart = localStorage.getItem("cart");
+      if (storedCart) {
+        setCartItems(JSON.parse(storedCart));
+      }
+    }
+  }, []); // Solo se ejecuta una vez al montar el componente
+
+  useEffect(() => {
+    // Guardar en localStorage cada vez que cambia el carrito
+    if (typeof window !== "undefined") {
+      localStorage.setItem("cart", JSON.stringify(cartItems));
+    }
+  }, [cartItems]);
 
   const addToCart = (product) => {
     setCartItems((prevItems) => {
       const itemExists = prevItems.find((item) => item.id === product.id);
       if (itemExists) {
+        if (itemExists.quantity + 1 > product.stock) {
+          toast.error("Has alcanzado el límite de stock disponible.", {
+            position: "top-center",
+          });
+          return prevItems;
+        }
         return prevItems.map((item) =>
           item.id === product.id
             ? { ...item, quantity: item.quantity + 1 }
             : item
         );
       } else {
+        if (product.stock <= 0) {
+          toast.error("El producto está agotado.", { position: "top-center" });
+          return prevItems;
+        }
+        toast.success("Producto agregado al carrito.", { position: "top-center" });
         return [...prevItems, { ...product, quantity: 1 }];
       }
     });
@@ -42,18 +78,27 @@ export const CartProvider = ({ children }) => {
     );
   };
 
-  // Calculate the subtotal including tax
+  // Nueva función para actualizar cantidades
+  const updateQuantity = (productId, quantity) => {
+    setCartItems((prevItems) =>
+      prevItems.map((item) =>
+        item.id === productId
+          ? { ...item, quantity: Math.min(quantity, item.stock) }
+          : item
+      )
+    );
+    if (quantity > 0) {
+      toast.success("Cantidad actualizada.", { position: "top-center" });
+    } else {
+      toast.error("Cantidad no válida.", { position: "top-center" });
+    }
+  };
+
   const calculateSubtotal = () =>
     cartItems.reduce((acc, item) => acc + item.price * item.quantity, 0);
 
-  // Calculate the tax as 19% of the subtotal, assuming subtotal includes tax
-  const calculateTax = () => {
-    const subtotal = calculateSubtotal();
-    return subtotal - subtotal / 1.19;
-  };
-
-  // Total is the subtotal as it already includes tax
-  const calculateTotal = () => calculateSubtotal();
+  const calculateTax = () => calculateSubtotal() * 0.19;
+  const calculateTotal = () => calculateSubtotal() + calculateTax();
 
   return (
     <CartContext.Provider
@@ -62,6 +107,7 @@ export const CartProvider = ({ children }) => {
         addToCart,
         decreaseQuantity,
         removeFromCart,
+        updateQuantity, // Se expone la nueva función
         calculateSubtotal,
         calculateTax,
         calculateTotal,
