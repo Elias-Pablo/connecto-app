@@ -67,22 +67,23 @@ export default function Header() {
       </div>
       <div className="flex w-1/3 justify-end items-center relative">
         <button
-          className="relative flex items-center justify-center p-2 rounded-full bg-gray-700 hover:bg-gray-600 transition"
+          className="relative flex items-center justify-center py-2 px-4 rounded-xl bg-yellow-500 hover:bg-yellow-700 transition"
           onClick={handleViewMessages}
         >
           <svg
             xmlns="http://www.w3.org/2000/svg"
-            className="h-6 w-6 text-white"
-            fill="none"
+            width="24"
+            height="24"
             viewBox="0 0 24 24"
-            stroke="currentColor"
-            strokeWidth={2}
+            fill="none"
+            stroke="white"
+            stroke-width="2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            class="icon icon-tabler icons-tabler-outline icon-tabler-message-circle"
           >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              d="M7 8h10M7 12h4m1 8h7a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v9a2 2 0 002 2h3l4 4z"
-            />
+            <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+            <path d="M3 20l1.3 -3.9c-2.324 -3.437 -1.426 -7.872 2.1 -10.374c3.526 -2.501 8.59 -2.296 11.845 .48c3.255 2.777 3.695 7.266 1.029 10.501c-2.666 3.235 -7.615 4.215 -11.574 2.293l-4.7 1" />
           </svg>
           {unreadMessages > 0 && (
             <span className="absolute -top-2 -right-2 bg-red-500 text-white text-xs rounded-full px-2">

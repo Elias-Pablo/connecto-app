@@ -1,11 +1,12 @@
 import connection from "@/lib/db";
 import jwt from "jsonwebtoken";
+export const dynamic = "force-dynamic";
 
 // Obtener el perfil del negocio por el ID de usuario
 export async function GET(req) {
   try {
     // Obtener el token JWT de las cookies
-    const token = req.cookies.get("token")?.value;
+    const token = req.cookies?.get("token")?.value;
 
     if (!token) {
       return new Response(JSON.stringify({ message: "Token no encontrado" }), {
@@ -18,13 +19,22 @@ export async function GET(req) {
     const userId = decoded.userId;
 
     // Consultar la base de datos para obtener el perfil del negocio
-    const [profile] = await new Promise((resolve, reject) => {
+    const profile = await new Promise((resolve, reject) => {
       connection.query(
-        "SELECT nombre_negocio, descripcion, direccion, telefono, sitioweb_url FROM perfil_negocio WHERE id_usuario = ?",
+        `
+          SELECT 
+            nombre_negocio, 
+            descripcion, 
+            direccion, 
+            telefono, 
+            sitioweb_url 
+          FROM perfil_negocio 
+          WHERE id_usuario = ?
+        `,
         [userId],
         (error, results) => {
           if (error) return reject(error);
-          resolve(results);
+          resolve(results[0]); // Obtener el primer resultado
         }
       );
     });
@@ -56,7 +66,7 @@ export async function PUT(req) {
       await req.json();
 
     // Obtener el token JWT de las cookies
-    const token = req.cookies.get("token")?.value;
+    const token = req.cookies?.get("token")?.value;
 
     if (!token) {
       return new Response(JSON.stringify({ message: "Token no encontrado" }), {
@@ -71,9 +81,16 @@ export async function PUT(req) {
     // Actualizar los datos del perfil del negocio en la base de datos
     await new Promise((resolve, reject) => {
       connection.query(
-        `UPDATE perfil_negocio 
-         SET nombre_negocio = ?, descripcion = ?, direccion = ?, telefono = ?, sitioweb_url = ?
-         WHERE id_usuario = ?`,
+        `
+          UPDATE perfil_negocio 
+          SET 
+            nombre_negocio = ?, 
+            descripcion = ?, 
+            direccion = ?, 
+            telefono = ?, 
+            sitioweb_url = ?
+          WHERE id_usuario = ?
+        `,
         [
           nombre_negocio,
           descripcion,

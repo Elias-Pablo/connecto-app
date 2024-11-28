@@ -110,7 +110,7 @@ export default function Mensajes() {
       if (response.ok) {
         const newMsg = {
           contenido: newMessage,
-          remitente: "Tú",
+          remitente: username,
           fecha_envio: new Date().toISOString(),
         };
 

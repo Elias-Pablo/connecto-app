@@ -15,7 +15,7 @@ jobs:
       mysql:
         image: mysql:latest
         env:
-          MYSQL_ROOT_PASSWORD: root
+          MYSQL_ALLOW_EMPTY_PASSWORD: "yes"
           MYSQL_DATABASE: testdb
         ports:
           - 3306:3306
@@ -43,16 +43,16 @@ jobs:
         env:
           CI: true
 
-      - name: Run esLint
-        run: npm run lint
-
       - name: Wait for MySQL
         run: sudo apt-get install -y mysql-client && until mysqladmin ping -h 127.0.0.1 --silent; do sleep 1; done
 
       - name: Set up database
         run: |
-          mysql -h 127.0.0.1 -u root -proot -e 'CREATE DATABASE IF NOT EXISTS testdb;'
-        #mysql -h 127.0.0.1 -u root -proot testdb < path/to/your/schema.sql
+          mysql -h 127.0.0.1 -u root -e 'CREATE DATABASE IF NOT EXISTS testdb;'
+          mysqldump -u root -p testdb > connecto.sql
+
+      - name: Run esLint
+        run: npm run lint
 
       - name: Build
         run: npm run build
