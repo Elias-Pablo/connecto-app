@@ -1,29 +1,26 @@
 "use client";
-
 import { useState, useEffect, Suspense, useRef } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
-import Image from "next/image";
 import Header from "@/components/Header-us";
 import { useCart, CartProvider } from "../../../context/CartContext";
 import { jwtDecode } from "jwt-decode";
 
-export const dynamic = "force-dynamic"; // Permite la renderización dinámica de la página
-
 export default function EmprendedorProfile() {
   const [emprendedorData, setEmprendedorData] = useState(null);
   const [productos, setProductos] = useState([]);
+  const [favorites, setFavorites] = useState([]); // Para manejar los favoritos
   const [showChat, setShowChat] = useState(false);
   const [message, setMessage] = useState("");
   const [messages, setMessages] = useState([]);
   const [idConversacion, setIdConversacion] = useState(null); // Nuevo estado para id_conversacion
   const searchParams = useSearchParams();
-  const idPerfil = searchParams?.get("id_perfil"); // Manejo seguro de searchParams
+  const idPerfil = searchParams.get("id_perfil");
   const [username, setUsername] = useState("");
   const router = useRouter();
   const [idDestinatario, setIdDestinatario] = useState(null);
   const [idRemitente, setIdRemitente] = useState(null);
   const [profilePicture, setProfilePicture] = useState(null);
-
+  const [isFavorite, setIsFavorite] = useState(false);
   const lastMessageRef = useRef(null);
 
   const formatPrice = (price) => {
@@ -68,12 +65,93 @@ export default function EmprendedorProfile() {
       }
     };
 
-    if (idPerfil) {
-      fetchProfileData();
-    }
+    fetchProfileData();
   }, [idPerfil]);
 
-  // Obtener la imagen de perfil del emprendedor
+  useEffect(() => {
+    if (favorites.some((fav) => fav.id_perfil === parseInt(idPerfil, 10))) {
+      setIsFavorite(true);
+    } else {
+      setIsFavorite(false);
+    }
+  }, [favorites, idPerfil]);
+
+  // Manejar agregar a favoritos
+  const handleAddToFavorites = async () => {
+    try {
+      const response = await fetch(`/api/user/emfavorito`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ id_perfil: idPerfil }),
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        setFavorites((prevFavorites) => [
+          ...prevFavorites,
+          { id_favorito: data.id, id_perfil: parseInt(idPerfil, 10) },
+        ]);
+        setIsFavorite(true); // Actualizar el estado local
+        console.log("Emprendedor agregado a favoritos");
+      } else {
+        console.error("Error al agregar emprendedor a favoritos");
+      }
+    } catch (error) {
+      console.error("Error al intentar agregar a favoritos:", error);
+    }
+  };
+
+  const handleRemoveFromFavorites = async () => {
+    const favorite = favorites.find(
+      (fav) => fav.id_perfil === parseInt(idPerfil, 10)
+    );
+
+    if (!favorite) return;
+
+    try {
+      const response = await fetch(
+        `/api/user/emfavorito?id_favorito=${favorite.id_favorito}`,
+        {
+          method: "DELETE",
+        }
+      );
+
+      if (response.ok) {
+        setFavorites((prevFavorites) =>
+          prevFavorites.filter(
+            (fav) => fav.id_favorito !== favorite.id_favorito
+          )
+        );
+        setIsFavorite(false); // Actualizar el estado local
+        console.log("Emprendedor eliminado de favoritos");
+      } else {
+        console.error("Error al eliminar emprendedor de favoritos");
+      }
+    } catch (error) {
+      console.error("Error al intentar eliminar de favoritos:", error);
+    }
+  };
+
+  // Cargar favoritos al iniciar
+  // Cargar favoritos al iniciar
+  useEffect(() => {
+    const fetchFavorites = async () => {
+      try {
+        const response = await fetch(`/api/user/emfavorito`);
+        if (response.ok) {
+          const data = await response.json();
+          setFavorites(data.favorites || []);
+        } else {
+          console.error("Error al cargar favoritos");
+        }
+      } catch (error) {
+        console.error("Error en la solicitud de favoritos:", error);
+      }
+    };
+
+    fetchFavorites();
+  }, []);
+
   useEffect(() => {
     const fetchProfilePicture = async () => {
       try {
@@ -166,17 +244,13 @@ export default function EmprendedorProfile() {
       });
 
       if (response.ok) {
-        // Construir el mensaje con el formato correcto
         const newMessage = {
-          contenido: message, // El texto del mensaje enviado
-          remitente: username, // Usuario actual que envió el mensaje
-          fecha_envio: new Date().toISOString(), // Fecha y hora actuales
+          contenido: message,
+          remitente: username,
+          fecha_envio: new Date().toISOString(),
         };
 
-        // Agregar el nuevo mensaje al estado
         setMessages((prevMessages) => [...prevMessages, newMessage]);
-
-        // Limpia el campo de entrada
         setMessage("");
         setTimeout(() => {
           lastMessageRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -186,6 +260,13 @@ export default function EmprendedorProfile() {
       }
     } catch (error) {
       console.error("Error al intentar enviar el mensaje:", error);
+    }
+  };
+  const handleFavoriteToggle = () => {
+    if (isFavorite) {
+      handleRemoveFromFavorites();
+    } else {
+      handleAddToFavorites();
     }
   };
 
@@ -226,6 +307,12 @@ export default function EmprendedorProfile() {
               ) : (
                 <p className="text-sm text-gray-500">Sitio web no disponible</p>
               )}
+              <button
+                className="py-2 px-4 my-4 text-white bg-red-400 rounded-lg hover:bg-red-600"
+                onClick={handleFavoriteToggle}
+              >
+                {isFavorite ? "Eliminar de Favoritos" : "Agregar a Favoritos"}
+              </button>
             </div>
 
             <div className="flex justify-end mt-6">
@@ -271,6 +358,56 @@ export default function EmprendedorProfile() {
                 )}
               </div>
             </div>
+
+            {showChat && (
+              <div className="fixed bottom-0 right-0 w-full md:w-1/3 bg-white border-t shadow-lg">
+                <div className="bg-blue-500 text-white p-4 flex justify-between items-center">
+                  <h2 className="text-lg font-semibold">
+                    Chat con {emprendedorData.nombre_negocio}
+                  </h2>
+                  <button
+                    onClick={() => setShowChat(false)}
+                    className="text-white text-xl font-bold"
+                  >
+                    &times;
+                  </button>
+                </div>
+                <div className="p-4 overflow-y-auto h-64">
+                  {messages.map((msg, index) => (
+                    <div
+                      key={index}
+                      ref={
+                        index === messages.length - 1 ? lastMessageRef : null
+                      } // Referencia al último mensaje
+                      className={`mb-4 ${
+                        msg.remitente === username
+                          ? "text-right"
+                          : "text-left text-gray-700"
+                      }`}
+                    >
+                      <p className="inline-block px-4 py-2 rounded-lg bg-gray-200 text-black">
+                        {msg.contenido}
+                      </p>
+                    </div>
+                  ))}
+                </div>
+                <div className="text-black p-4 flex">
+                  <input
+                    type="text"
+                    placeholder="Escribe tu mensaje..."
+                    className="flex-grow border rounded-l-lg p-2"
+                    value={message}
+                    onChange={(e) => setMessage(e.target.value)}
+                  />
+                  <button
+                    className="bg-blue-500 text-white px-4 rounded-r-lg"
+                    onClick={handleSendMessage}
+                  >
+                    Enviar
+                  </button>
+                </div>
+              </div>
+            )}
           </section>
         ) : (
           <p className="text-center text-gray-500">
