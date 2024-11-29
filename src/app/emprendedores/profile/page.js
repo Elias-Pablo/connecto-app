@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import Header from "@/components/Header-em";
 import MetricChart from "@/components/MetricChart";
 import { jwtDecode } from "jwt-decode";
+import { FaEye, FaShoppingCart, FaDollarSign, FaChartLine } from "react-icons/fa"; // Íconos
 
 export default function EmprendedorProfile() {
   const [selectedMetric, setSelectedMetric] = useState("weekly");
@@ -268,6 +269,7 @@ export default function EmprendedorProfile() {
     weekly: { visits: [], sales: [] },
     monthly: { visits: [], sales: [] },
   });
+  
 
   const mostViewedProduct = {
     image: "/zapato.jpg",
@@ -278,24 +280,33 @@ export default function EmprendedorProfile() {
 
   useEffect(() => {
     const fetchMetrics = async () => {
-      if (user) {
-        try {
-          const response = await fetch(`/api/metrics/4`);
-          if (response.ok) {
-            const data = await response.json();
-            console.log("Métricas recibidas:", data.metrics); // Debug de métricas
-            setMetricData(data.metrics);
-          } else {
-            console.error("Error al obtener métricas:", response.status);
-          }
-        } catch (error) {
-          console.error("Error al hacer la solicitud de métricas:", error);
+      const token = localStorage.getItem("token");
+      if (!token) {
+        console.error("Token no encontrado");
+        return;
+      }
+  
+      try {
+        const response = await fetch(`/api/metrics`, {
+          method: "GET",
+          headers: { Authorization: `Bearer ${token}` },
+        });
+  
+        if (response.ok) {
+          const { metrics } = await response.json();
+          console.log("Métricas recibidas:", metrics);
+          setMetricData(metrics);
+        } else {
+          console.error("Error al obtener métricas:", response.status);
         }
+      } catch (error) {
+        console.error("Error al hacer la solicitud de métricas:", error);
       }
     };
-
+  
     fetchMetrics();
   }, [user]);
+  
 
   return (
     <>
@@ -420,18 +431,18 @@ export default function EmprendedorProfile() {
               </svg>
             </button>
           </div>
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-6">
             {products.map((product) => (
               <div
                 key={product.id}
-                className="text-center p-5 bg-gray-200 rounded-lg shadow-lg"
+                className="text-center p-5 bg-gray-200 w-auto rounded-lg shadow-lg"
               >
                 <img
                   src={product.image || "/placeholder.jpg"}
                   alt={product.name}
                   width={200}
                   height={150}
-                  className="mx-auto"
+                  className="mx-auto rounded-full"
                 />
                 <h4 className="text-black text-xl  font-semibold mt-3">
                   {product.name}
@@ -524,73 +535,37 @@ export default function EmprendedorProfile() {
 
         {/* Métricas y Estadísticas */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
-          <div className="bg-fuchsia-800 p-6 rounded-xl shadow-lg">
-            <h3 className="text-center text-xl font-semibold mb-5 text-white">
-              Métricas y Estadísticas
-            </h3>
-            <div className="flex justify-center space-x-4 mb-5">
-              <button
-                className={`px-4 py-2 rounded-lg ${
-                  selectedMetric === "daily"
-                    ? "bg-white text-black"
-                    : "bg-black text-white"
-                }`}
-                onClick={() => setSelectedMetric("daily")}
-              >
-                Diario
-              </button>
-              <button
-                className={`px-4 py-2 rounded-lg ${
-                  selectedMetric === "weekly"
-                    ? "bg-white text-black"
-                    : "bg-black text-white"
-                }`}
-                onClick={() => setSelectedMetric("weekly")}
-              >
-                Semanal
-              </button>
-              <button
-                className={`px-4 py-2 rounded-lg ${
-                  selectedMetric === "monthly"
-                    ? "bg-white text-black"
-                    : "bg-black text-white"
-                }`}
-                onClick={() => setSelectedMetric("monthly")}
-              >
-                Mensual
-              </button>
-            </div>
-            <MetricChart data={metricData[selectedMetric]} />
-          </div>
-
-          <div className="bg-sky-500 p-6 rounded-xl shadow-lg">
-            <h3 className="text-center text-xl font-semibold mb-5 text-white">
-              Producto Más Visto
-            </h3>
-            <div className="text-center bg-white p-4 rounded-lg shadow-md">
-              <Image
-                src={mostViewedProduct.image}
-                alt={mostViewedProduct.name}
-                width={200}
-                height={150}
-                className="mx-auto"
-              />
-              <h4 className="text-lg font-semibold mt-3 text-black">
-                {mostViewedProduct.name}
-              </h4>
-              <p className="text-black">Vistas: {mostViewedProduct.views}</p>
-              <p className="text-black font-semibold mt-2">
-                {mostViewedProduct.price}
-              </p>
-              <a
-                href="#"
-                className="text-sm text-blue-500 hover:underline mt-2 inline-block"
-              >
-                Ver más
-              </a>
-            </div>
-          </div>
+          <MetricChart />
         </div>
+        {/* Métricas y Estadísticas */}
+        <div className="bg-white p-6 rounded-lg shadow-lg">
+            <h2 className="text-2xl font-bold mb-4">Métricas</h2>
+            <div className="flex items-center mb-2">
+              <FaEye className="text-indigo-500 mr-2" />
+              <p>
+                <strong>Visitas al Perfil:</strong> {}
+              </p>
+            </div>
+            <div className="flex items-center mb-2">
+              <FaShoppingCart className="text-green-500 mr-2" />
+              <p>
+                <strong>Ventas Totales:</strong> {}
+              </p>
+            </div>
+            <div className="flex items-center mb-2">
+              <FaDollarSign className="text-yellow-500 mr-2" />
+              <p>
+                <strong>Ingresos Totales:</strong> ${}
+              </p>
+            </div>
+            <div className="flex items-center mb-2">
+              <FaChartLine className="text-blue-500 mr-2" />
+              <p>
+                <strong>Tasa de Conversión:</strong> {}%
+              </p>
+            </div>
+          </div>
+        
       </div>
     </>
   );
