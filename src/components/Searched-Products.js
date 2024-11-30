@@ -1,9 +1,13 @@
-import Image from "next/image";
 import { useCart } from "../../src/app/context/CartContext";
 import Link from "next/link";
+import Slider from "react-slick"; // Importación del carrusel de react-slick
+import "slick-carousel/slick/slick.css"; // Importar estilos de slick-carousel
+import "slick-carousel/slick/slick-theme.css";
 
 export default function SearchedProducts({ products }) {
   const { addToCart } = useCart();
+
+  // Formatear el precio
   const formatPrice = (price) => {
     return new Intl.NumberFormat("es-CL", {
       style: "currency",
@@ -12,21 +16,52 @@ export default function SearchedProducts({ products }) {
     }).format(price);
   };
 
+  // Configuración del carrusel
+  const sliderSettings = {
+    dots: true,
+    infinite: true,
+    speed: 500,
+    slidesToShow: 1,
+    slidesToScroll: 1,
+    arrows: true,
+  };
+
   return (
-    <div className="mt-4 grid grid-cols-4 bg-fuchsia-400 gap-5 w-full p-8 mb-4 rounded-lg">
+    <div className="mt-4 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 bg-fuchsia-400 gap-5 w-full p-8 mb-4 rounded-lg">
       {products.map((product) => (
         <div
           key={product.id}
-          className="bg-white border border-gray-200 rounded-lg shadow-lg p-6 flex flex-col items-center justify-between transform transition-transform duration-300 hover:scale-105"
+          className="text-center p-5 bg-gray-200 w-auto rounded-lg shadow-lg"
         >
-          <img
-            src={product.image || "/placeholder.jpg"}
-            alt={product.name}
-            className="rounded-lg mb-4"
-            width={250}
-            height={250}
-          />
-          <div className="w-full text-center">
+          <Link href={`/products/${product.id}`}>
+            <div className="cursor-pointer w-full">
+              {product.images && product.images.length > 0 ? (
+                <Slider {...sliderSettings}>
+                  {product.images.map((img, index) => (
+                    <div key={index}>
+                      <img
+                        src={img || "/placeholder.jpg"}
+                        alt={`Producto ${index + 1}`}
+                        width={250}
+                        height={250}
+                        className="mx-auto rounded-lg mb-2 w-full h-64 object-cover"
+                      />
+                    </div>
+                  ))}
+                </Slider>
+              ) : (
+                <img
+                  src="/placeholder.jpg"
+                  alt="Sin imagen"
+                  width={250}
+                  height={250}
+                  className="rounded-lg mb-4 object-cover w-full"
+                />
+              )}
+            </div>
+          </Link>
+
+          <div className="w-full text-center mt-4">
             <h3 className="text-xl font-semibold text-gray-800">
               {product.name}
             </h3>
@@ -36,12 +71,18 @@ export default function SearchedProducts({ products }) {
             </p>
             <p className="text-xs text-gray-500 my-2">
               Vendedor:{" "}
-              <Link href="/user/emprendedores/profile" className="text-sky-500">
+              <Link
+                href={`/user/emprendedores/profile?id_perfil=${product.id_perfil}`}
+                className="text-sky-500"
+              >
                 {product.businessName}
               </Link>
             </p>
             <button
-              onClick={() => addToCart(product)}
+              onClick={(e) => {
+                e.stopPropagation(); // Prevenir que el click en el botón navegue al link del producto
+                addToCart(product);
+              }}
               className="mt-2 bg-green-400 text-white px-4 py-2 rounded-lg hover:bg-green-700"
             >
               Agregar al Carro

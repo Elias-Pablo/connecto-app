@@ -62,14 +62,15 @@ export async function POST(req) {
     );
     const compraResult = await new Promise((resolve, reject) => {
       connection.query(
-        `INSERT INTO compra (id_documento, id_envio, detalle, cantidad, estado, total, fecha_creacion) 
-        VALUES (?, ?, ?, ?, ?, ?, NOW())`,
+        `INSERT INTO compra (id_documento, id_envio, id_usuario, detalle, cantidad, estado, total, fecha_creacion) 
+        VALUES (?, ?, ?, ?, ?, ?, ?, NOW())`,
         [
           id_documento,
           id_envio,
+          userId,
           "Compra de productos",
           cartItems.length,
-          "pendiente", // Estado inicial
+          "1", // Estado inicial
           total,
         ],
         (error, results) => {
@@ -108,19 +109,19 @@ export async function POST(req) {
           );
         });
 
-      // Descontar stock del producto
-      await new Promise((resolve, reject) => {
-        connection.query(
-          `UPDATE productos SET stock = stock - ? WHERE id = ?`,
-          [item.quantity, item.id],
-          (error) => {
-            if (error) return reject(error);
-            resolve();
-          }
-        );
-      });
-    })
-  );
+        // Descontar stock del producto
+        await new Promise((resolve, reject) => {
+          connection.query(
+            `UPDATE productos SET stock = stock - ? WHERE id_producto = ?`,
+            [item.quantity, item.id],
+            (error) => {
+              if (error) return reject(error);
+              resolve();
+            }
+          );
+        });
+      })
+    );
 
     // Retornar respuesta exitosa
     return new Response(

@@ -4,6 +4,9 @@ import { useRouter, useSearchParams } from "next/navigation";
 import Header from "@/components/Header-us";
 import { useCart, CartProvider } from "../../../context/CartContext";
 import { jwtDecode } from "jwt-decode";
+import Slider from "react-slick"; // Importación del carrusel de react-slick
+import "slick-carousel/slick/slick.css"; // Importar estilos de slick-carousel
+import "slick-carousel/slick/slick-theme.css";
 
 export default function EmprendedorProfile() {
   const [emprendedorData, setEmprendedorData] = useState(null);
@@ -20,7 +23,7 @@ export default function EmprendedorProfile() {
   const [idDestinatario, setIdDestinatario] = useState(null);
   const [idRemitente, setIdRemitente] = useState(null);
   const [profilePicture, setProfilePicture] = useState(null);
-  const [isFavorite, setIsFavorite] = useState(false);
+
   const lastMessageRef = useRef(null);
 
   const formatPrice = (price) => {
@@ -40,6 +43,14 @@ export default function EmprendedorProfile() {
       setUsername(decoded.username);
     }
   }, []);
+  const sliderSettings = {
+    dots: true,
+    infinite: true,
+    speed: 500,
+    slidesToShow: 1,
+    slidesToScroll: 1,
+    arrows: true,
+  };
 
   // Obtener los datos del emprendedor y su `id_usuario` a partir de `id_perfil`
   useEffect(() => {
@@ -67,14 +78,7 @@ export default function EmprendedorProfile() {
 
     fetchProfileData();
   }, [idPerfil]);
-
-  useEffect(() => {
-    if (favorites.some((fav) => fav.id_perfil === parseInt(idPerfil, 10))) {
-      setIsFavorite(true);
-    } else {
-      setIsFavorite(false);
-    }
-  }, [favorites, idPerfil]);
+  console.log(productos);
 
   // Manejar agregar a favoritos
   const handleAddToFavorites = async () => {
@@ -132,7 +136,6 @@ export default function EmprendedorProfile() {
     }
   };
 
-  // Cargar favoritos al iniciar
   // Cargar favoritos al iniciar
   useEffect(() => {
     const fetchFavorites = async () => {
@@ -309,9 +312,9 @@ export default function EmprendedorProfile() {
               )}
               <button
                 className="py-2 px-4 my-4 text-white bg-red-400 rounded-lg hover:bg-red-600"
-                onClick={handleFavoriteToggle}
+                onClick={handleAddToFavorites}
               >
-                {isFavorite ? "Eliminar de Favoritos" : "Agregar a Favoritos"}
+                Agregar a Favoritos
               </button>
             </div>
 
@@ -331,23 +334,37 @@ export default function EmprendedorProfile() {
                   productos.map((producto) => (
                     <div
                       key={producto.id_producto}
-                      className="bg-gray-100 p-4 rounded-lg shadow-md flex flex-col items-center justify-around"
+                      className="text-center p-5 bg-gray-200 w-auto rounded-lg shadow-lg"
                     >
-                      <img
-                        src={producto.url_imagen || "/placeholder.webp"}
-                        alt={producto.producto_nombre}
-                        width={200}
-                        height={150}
-                        className="rounded-lg mb-2"
-                      />
-                      <h3 className="text-lg font-bold text-black">
-                        {producto.producto_nombre}
+                      {producto.images && producto.images.length > 0 ? (
+                        <Slider {...sliderSettings}>
+                          {producto.images.map((img, index) => (
+                            <div key={index}>
+                              <img
+                                src={img || "/placeholder.webp"}
+                                alt={`Producto ${index + 1}`}
+                                width={200}
+                                height={150}
+                                className="rounded-lg mb-2 w-full h-64 object-cover"
+                              />
+                            </div>
+                          ))}
+                        </Slider>
+                      ) : (
+                        <img
+                          src="/placeholder.webp"
+                          alt="Sin imagen"
+                          className="rounded-lg mb-2 w-full h-64 object-cover"
+                        />
+                      )}
+                      <h3 className="text-lg font-bold text-black mt-6">
+                        {producto.name}
                       </h3>
                       <p className="text-sm mb-2 text-black">
-                        {producto.descripcion}
+                        {producto.description}
                       </p>
                       <p className="text-blue-500 font-semibold">
-                        {formatPrice(producto.precio)}
+                        {formatPrice(producto.price)}
                       </p>
                     </div>
                   ))

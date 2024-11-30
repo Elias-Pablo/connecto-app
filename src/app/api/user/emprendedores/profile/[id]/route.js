@@ -51,7 +51,7 @@ async function obtenerDatosEmprendedor(profileId) {
     connection.query(
       `SELECT e.id_usuario, e.nombre_negocio, e.descripcion, e.direccion, e.telefono, e.sitioweb_url, i.url_imagen
        FROM perfil_negocio e
-       LEFT JOIN imagen_publicacion i ON e.id_imagen = i.id_imagen
+       LEFT JOIN producto_imagenes i ON e.id_imagen = i.id_imagen
        WHERE e.id_perfil = ?`,
       [profileId],
       (error, results) => {
@@ -70,9 +70,14 @@ async function obtenerDatosEmprendedor(profileId) {
 async function obtenerProductos(profileId) {
   return new Promise((resolve, reject) => {
     connection.query(
-      `SELECT p.id_producto, p.nombre AS producto_nombre, p.descripcion, p.precio, i.url_imagen
+      `SELECT 
+        p.id_producto, 
+        p.nombre AS producto_nombre, 
+        p.descripcion, 
+        p.precio, 
+        pi.url_imagen
        FROM productos p
-       LEFT JOIN imagen_publicacion i ON p.id_imagen = i.id_imagen
+       LEFT JOIN producto_imagenes pi ON p.id_producto = pi.id_producto
        WHERE p.id_perfil = ?`,
       [profileId],
       (error, results) => {
@@ -80,7 +85,30 @@ async function obtenerProductos(profileId) {
           console.error("Error al obtener productos:", error);
           reject(new Error("Error al obtener productos"));
         } else {
-          resolve(results);
+          // Agrupar los productos por su ID para consolidar las imágenes en un array
+          const productMap = {};
+          results.forEach((product) => {
+            if (!productMap[product.id_producto]) {
+              // Si el producto no está en el mapa, añadirlo
+              productMap[product.id_producto] = {
+                id: product.id_producto,
+                name: product.producto_nombre,
+                description: product.descripcion,
+                price: product.precio,
+                images: product.url_imagen ? [product.url_imagen] : [],
+              };
+            } else {
+              // Si el producto ya está en el mapa, añadir la imagen al array
+              if (product.url_imagen) {
+                productMap[product.id_producto].images.push(product.url_imagen);
+              }
+            }
+          });
+
+          // Convertir el objeto productMap en un array
+          const formattedProducts = Object.values(productMap);
+
+          resolve(formattedProducts);
         }
       }
     );

@@ -3,6 +3,9 @@ import { CartProvider } from "@/app/context/CartContext";
 import Header from "@/components/Header-us";
 import React, { useState, useEffect } from "react";
 import { jwtDecode } from "jwt-decode";
+import Slider from "react-slick"; // Importación del carrusel de react-slick
+import "slick-carousel/slick/slick.css"; // Importar estilos de slick-carousel
+import "slick-carousel/slick/slick-theme.css";
 
 export default function FavoritesPage() {
   const [favorites, setFavorites] = useState([]); // Productos favoritos
@@ -145,6 +148,16 @@ export default function FavoritesPage() {
     }
   };
 
+  // Configuración del carrusel
+  const sliderSettings = {
+    dots: true,
+    infinite: true,
+    speed: 500,
+    slidesToShow: 1,
+    slidesToScroll: 1,
+    arrows: true,
+  };
+
   return (
     <CartProvider>
       <Header />
@@ -165,18 +178,30 @@ export default function FavoritesPage() {
                   {favorites.map((product) => (
                     <div
                       key={product.id_favorito}
-                      className="bg-white p-4 rounded-lg shadow-lg hover:shadow-xl transition-shadow flex flex-col items-center justify-around"
+                      className="text-center p-5 bg-gray-200 w-auto rounded-lg shadow-lg"
                     >
-                      <img
-                        src={product.image}
-                        alt={product.nombre}
-                        className="w-full h-auto object-cover rounded-md mb-4"
-                      />
-                      <h2 className="text-lg font-semibold">
-                        {product.nombre}
-                      </h2>
+                      {product.images && product.images.length > 0 ? (
+                        <Slider {...sliderSettings}>
+                          {product.images.map((img, index) => (
+                            <div key={index}>
+                              <img
+                                src={img}
+                                alt={product.nombre}
+                                className="mx-auto rounded-lg mb-2 w-full h-64 object-cover"
+                              />
+                            </div>
+                          ))}
+                        </Slider>
+                      ) : (
+                        <img
+                          src="/placeholder.webp"
+                          alt={product.nombre}
+                          className="w-full h-auto object-cover rounded-md mb-4"
+                        />
+                      )}
+                      <h2 className="text-lg font-semibold">{product.name}</h2>
                       <p className="text-gray-500">
-                        {formatPrice(product.precio)}
+                        {formatPrice(product.price)}
                       </p>
                       <button
                         className="mt-4 w-full bg-red-500 text-white py-2 rounded-md hover:bg-red-600 transition-colors"

@@ -4,7 +4,15 @@ import { useState, useEffect } from "react";
 import Header from "@/components/Header-em";
 import MetricChart from "@/components/MetricChart";
 import { jwtDecode } from "jwt-decode";
-import { FaEye, FaShoppingCart, FaDollarSign, FaChartLine } from "react-icons/fa"; // Íconos
+import {
+  FaEye,
+  FaShoppingCart,
+  FaDollarSign,
+  FaChartLine,
+} from "react-icons/fa"; // Íconos
+import Slider from "react-slick"; // Importación del carrusel de react-slick
+import "slick-carousel/slick/slick.css"; // Importar estilos de slick-carousel
+import "slick-carousel/slick/slick-theme.css"; // Importar tema de slick-carousel
 
 export default function EmprendedorProfile() {
   const [selectedMetric, setSelectedMetric] = useState("weekly");
@@ -16,7 +24,7 @@ export default function EmprendedorProfile() {
     name: "",
     description: "",
     price: "",
-    url_imagen: "", // Campo para URL de imagen en lugar de id_imagen
+    images: ["", "", ""], // Inicializamos un array de tres elementos para las URLs
     stock: 0,
   });
   const [profileInfo, setProfileInfo] = useState({
@@ -144,13 +152,21 @@ export default function EmprendedorProfile() {
       console.error("Error en la solicitud para actualizar perfil:", error);
     }
   };
+
   const handleDeleteProduct = async (productId) => {
     try {
-      const response = await fetch(`/api/auth/products?id=${productId}`, {
-        method: "DELETE",
-      });
+      const response = await fetch(
+        `/api/auth/products/delete?id=${productId}`,
+        {
+          method: "DELETE",
+        }
+      );
+
       if (response.ok) {
-        setProducts(products.filter((product) => product.id !== productId));
+        // Filtrar el producto eliminado de la lista de productos
+        setProducts((prevProducts) =>
+          prevProducts.filter((product) => product.id !== productId)
+        );
         console.log("Producto eliminado exitosamente");
       } else {
         console.error("Error al eliminar el producto");
@@ -174,7 +190,7 @@ export default function EmprendedorProfile() {
       name: "",
       description: "",
       price: "",
-      url_imagen: "", // Resetear la URL de la imagen al abrir el modal
+      images: ["", "", ""], // Si no hay producto, inicializamos con tres elementos vacíos para las URLs
       stock: 0,
     }
   ) => {
@@ -204,13 +220,12 @@ export default function EmprendedorProfile() {
           description: currentProduct.description,
           price: currentProduct.price,
           stock: currentProduct.stock || 0,
-          url_imagen: currentProduct.url_imagen || null, // Enviar la URL de la imagen en la solicitud
+          images: currentProduct.images.filter((url) => url), // Filtramos para no enviar URLs vacías
         }),
       });
 
       if (response.ok) {
         const data = await response.json();
-
         if (method === "PUT") {
           setProducts(
             products.map((product) =>
@@ -227,7 +242,7 @@ export default function EmprendedorProfile() {
     } catch (error) {
       console.error("Error en la solicitud:", error);
     }
-    setIsModalOpen(false);
+    closeProductModal();
   };
 
   const handleInputChange = (e) => {
@@ -238,20 +253,43 @@ export default function EmprendedorProfile() {
     }));
   };
 
+  const handleImageUrlChange = (index, value) => {
+    const updatedImages = [...currentProduct.images];
+    updatedImages[index] = value;
+    setCurrentProduct((prevProduct) => ({
+      ...prevProduct,
+      images: updatedImages,
+    }));
+  };
+
   useEffect(() => {
     const fetchProducts = async () => {
       try {
         const response = await fetch("/api/auth/products", { method: "GET" });
         if (response.ok) {
           const data = await response.json();
-          const formattedProducts = data.products.map((product) => ({
-            id: product.id,
-            name: product.name,
-            description: product.description,
-            price: product.price,
-            stock: product.stock,
-            image: product.image,
-          }));
+
+          // Agrupar productos con el mismo id consolidando sus imágenes
+          const productMap = {};
+          data.products.forEach((product) => {
+            if (productMap[product.id]) {
+              if (product.image) {
+                productMap[product.id].images.push(product.image);
+              }
+            } else {
+              productMap[product.id] = {
+                id: product.id,
+                name: product.name,
+                description: product.description,
+                price: product.price,
+                stock: product.stock,
+                images: product.image ? [product.image] : [],
+              };
+            }
+          });
+
+          // Convertir el objeto en un array
+          const formattedProducts = Object.values(productMap);
           setProducts(formattedProducts);
         } else {
           console.error("Error al cargar productos");
@@ -264,49 +302,14 @@ export default function EmprendedorProfile() {
     fetchProducts();
   }, []);
 
-  const [metricData, setMetricData] = useState({
-    daily: { visits: [], sales: [] },
-    weekly: { visits: [], sales: [] },
-    monthly: { visits: [], sales: [] },
-  });
-  
-
-  const mostViewedProduct = {
-    image: "/zapato.jpg",
-    name: "Producto Ejemplo",
-    views: 1234,
-    price: "$19.99",
+  const sliderSettings = {
+    dots: true,
+    infinite: true,
+    speed: 500,
+    slidesToShow: 1,
+    slidesToScroll: 1,
+    arrows: true,
   };
-
-  useEffect(() => {
-    const fetchMetrics = async () => {
-      const token = localStorage.getItem("token");
-      if (!token) {
-        console.error("Token no encontrado");
-        return;
-      }
-  
-      try {
-        const response = await fetch(`/api/metrics`, {
-          method: "GET",
-          headers: { Authorization: `Bearer ${token}` },
-        });
-  
-        if (response.ok) {
-          const { metrics } = await response.json();
-          console.log("Métricas recibidas:", metrics);
-          setMetricData(metrics);
-        } else {
-          console.error("Error al obtener métricas:", response.status);
-        }
-      } catch (error) {
-        console.error("Error al hacer la solicitud de métricas:", error);
-      }
-    };
-  
-    fetchMetrics();
-  }, [user]);
-  
 
   return (
     <>
@@ -431,20 +434,32 @@ export default function EmprendedorProfile() {
               </svg>
             </button>
           </div>
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-6">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
             {products.map((product) => (
               <div
                 key={product.id}
                 className="text-center p-5 bg-gray-200 w-auto rounded-lg shadow-lg"
               >
-                <img
-                  src={product.image || "/placeholder.jpg"}
-                  alt={product.name}
-                  width={200}
-                  height={150}
-                  className="mx-auto rounded-full"
-                />
-                <h4 className="text-black text-xl  font-semibold mt-3">
+                {product.images && product.images.length > 0 ? (
+                  <Slider {...sliderSettings}>
+                    {product.images.map((image, index) => (
+                      <div key={index}>
+                        <img
+                          src={image}
+                          alt={product.name}
+                          className="mx-auto rounded-lg mb-2 w-full h-64 object-cover"
+                        />
+                      </div>
+                    ))}
+                  </Slider>
+                ) : (
+                  <img
+                    src="/placeholder.webp"
+                    alt="Sin imagen"
+                    className="mx-auto rounded-lg mb-2 w-full h-64 object-cover"
+                  />
+                )}
+                <h4 className="text-black text-xl font-semibold mt-5">
                   {product.name}
                 </h4>
                 <p className="text-gray-600 text-sm">{product.description}</p>
@@ -502,14 +517,6 @@ export default function EmprendedorProfile() {
                 className="text-black border p-2 rounded w-full mb-4"
               />
               <input
-                type="text"
-                name="url_imagen" // Asegúrate de que el nombre coincida con el back-end
-                value={currentProduct.url_imagen}
-                onChange={handleInputChange}
-                placeholder="URL de la imagen"
-                className="text-black border p-2 rounded w-full mb-4"
-              />
-              <input
                 type="number"
                 name="stock"
                 value={currentProduct.stock || 0}
@@ -517,6 +524,19 @@ export default function EmprendedorProfile() {
                 placeholder="Stock disponible"
                 className="text-black border p-2 rounded w-full mb-4"
               />
+              {[...Array(3)].map((_, index) => (
+                <input
+                  key={index}
+                  type="url"
+                  value={currentProduct.images[index] || ""}
+                  onChange={(e) => handleImageUrlChange(index, e.target.value)}
+                  placeholder={`URL de la imagen ${index + 1}`}
+                  className="text-black border p-2 rounded w-full mb-4"
+                />
+              ))}
+              <p className="text-xs text-gray-500 mb-4">
+                Puedes proporcionar hasta 3 URLs de imágenes.
+              </p>
               <button
                 onClick={handleSaveProduct}
                 className="bg-blue-500 text-white px-4 py-2 rounded-lg mr-2"
@@ -537,35 +557,33 @@ export default function EmprendedorProfile() {
         <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
           <MetricChart />
         </div>
-        {/* Métricas y Estadísticas */}
         <div className="bg-white p-6 rounded-lg shadow-lg">
-            <h2 className="text-2xl font-bold mb-4">Métricas</h2>
-            <div className="flex items-center mb-2">
-              <FaEye className="text-indigo-500 mr-2" />
-              <p>
-                <strong>Visitas al Perfil:</strong> {}
-              </p>
-            </div>
-            <div className="flex items-center mb-2">
-              <FaShoppingCart className="text-green-500 mr-2" />
-              <p>
-                <strong>Ventas Totales:</strong> {}
-              </p>
-            </div>
-            <div className="flex items-center mb-2">
-              <FaDollarSign className="text-yellow-500 mr-2" />
-              <p>
-                <strong>Ingresos Totales:</strong> ${}
-              </p>
-            </div>
-            <div className="flex items-center mb-2">
-              <FaChartLine className="text-blue-500 mr-2" />
-              <p>
-                <strong>Tasa de Conversión:</strong> {}%
-              </p>
-            </div>
+          <h2 className="text-2xl font-bold mb-4">Métricas</h2>
+          <div className="flex items-center mb-2">
+            <FaEye className="text-indigo-500 mr-2" />
+            <p>
+              <strong>Visitas al Perfil:</strong> {}
+            </p>
           </div>
-        
+          <div className="flex items-center mb-2">
+            <FaShoppingCart className="text-green-500 mr-2" />
+            <p>
+              <strong>Ventas Totales:</strong> {}
+            </p>
+          </div>
+          <div className="flex items-center mb-2">
+            <FaDollarSign className="text-yellow-500 mr-2" />
+            <p>
+              <strong>Ingresos Totales:</strong> ${}
+            </p>
+          </div>
+          <div className="flex items-center mb-2">
+            <FaChartLine className="text-blue-500 mr-2" />
+            <p>
+              <strong>Tasa de Conversión:</strong> {}%
+            </p>
+          </div>
+        </div>
       </div>
     </>
   );

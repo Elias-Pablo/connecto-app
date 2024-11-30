@@ -17,94 +17,6 @@ async function getPerfilId(userId) {
   });
 }
 
-// Inserción de productos
-export async function POST(req) {
-  try {
-    const token = req.cookies.get("token")?.value;
-    if (!token) {
-      return new Response(JSON.stringify({ message: "Token no encontrado" }), {
-        status: 401,
-      });
-    }
-
-    const decoded = jwt.verify(token, process.env.JWT_SECRET);
-    const userId = decoded.userId;
-
-    const id_perfil = await getPerfilId(userId); // Obtener id_perfil basado en el userId
-
-    const { name, description, price, stock, url_imagen } = await req.json();
-    if (!name || !description || !price || stock === undefined) {
-      return new Response(
-        JSON.stringify({ message: "Todos los campos son obligatorios" }),
-        { status: 400 }
-      );
-    }
-
-    return new Promise((resolve, reject) => {
-      // Insertar la URL de la imagen en la tabla imagen_publicacion y obtener id_imagen
-      connection.query(
-        "INSERT INTO imagen_publicacion (url_imagen) VALUES (?)",
-        [url_imagen],
-        (error, results) => {
-          if (error) {
-            console.error("Error al insertar imagen:", error);
-            return reject(
-              new Response(
-                JSON.stringify({
-                  message: "Error al insertar imagen",
-                  error: error.message,
-                }),
-                { status: 500 }
-              )
-            );
-          }
-
-          const id_imagen = results.insertId;
-
-          // Insertar el producto en la tabla productos usando el id_imagen y id_perfil
-          connection.query(
-            "INSERT INTO productos (id_perfil, nombre, descripcion, precio, stock, tiempo_creacion, id_imagen) VALUES (?, ?, ?, ?, ?, NOW(), ?)",
-            [id_perfil, name, description, price, stock, id_imagen],
-            (error, results) => {
-              if (error) {
-                console.error("Error al insertar el producto:", error);
-                reject(
-                  new Response(
-                    JSON.stringify({
-                      message: "Error al insertar el producto",
-                      error: error.message,
-                    }),
-                    { status: 500 }
-                  )
-                );
-              } else {
-                resolve(
-                  new Response(
-                    JSON.stringify({
-                      message: "Producto agregado exitosamente",
-                      id: results.insertId,
-                    }),
-                    { status: 201 }
-                  )
-                );
-              }
-            }
-          );
-        }
-      );
-    });
-  } catch (error) {
-    console.error("Error al insertar el producto:", error);
-    return new Response(
-      JSON.stringify({
-        message: "Error al insertar el producto",
-        error: error.message,
-      }),
-      { status: 500 }
-    );
-  }
-}
-
 // Obtener productos filtrados por usuario autenticado
 export async function GET(req) {
   try {
@@ -124,7 +36,7 @@ export async function GET(req) {
       connection.query(
         `SELECT p.id_producto, p.nombre, p.descripcion, p.precio, p.stock, i.url_imagen
          FROM productos p
-         LEFT JOIN imagen_publicacion i ON p.id_imagen = i.id_imagen
+         LEFT JOIN producto_imagenes i ON p.id_producto = i.id_producto
          WHERE p.id_perfil = ?`,
         [perfilId],
         (err, results) => {
@@ -152,6 +64,118 @@ export async function GET(req) {
     return new Response(
       JSON.stringify({
         message: "Error al cargar productos",
+        error: error.message,
+      }),
+      { status: 500 }
+    );
+  }
+}
+
+// Inserción de productos
+export async function POST(req) {
+  try {
+    const token = req.cookies.get("token")?.value;
+    if (!token) {
+      return new Response(JSON.stringify({ message: "Token no encontrado" }), {
+        status: 401,
+      });
+    }
+
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    const userId = decoded.userId;
+
+    const id_perfil = await getPerfilId(userId); // Obtener id_perfil basado en el userId
+
+    const { name, description, price, stock, images } = await req.json(); // Aquí obtenemos las imágenes como un array
+    if (!name || !description || !price || stock === undefined) {
+      return new Response(
+        JSON.stringify({ message: "Todos los campos son obligatorios" }),
+        { status: 400 }
+      );
+    }
+
+    return new Promise((resolve, reject) => {
+      // Insertar el producto en la tabla productos
+      connection.query(
+        "INSERT INTO productos (id_perfil, nombre, descripcion, precio, stock, tiempo_creacion) VALUES (?, ?, ?, ?, ?, NOW())",
+        [id_perfil, name, description, price, stock],
+        (error, results) => {
+          if (error) {
+            console.error("Error al insertar el producto:", error);
+            return reject(
+              new Response(
+                JSON.stringify({
+                  message: "Error al insertar el producto",
+                  error: error.message,
+                }),
+                { status: 500 }
+              )
+            );
+          }
+
+          const id_producto = results.insertId;
+
+          // Insertar múltiples imágenes asociadas al producto en la tabla producto_imagenes
+          if (images && images.length > 0) {
+            const imageQueries = images.map((url) => {
+              return new Promise((imgResolve, imgReject) => {
+                connection.query(
+                  "INSERT INTO producto_imagenes (id_producto, url_imagen) VALUES (?, ?)",
+                  [id_producto, url],
+                  (err) => {
+                    if (err) {
+                      console.error("Error al insertar la imagen:", err);
+                      imgReject(err);
+                    } else {
+                      imgResolve();
+                    }
+                  }
+                );
+              });
+            });
+
+            Promise.all(imageQueries)
+              .then(() => {
+                resolve(
+                  new Response(
+                    JSON.stringify({
+                      message: "Producto agregado exitosamente",
+                      id: id_producto,
+                    }),
+                    { status: 201 }
+                  )
+                );
+              })
+              .catch((error) => {
+                reject(
+                  new Response(
+                    JSON.stringify({
+                      message: "Error al insertar las imágenes",
+                      error: error.message,
+                    }),
+                    { status: 500 }
+                  )
+                );
+              });
+          } else {
+            resolve(
+              new Response(
+                JSON.stringify({
+                  message: "Producto agregado sin imágenes",
+                  id: id_producto,
+                }),
+                { status: 201 }
+              )
+            );
+          }
+        }
+      );
+    });
+  } catch (error) {
+    console.error("Error al insertar el producto:", error);
+    return new Response(
+      JSON.stringify({
+        message: "Error al insertar el producto",
         error: error.message,
       }),
       { status: 500 }

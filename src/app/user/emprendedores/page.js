@@ -8,11 +8,11 @@ export default function Home() {
   const router = useRouter();
 
   const handleLoginClick = () => {
-    router.push("auth/login");
+    router.push("/auth/login");
   };
 
   const handleRegisterClick = () => {
-    router.push("auth/emregister");
+    router.push("/auth/emregister");
   };
 
   const [expandedIndex, setExpandedIndex] = useState(null);

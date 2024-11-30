@@ -4,7 +4,7 @@ import { Bar } from "react-chartjs-2";
 import Chart from "chart.js/auto";
 
 export default function MetricChart() {
-  const [metricsData, setMetricsData] = useState([]);
+  const [metricsData, setMetricsData] = useState({}); // Inicializar como objeto vacío
   const [period, setPeriod] = useState("daily");
 
   useEffect(() => {
@@ -23,7 +23,7 @@ export default function MetricChart() {
 
         if (response.ok) {
           const { metrics } = await response.json();
-          setMetricsData(metrics);
+          setMetricsData(metrics || {}); // Asegurar que metrics sea un objeto válido
         } else {
           console.error("Error al obtener datos de métricas");
         }
@@ -36,7 +36,15 @@ export default function MetricChart() {
   }, []);
 
   const periodLabels = {
-    daily: ["Lunes", "Martes", "Miércoles", "Jueves", "Viernes", "Sábado", "Domingo"],
+    daily: [
+      "Lunes",
+      "Martes",
+      "Miércoles",
+      "Jueves",
+      "Viernes",
+      "Sábado",
+      "Domingo",
+    ],
     weekly: ["Semana 1", "Semana 2", "Semana 3", "Semana 4"],
     monthly: [
       "Enero",
@@ -59,14 +67,14 @@ export default function MetricChart() {
     datasets: [
       {
         label: "Visitas",
-        data: metricsData[period]?.visits || [],
+        data: metricsData[period]?.visits || [], // Manejar el caso en que metricsData[period] sea undefined
         backgroundColor: "rgba(75, 192, 192, 0.6)",
         borderColor: "rgba(75, 192, 192, 1)",
         borderWidth: 1,
       },
       {
         label: "Ventas",
-        data: metricsData[period]?.sales || [],
+        data: metricsData[period]?.sales || [], // Manejar el caso en que metricsData[period] sea undefined
         backgroundColor: "rgba(255, 99, 132, 0.6)",
         borderColor: "rgba(255, 99, 132, 1)",
         borderWidth: 1,
@@ -80,7 +88,17 @@ export default function MetricChart() {
       legend: { display: true },
     },
     scales: {
-      x: { title: { display: true, text: period === "daily" ? "Días" : period === "weekly" ? "Semanas" : "Meses" } },
+      x: {
+        title: {
+          display: true,
+          text:
+            period === "daily"
+              ? "Días"
+              : period === "weekly"
+              ? "Semanas"
+              : "Meses",
+        },
+      },
       y: { title: { display: true, text: "Cantidad" } },
     },
   };
@@ -99,7 +117,11 @@ export default function MetricChart() {
             }`}
             onClick={() => setPeriod(key)}
           >
-            {key === "daily" ? "Diario" : key === "weekly" ? "Semanal" : "Mensual"}
+            {key === "daily"
+              ? "Diario"
+              : key === "weekly"
+              ? "Semanal"
+              : "Mensual"}
           </button>
         ))}
       </div>

@@ -14,17 +14,50 @@ export async function GET(req) {
       });
     }
 
+    // Consulta a la base de datos para obtener los favoritos, incluidas todas las imágenes del producto
     const query = `
-      SELECT f.id_favorito, p.id_producto, p.nombre, p.precio, i.url_imagen AS image 
+      SELECT 
+        f.id_favorito, 
+        p.id_producto, 
+        p.nombre, 
+        p.precio,
+        pi.url_imagen,
+        pn.id_perfil, 
+        pn.nombre_negocio AS business_name
       FROM favoritos f
       INNER JOIN productos p ON f.id_producto = p.id_producto
-      LEFT JOIN imagen_publicacion i ON p.id_imagen = i.id_imagen
+      LEFT JOIN producto_imagenes pi ON p.id_producto = pi.id_producto
+      LEFT JOIN perfil_negocio pn ON p.id_perfil = pn.id_perfil
       WHERE f.id_usuario = ?
     `;
 
     const [results] = await connection.promise().query(query, [userId]);
 
-    return new Response(JSON.stringify({ favorites: results }), {
+    // Agrupar los productos por su ID y consolidar las imágenes en un array
+    const favoriteMap = {};
+    results.forEach((favorite) => {
+      if (!favoriteMap[favorite.id_producto]) {
+        // Si el producto no está en el mapa, añadirlo
+        favoriteMap[favorite.id_producto] = {
+          id: favorite.id_producto,
+          name: favorite.nombre,
+          price: favorite.precio,
+          images: favorite.url_imagen ? [favorite.url_imagen] : [], // Inicializar el array de imágenes
+          businessName: favorite.business_name,
+          id_perfil: favorite.id_perfil,
+        };
+      } else {
+        // Si el producto ya está en el mapa, agregar la imagen a su array
+        if (favorite.url_imagen) {
+          favoriteMap[favorite.id_producto].images.push(favorite.url_imagen);
+        }
+      }
+    });
+
+    // Convertir el mapa a un array
+    const favorites = Object.values(favoriteMap);
+
+    return new Response(JSON.stringify({ favorites: favorites }), {
       status: 200,
       headers: { "Content-Type": "application/json" },
     });

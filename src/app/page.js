@@ -8,6 +8,9 @@ import SearchedProducts from "@/components/Searched-Products";
 import { useCart, CartProvider } from "../../src/app/context/CartContext";
 import Link from "next/link";
 import { jwtDecode } from "jwt-decode";
+import Slider from "react-slick"; // Importación del carrusel de react-slick
+import "slick-carousel/slick/slick.css"; // Importar estilos de slick-carousel
+import "slick-carousel/slick/slick-theme.css";
 
 export default function Home() {
   const router = useRouter();
@@ -46,10 +49,8 @@ export default function Home() {
   };
 
   const handleAddToFavorites = async (product) => {
-    // Añadir a los favoritos en el estado
     setFavorites((prevFavorites) => [...prevFavorites, product]);
 
-    // Enviar la solicitud para guardar el producto en la base de datos
     try {
       const response = await fetch(`/api/favorites`, {
         method: "POST",
@@ -72,7 +73,6 @@ export default function Home() {
       prevFavorites.filter((item) => item.id !== productId)
     );
 
-    // Enviar la solicitud para eliminar el producto de favoritos en la base de datos
     try {
       const response = await fetch(
         `/api/favorites/${productId}?userId=${userId}`,
@@ -137,7 +137,6 @@ export default function Home() {
       const token = localStorage.getItem("token");
       if (!token) return;
 
-      // Decodificar el token para extraer el `userId`
       const { userId } = jwtDecode(token);
 
       try {
@@ -148,7 +147,7 @@ export default function Home() {
             Authorization: `Bearer ${token}`,
           },
           body: JSON.stringify({
-            userId, // Incluye el usuario que realiza la interacción
+            userId,
             tipo_interaccion: type,
             id_perfil,
             id_producto,
@@ -159,6 +158,14 @@ export default function Home() {
         console.error("Error al registrar la interacción:", error);
       }
     };
+    const sliderSettings = {
+      dots: true,
+      infinite: true,
+      speed: 500,
+      slidesToShow: 1,
+      slidesToScroll: 1,
+      arrows: true,
+    };
 
     return (
       <section className="bg-white p-10">
@@ -168,61 +175,75 @@ export default function Home() {
           </h2>
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
             {products.map((product) => (
-              <div
-                key={product.id}
-                className="bg-zinc-300 p-5 rounded-lg shadow-lg text-center flex flex-col items-center justify-around"
-              >
-                <img
-                  src={product.image || "/placeholder.webp"}
-                  width={250}
-                  height={100}
-                  className="rounded-lg drop-shadow-md"
-                  alt={product.name}
-                />
-                <h3 className="text-lg font-semibold mt-2 text-black">
-                  {product.name}
-                </h3>
-                <p className="text-sm text-gray-600">
-                  {formatPrice(product.price)}
-                </p>
-
-                <p className="text-sm text-black">{product.description}</p>
-                <div className="flex flex-col space-y-2 mt-2">
-                  <p className="text-xs text-gray-500 my-2">
-                    Vendedor:{" "}
-                    <Link
-                      href={`/user/emprendedores/profile?id_perfil=${product.id_perfil}`}
-                      className="text-sky-500"
-                      onClick={() =>
-                        handleInteraction("View", product.id_perfil, null)
-                      }
-                    >
-                      {product.businessName}
-                    </Link>
+              <Link href={`/products/${product.id}`} key={product.id}>
+                <div
+                  key={product.id}
+                  className="text-center p-5 bg-gray-200 w-auto rounded-lg shadow-lg"
+                >
+                  {product.images && product.images.length > 0 ? (
+                    <Slider {...sliderSettings}>
+                      {product.images.map((image, index) => (
+                        <div key={index}>
+                          <img
+                            src={image}
+                            alt={product.name}
+                            className="mx-auto rounded-lg mb-2 w-full h-64 object-cover"
+                          />
+                        </div>
+                      ))}
+                    </Slider>
+                  ) : (
+                    <img
+                      src="/placeholder.webp"
+                      alt="Sin imagen"
+                      className="mx-auto rounded-lg mb-2 w-full h-64 object-cover"
+                    />
+                  )}
+                  <h3 className="text-lg font-semibold mt-5 text-black">
+                    {product.name}
+                  </h3>
+                  <p className="text-sm text-gray-600">
+                    {formatPrice(product.price)}
                   </p>
-                  <button
-                    onClick={() => {
-                      handleInteraction("Click", product.id_perfil, product.id); // Registrar interacción
-                      addToCart(product);
-                    }}
-                    className="bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600"
-                  >
-                    Agregar al Carrito
-                  </button>
-                  <button
-                    onClick={() =>
-                      favorites.some((fav) => fav.id === product.id)
-                        ? handleRemoveFromFavorites(product.id)
-                        : handleAddToFavorites(product)
-                    }
-                    className="bg-red-500 text-white px-4 py-2 rounded-lg hover:bg-red-600"
-                  >
-                    {favorites.some((fav) => fav.id === product.id)
-                      ? "Eliminar de Favoritos"
-                      : "Agregar a Favoritos"}
-                  </button>
+                  <p className="text-sm text-black">{product.description}</p>
+                  <div className="flex flex-col space-y-2 mt-2">
+                    <p className="text-xs text-gray-500 my-2">
+                      Vendedor:{" "}
+                      <Link
+                        href={`/user/emprendedores/profile?id_perfil=${product.id_perfil}`}
+                        className="text-sky-500"
+                      >
+                        {product.businessName}
+                      </Link>
+                    </p>
+                    <button
+                      onClick={() => {
+                        handleInteraction(
+                          "Click",
+                          product.id_perfil,
+                          product.id
+                        );
+                        addToCart(product);
+                      }}
+                      className="bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600"
+                    >
+                      Agregar al Carrito
+                    </button>
+                    <button
+                      onClick={() =>
+                        favorites.some((fav) => fav.id === product.id)
+                          ? handleRemoveFromFavorites(product.id)
+                          : handleAddToFavorites(product)
+                      }
+                      className="bg-red-500 text-white px-4 py-2 rounded-lg hover:bg-red-600"
+                    >
+                      {favorites.some((fav) => fav.id === product.id)
+                        ? "Eliminar de Favoritos"
+                        : "Agregar a Favoritos"}
+                    </button>
+                  </div>
                 </div>
-              </div>
+              </Link>
             ))}
           </div>
         </div>
@@ -240,7 +261,7 @@ export default function Home() {
           if (response.ok) {
             const data = await response.json();
             console.log("Datos de los perfiles recibidos:", data);
-            setProfileData(data.perfiles); // Guardamos todos los perfiles
+            setProfileData(data.perfiles);
           } else {
             console.error("Error al cargar los perfiles de emprendedores");
           }
@@ -285,13 +306,38 @@ export default function Home() {
       </section>
     );
   };
+
   const FAQSection = () => {
     const [expandedQuestion, setExpandedQuestion] = useState(null);
 
     const handleToggleAnswer = (index) => {
       setExpandedQuestion(expandedQuestion === index ? null : index);
     };
+
+    return (
+      <section className="p-10 bg-gray-100">
+        <div className="container mx-auto">
+          <h2 className="text-2xl font-semibold mb-5 text-center text-black">
+            Preguntas Frecuentes
+          </h2>
+          {FAQ.map((item, index) => (
+            <div key={index} className="mb-4">
+              <button
+                className="text-lg font-medium text-blue-500"
+                onClick={() => handleToggleAnswer(index)}
+              >
+                {item.question}
+              </button>
+              {expandedQuestion === index && (
+                <p className="text-black mt-2">{item.answer}</p>
+              )}
+            </div>
+          ))}
+        </div>
+      </section>
+    );
   };
+
   return (
     <CartProvider>
       <Header />
