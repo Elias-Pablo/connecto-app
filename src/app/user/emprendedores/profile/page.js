@@ -16,6 +16,11 @@ export default function EmprendedorProfile() {
   const [message, setMessage] = useState("");
   const [messages, setMessages] = useState([]);
   const [idConversacion, setIdConversacion] = useState(null); // Nuevo estado para id_conversacion
+  const [reviews, setReviews] = useState([]); // Nuevo estado para las reseñas
+  const [newReview, setNewReview] = useState({
+    comentario: "",
+    calificacion: 0,
+  });
   const searchParams = useSearchParams();
   const idPerfil = searchParams.get("id_perfil");
   const [username, setUsername] = useState("");
@@ -23,7 +28,6 @@ export default function EmprendedorProfile() {
   const [idDestinatario, setIdDestinatario] = useState(null);
   const [idRemitente, setIdRemitente] = useState(null);
   const [profilePicture, setProfilePicture] = useState(null);
-
   const lastMessageRef = useRef(null);
 
   const formatPrice = (price) => {
@@ -43,6 +47,7 @@ export default function EmprendedorProfile() {
       setUsername(decoded.username);
     }
   }, []);
+
   const sliderSettings = {
     dots: true,
     infinite: true,
@@ -78,7 +83,26 @@ export default function EmprendedorProfile() {
 
     fetchProfileData();
   }, [idPerfil]);
-  console.log(productos);
+
+  // Obtener las reseñas del emprendedor
+  useEffect(() => {
+    const fetchReviews = async () => {
+      if (!idPerfil) return;
+      try {
+        const response = await fetch(`/api/reviews/emprendedor/${idPerfil}`);
+        if (response.ok) {
+          const data = await response.json();
+          setReviews(data.reviews || []);
+        } else {
+          console.error("Error al obtener las reseñas");
+        }
+      } catch (error) {
+        console.error("Error en la solicitud:", error);
+      }
+    };
+
+    fetchReviews();
+  }, [idPerfil]);
 
   // Manejar agregar a favoritos
   const handleAddToFavorites = async () => {
@@ -95,7 +119,6 @@ export default function EmprendedorProfile() {
           ...prevFavorites,
           { id_favorito: data.id, id_perfil: parseInt(idPerfil, 10) },
         ]);
-        setIsFavorite(true); // Actualizar el estado local
         console.log("Emprendedor agregado a favoritos");
       } else {
         console.error("Error al agregar emprendedor a favoritos");
@@ -126,7 +149,6 @@ export default function EmprendedorProfile() {
             (fav) => fav.id_favorito !== favorite.id_favorito
           )
         );
-        setIsFavorite(false); // Actualizar el estado local
         console.log("Emprendedor eliminado de favoritos");
       } else {
         console.error("Error al eliminar emprendedor de favoritos");
@@ -227,13 +249,6 @@ export default function EmprendedorProfile() {
       return;
     }
 
-    console.log("Enviando mensaje:", {
-      idRemitente,
-      idDestinatario,
-      idConversacion,
-      message,
-    });
-
     try {
       const response = await fetch("/api/chat/send", {
         method: "POST",
@@ -265,11 +280,59 @@ export default function EmprendedorProfile() {
       console.error("Error al intentar enviar el mensaje:", error);
     }
   };
-  const handleFavoriteToggle = () => {
-    if (isFavorite) {
-      handleRemoveFromFavorites();
-    } else {
-      handleAddToFavorites();
+  const renderStars = (rating) => {
+    let stars = [];
+    for (let i = 1; i <= 5; i++) {
+      if (i <= rating) {
+        stars.push(
+          <svg
+            key={i}
+            xmlns="http://www.w3.org/2000/svg"
+            fill="#ebdc23"
+            viewBox="0 0 24 24"
+            width="24"
+            height="24"
+          >
+            <path d="M12 2l2.1 6.4h6.7l-5.4 3.9 2.1 6.6-5.4-3.9-5.4 3.9 2.1-6.6-5.4-3.9h6.7z" />
+          </svg>
+        );
+      } else {
+        stars.push(
+          <svg
+            key={i}
+            xmlns="http://www.w3.org/2000/svg"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+            width="24"
+            height="24"
+          >
+            <path d="M12 2l2.1 6.4h6.7l-5.4 3.9 2.1 6.6-5.4-3.9-5.4 3.9 2.1-6.6-5.4-3.9h6.7z" />
+          </svg>
+        );
+      }
+    }
+    return stars;
+  };
+
+  const handleReviewSubmit = async (e) => {
+    e.preventDefault();
+
+    try {
+      const response = await fetch(`/api/reviews/emprendedor/${idPerfil}`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(newReview),
+      });
+
+      if (response.ok) {
+        setReviews([...reviews, { ...newReview, fecha_creacion: new Date() }]);
+        setNewReview({ comentario: "", calificacion: 0 }); // Limpiar el formulario
+      } else {
+        console.error("Error al agregar reseña");
+      }
+    } catch (error) {
+      console.error("Error en la solicitud:", error);
     }
   };
 
@@ -317,7 +380,6 @@ export default function EmprendedorProfile() {
                 Agregar a Favoritos
               </button>
             </div>
-
             <div className="flex justify-end mt-6">
               <button
                 className="flex items-center bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600"
@@ -327,6 +389,70 @@ export default function EmprendedorProfile() {
               </button>
             </div>
 
+            {/* Sección de reseñas */}
+            <div className="mt-10">
+              <h3 className="text-xl font-semibold mb-4">Reseñas</h3>
+              {reviews.length > 0 ? (
+                reviews.map((review, index) => (
+                  <div key={index} className="border-b py-4">
+                    <p className="flex">
+                      <strong>{review.nombre_usuario}</strong> -{" "}
+                      {renderStars(review.calificacion)}
+                    </p>
+                    <p>{review.comentario}</p>
+                    <p className="text-xs text-gray-500">
+                      {new Date(review.fecha_creacion).toLocaleDateString()}
+                    </p>
+                  </div>
+                ))
+              ) : (
+                <p>No hay reseñas para este producto.</p>
+              )}
+
+              <h3 className="text-xl font-semibold mt-6">Agregar una reseña</h3>
+              <form onSubmit={handleReviewSubmit}>
+                <textarea
+                  name="comentario"
+                  value={newReview.comentario}
+                  onChange={(e) =>
+                    setNewReview({ ...newReview, comentario: e.target.value })
+                  }
+                  placeholder="Escribe tu comentario"
+                  className="w-full p-2 border rounded mb-4"
+                  required
+                />
+                <div className="mb-4">
+                  <label className="mr-2">Calificación:</label>
+                  <select
+                    name="calificacion"
+                    value={newReview.calificacion}
+                    onChange={(e) =>
+                      setNewReview({
+                        ...newReview,
+                        calificacion: parseInt(e.target.value),
+                      })
+                    }
+                    className="p-2 border rounded"
+                    required
+                  >
+                    <option value="0">Seleccionar calificación</option>
+                    <option value="1">1 ⭐</option>
+                    <option value="2">2 ⭐</option>
+                    <option value="3">3 ⭐</option>
+                    <option value="4">4 ⭐</option>
+                    <option value="5">5 ⭐</option>
+                  </select>
+                </div>
+                <button
+                  type="submit"
+                  className="bg-blue-500 text-white py-2 px-4 rounded"
+                >
+                  Enviar Reseña
+                </button>
+              </form>
+            </div>
+
+            {/* Productos */}
             <div className="mt-10">
               <h2 className="text-xl font-semibold mb-4">Productos</h2>
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">

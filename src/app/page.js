@@ -175,11 +175,11 @@ export default function Home() {
           </h2>
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
             {products.map((product) => (
-              <Link href={`/products/${product.id}`} key={product.id}>
-                <div
-                  key={product.id}
-                  className="text-center p-5 bg-gray-200 w-auto rounded-lg shadow-lg"
-                >
+              <div
+                key={product.id}
+                className="text-center p-5 bg-gray-200 w-auto rounded-lg shadow-lg"
+              >
+                <Link href={`/products/${product.id}`} key={product.id}>
                   {product.images && product.images.length > 0 ? (
                     <Slider {...sliderSettings}>
                       {product.images.map((image, index) => (
@@ -202,48 +202,44 @@ export default function Home() {
                   <h3 className="text-lg font-semibold mt-5 text-black">
                     {product.name}
                   </h3>
-                  <p className="text-sm text-gray-600">
-                    {formatPrice(product.price)}
+                </Link>
+                <p className="text-sm text-gray-600">
+                  {formatPrice(product.price)}
+                </p>
+                <p className="text-sm text-black">{product.description}</p>
+                <div className="flex flex-col space-y-2 mt-2">
+                  <p className="text-xs text-gray-500 my-2">
+                    Vendedor:{" "}
+                    <Link
+                      href={`/user/emprendedores/profile?id_perfil=${product.id_perfil}`}
+                      className="text-sky-500"
+                    >
+                      {product.businessName}
+                    </Link>
                   </p>
-                  <p className="text-sm text-black">{product.description}</p>
-                  <div className="flex flex-col space-y-2 mt-2">
-                    <p className="text-xs text-gray-500 my-2">
-                      Vendedor:{" "}
-                      <Link
-                        href={`/user/emprendedores/profile?id_perfil=${product.id_perfil}`}
-                        className="text-sky-500"
-                      >
-                        {product.businessName}
-                      </Link>
-                    </p>
-                    <button
-                      onClick={() => {
-                        handleInteraction(
-                          "Click",
-                          product.id_perfil,
-                          product.id
-                        );
-                        addToCart(product);
-                      }}
-                      className="bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600"
-                    >
-                      Agregar al Carrito
-                    </button>
-                    <button
-                      onClick={() =>
-                        favorites.some((fav) => fav.id === product.id)
-                          ? handleRemoveFromFavorites(product.id)
-                          : handleAddToFavorites(product)
-                      }
-                      className="bg-red-500 text-white px-4 py-2 rounded-lg hover:bg-red-600"
-                    >
-                      {favorites.some((fav) => fav.id === product.id)
-                        ? "Eliminar de Favoritos"
-                        : "Agregar a Favoritos"}
-                    </button>
-                  </div>
+                  <button
+                    onClick={() => {
+                      handleInteraction("Click", product.id_perfil, product.id);
+                      addToCart(product);
+                    }}
+                    className="bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600"
+                  >
+                    Agregar al Carrito
+                  </button>
+                  <button
+                    onClick={() =>
+                      favorites.some((fav) => fav.id === product.id)
+                        ? handleRemoveFromFavorites(product.id)
+                        : handleAddToFavorites(product)
+                    }
+                    className="bg-red-500 text-white px-4 py-2 rounded-lg hover:bg-red-600"
+                  >
+                    {favorites.some((fav) => fav.id === product.id)
+                      ? "Eliminar de Favoritos"
+                      : "Agregar a Favoritos"}
+                  </button>
                 </div>
-              </Link>
+              </div>
             ))}
           </div>
         </div>

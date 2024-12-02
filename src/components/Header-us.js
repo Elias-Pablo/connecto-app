@@ -99,7 +99,7 @@ export default function Header() {
     }
   }, []);
   const handleViewMessages = () => {
-    router.push("user/mensajes"); // Página que muestra los chats
+    router.push("/user/mensajes"); // Página que muestra los chats
   };
   const handleClickonAvatar = () => {
     if (user.tipo_usuario === "emprendedor") {
@@ -277,10 +277,10 @@ export default function Header() {
                   viewBox="0 0 24 24"
                   fill="none"
                   stroke="white"
-                  stroke-width="2"
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  class="icon icon-tabler icons-tabler-outline icon-tabler-message-circle"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  className="icon icon-tabler icons-tabler-outline icon-tabler-message-circle"
                 >
                   <path stroke="none" d="M0 0h24v24H0z" fill="none" />
                   <path d="M3 20l1.3 -3.9c-2.324 -3.437 -1.426 -7.872 2.1 -10.374c3.526 -2.501 8.59 -2.296 11.845 .48c3.255 2.777 3.695 7.266 1.029 10.501c-2.666 3.235 -7.615 4.215 -11.574 2.293l-4.7 1" />
@@ -308,9 +308,9 @@ export default function Header() {
                 fill="none"
                 stroke="currentColor"
                 strokeWidth="2"
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                class="icon icon-tabler icons-tabler-outline icon-tabler-bell"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                className="icon icon-tabler icons-tabler-outline icon-tabler-bell"
               >
                 <path stroke="none" d="M0 0h24v24H0z" fill="none" />
                 <path d="M10 5a2 2 0 1 1 4 0a7 7 0 0 1 4 6v3a4 4 0 0 0 2 3h-16a4 4 0 0 0 2 -3v-3a7 7 0 0 1 4 -6" />

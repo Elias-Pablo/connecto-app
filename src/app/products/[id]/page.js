@@ -12,6 +12,11 @@ import Link from "next/link";
 export default function ProductDetail() {
   const { id } = useParams(); // Obtiene el ID del producto desde la URL usando useParams()
   const [product, setProduct] = useState(null);
+  const [reviews, setReviews] = useState([]);
+  const [newReview, setNewReview] = useState({
+    comentario: "",
+    calificacion: 0,
+  });
   const { addToCart } = useCart();
 
   useEffect(() => {
@@ -32,12 +37,45 @@ export default function ProductDetail() {
       }
     };
 
+    // Fetch reseñas
+    const fetchReviews = async () => {
+      try {
+        const response = await fetch(`/api/reviews/products/${id}`);
+        if (response.ok) {
+          const data = await response.json();
+          setReviews(data.reviews);
+        } else {
+          console.error("Error al obtener las reseñas");
+        }
+      } catch (error) {
+        console.error("Error en la solicitud:", error);
+      }
+    };
+
     fetchProductData();
+    fetchReviews();
   }, [id]);
 
-  if (!product) {
-    return <div>Cargando producto...</div>;
-  }
+  const handleReviewSubmit = async (e) => {
+    e.preventDefault();
+
+    try {
+      const response = await fetch(`/api/reviews/products/${id}`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(newReview),
+      });
+
+      if (response.ok) {
+        setReviews([...reviews, { ...newReview, fecha_creacion: new Date() }]);
+        setNewReview({ comentario: "", calificacion: 0 }); // Limpiar el formulario
+      } else {
+        console.error("Error al agregar reseña");
+      }
+    } catch (error) {
+      console.error("Error en la solicitud:", error);
+    }
+  };
 
   // Configuración para el carrusel
   const sliderSettings = {
@@ -50,7 +88,47 @@ export default function ProductDetail() {
   };
 
   // Combinar la imagen principal con las adicionales
-  const images = [product.mainImage, ...(product.additionalImages || [])];
+  const images = [product?.mainImage, ...(product?.additionalImages || [])];
+
+  if (!product) {
+    return <div>Cargando producto...</div>;
+  }
+
+  // Función para renderizar las estrellas
+  const renderStars = (rating) => {
+    let stars = [];
+    for (let i = 1; i <= 5; i++) {
+      if (i <= rating) {
+        stars.push(
+          <svg
+            key={i}
+            xmlns="http://www.w3.org/2000/svg"
+            fill="#ebdc23"
+            viewBox="0 0 24 24"
+            width="24"
+            height="24"
+          >
+            <path d="M12 2l2.1 6.4h6.7l-5.4 3.9 2.1 6.6-5.4-3.9-5.4 3.9 2.1-6.6-5.4-3.9h6.7z" />
+          </svg>
+        );
+      } else {
+        stars.push(
+          <svg
+            key={i}
+            xmlns="http://www.w3.org/2000/svg"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+            width="24"
+            height="24"
+          >
+            <path d="M12 2l2.1 6.4h6.7l-5.4 3.9 2.1 6.6-5.4-3.9-5.4 3.9 2.1-6.6-5.4-3.9h6.7z" />
+          </svg>
+        );
+      }
+    }
+    return stars;
+  };
 
   return (
     <>
@@ -132,6 +210,69 @@ export default function ProductDetail() {
               </div>
             )}
           </div>
+        </div>
+
+        {/* Sección de Reseñas */}
+        <div className="mt-10">
+          <h3 className="text-xl font-semibold mb-4">Reseñas</h3>
+          {reviews.length > 0 ? (
+            reviews.map((review, index) => (
+              <div key={index} className="border-b py-4">
+                <p className="flex">
+                  <strong>{review.nombre_usuario}</strong> -{" "}
+                  {renderStars(review.calificacion)}
+                </p>
+                <p>{review.comentario}</p>
+                <p className="text-xs text-gray-500">
+                  {new Date(review.fecha_creacion).toLocaleDateString()}
+                </p>
+              </div>
+            ))
+          ) : (
+            <p>No hay reseñas para este producto.</p>
+          )}
+
+          <h3 className="text-xl font-semibold mt-6">Agregar una reseña</h3>
+          <form onSubmit={handleReviewSubmit}>
+            <textarea
+              name="comentario"
+              value={newReview.comentario}
+              onChange={(e) =>
+                setNewReview({ ...newReview, comentario: e.target.value })
+              }
+              placeholder="Escribe tu comentario"
+              className="w-full p-2 border rounded mb-4"
+              required
+            />
+            <div className="mb-4">
+              <label className="mr-2">Calificación:</label>
+              <select
+                name="calificacion"
+                value={newReview.calificacion}
+                onChange={(e) =>
+                  setNewReview({
+                    ...newReview,
+                    calificacion: parseInt(e.target.value),
+                  })
+                }
+                className="p-2 border rounded"
+                required
+              >
+                <option value="0">Seleccionar calificación</option>
+                <option value="1">1 ⭐</option>
+                <option value="2">2 ⭐</option>
+                <option value="3">3 ⭐</option>
+                <option value="4">4 ⭐</option>
+                <option value="5">5 ⭐</option>
+              </select>
+            </div>
+            <button
+              type="submit"
+              className="bg-blue-500 text-white py-2 px-4 rounded"
+            >
+              Enviar Reseña
+            </button>
+          </form>
         </div>
       </div>
     </>

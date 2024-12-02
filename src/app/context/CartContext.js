@@ -51,7 +51,9 @@ export const CartProvider = ({ children }) => {
           toast.error("El producto está agotado.", { position: "top-center" });
           return prevItems;
         }
-        toast.success("Producto agregado al carrito.", { position: "top-center" });
+        toast.success("Producto agregado al carrito.", {
+          position: "top-center",
+        });
         return [...prevItems, { ...product, quantity: 1 }];
       }
     });

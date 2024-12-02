@@ -1,88 +1,54 @@
+// src/app/api/reviews/products/[id].js
+
 import connection from "@/lib/db";
-import jwt from "jsonwebtoken";
 
-export async function GET(req) {
-  try {
-    const url = new URL(req.url);
-    const id_producto = url.searchParams.get("id_producto");
+export const dynamic = "force-dynamic";
 
-    if (!id_producto) {
-      return new Response(
-        JSON.stringify({ message: "ID de producto es requerido" }),
-        { status: 400, headers: { "Content-Type": "application/json" } }
-      );
-    }
+export async function GET(req, { params }) {
+  const productId = params.id;
 
-    const query = `
-        SELECT r.id_review, r.comentario, r.calificacion, u.username, r.fecha_creacion
-        FROM product_reviews r
-        INNER JOIN usuarios u ON r.id_usuario = u.id_usuario
-        WHERE r.id_producto = ?
-      `;
-
-    const [results] = await connection.promise().query(query, [id_producto]);
-
-    return new Response(JSON.stringify({ reviews: results }), {
-      status: 200,
-      headers: { "Content-Type": "application/json" },
-    });
-  } catch (error) {
-    console.error("Error al obtener reseñas:", error);
+  if (!productId) {
     return new Response(
-      JSON.stringify({ message: "Error al obtener reseñas" }),
-      {
-        status: 500,
-        headers: { "Content-Type": "application/json" },
-      }
+      JSON.stringify({ message: "ID del producto es requerido" }),
+      { status: 400 }
     );
   }
-}
 
-export async function POST(req) {
   try {
-    const token = req.cookies.get("token")?.value;
-    if (!token) {
-      return new Response(JSON.stringify({ message: "Token no encontrado" }), {
-        status: 401,
-        headers: { "Content-Type": "application/json" },
-      });
-    }
-
-    const decoded = jwt.verify(token, process.env.JWT_SECRET);
-    const userId = decoded.userId;
-
-    const { id_producto, comentario, calificacion } = await req.json();
-
-    if (!id_producto || !calificacion) {
-      return new Response(
-        JSON.stringify({
-          message: "ID de producto y calificación son requeridos",
-        }),
-        { status: 400, headers: { "Content-Type": "application/json" } }
+    // Obtener todas las reseñas del producto
+    const reviews = await new Promise((resolve, reject) => {
+      connection.query(
+        "SELECT calificacion FROM product_reviews WHERE id_producto = ?",
+        [productId],
+        (error, results) => {
+          if (error) {
+            console.error("Error al obtener las reseñas:", error);
+            return reject(error);
+          }
+          resolve(results);
+        }
       );
-    }
+    });
 
-    const query = `
-      INSERT INTO product_reviews (id_usuario, id_producto, comentario, calificacion)
-      VALUES (?, ?, ?, ?)
-    `;
-
-    await connection
-      .promise()
-      .query(query, [userId, id_producto, comentario, calificacion]);
+    // Calcular el promedio de las calificaciones
+    const averageRating =
+      reviews.length > 0
+        ? reviews.reduce((acc, review) => acc + review.calificacion, 0) /
+          reviews.length
+        : 0;
 
     return new Response(
-      JSON.stringify({ message: "Reseña creada exitosamente" }),
-      {
-        status: 201,
-        headers: { "Content-Type": "application/json" },
-      }
+      JSON.stringify({ averageRating: averageRating.toFixed(1) }), // redondeamos a 1 decimal
+      { status: 200 }
     );
   } catch (error) {
-    console.error("Error al crear reseña:", error);
-    return new Response(JSON.stringify({ message: "Error al crear reseña" }), {
-      status: 500,
-      headers: { "Content-Type": "application/json" },
-    });
+    console.error("Error en la solicitud:", error);
+    return new Response(
+      JSON.stringify({
+        message: "Error en la solicitud",
+        error: error.message,
+      }),
+      { status: 500 }
+    );
   }
 }
