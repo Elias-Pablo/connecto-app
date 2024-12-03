@@ -1,11 +1,11 @@
 -- phpMyAdmin SQL Dump
--- version 5.2.0
+-- version 5.2.1
 -- https://www.phpmyadmin.net/
 --
--- Servidor: localhost
--- Tiempo de generación: 30-11-2024 a las 02:32:38
--- Versión del servidor: 10.4.27-MariaDB
--- Versión de PHP: 7.4.33
+-- Servidor: 127.0.0.1
+-- Tiempo de generación: 03-12-2024 a las 18:56:47
+-- Versión del servidor: 10.4.32-MariaDB
+-- Versión de PHP: 8.2.12
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 START TRANSACTION;
@@ -65,7 +65,15 @@ CREATE TABLE `compra` (
 INSERT INTO `compra` (`id_compra`, `id_documento`, `id_envio`, `id_usuario`, `detalle`, `cantidad`, `estado`, `total`, `fecha_creacion`) VALUES
 (1, 5, 5, NULL, 'Compra de productos', 1, 1, 2000, '2024-11-30 01:18:23'),
 (2, 6, 6, NULL, 'Compra de productos', 1, 1, 2000, '2024-11-30 01:18:59'),
-(3, 7, 7, 11, 'Compra de productos', 1, 1, 2000, '2024-11-30 01:24:26');
+(3, 7, 7, 11, 'Compra de productos', 1, 1, 2000, '2024-11-30 01:24:26'),
+(4, 8, 8, 12, 'Compra de productos', 1, 1, 4000, '2024-12-03 01:24:55'),
+(5, 9, 9, 12, 'Compra de productos', 1, 1, 4000, '2024-12-03 01:29:34'),
+(6, 10, 10, 12, 'Compra de productos', 1, 1, 4000, '2024-12-03 01:33:32'),
+(7, 11, 11, 12, 'Compra de productos', 1, 1, 4000, '2024-12-03 01:45:11'),
+(8, 12, 12, 12, 'Compra de productos', 1, 1, 4000, '2024-12-03 01:48:22'),
+(9, 13, 13, 12, 'Compra de productos', 1, 1, 4000, '2024-12-03 01:49:52'),
+(10, 14, 14, 12, 'Compra de productos', 1, 1, 8000, '2024-12-03 01:51:18'),
+(11, 15, 15, 12, 'Compra de productos', 1, 1, 8000, '2024-12-03 02:05:26');
 
 -- --------------------------------------------------------
 
@@ -91,7 +99,8 @@ INSERT INTO `conversaciones` (`id_conversacion`, `nombre_conversacion`, `id_usua
 (3, 'Chat entre 9 y 9', 9, 9, '2024-11-26 19:52:09'),
 (4, 'Chat entre 7 y 10', 7, 10, '2024-11-26 20:22:47'),
 (5, 'Chat entre 11 y 9', 11, 9, '2024-11-29 22:41:29'),
-(6, 'Chat entre 11 y 11', 11, 11, '2024-11-30 00:05:12');
+(6, 'Chat entre 11 y 11', 11, 11, '2024-11-30 00:05:12'),
+(7, 'Chat entre 12 y 9', 12, 9, '2024-12-03 01:31:05');
 
 -- --------------------------------------------------------
 
@@ -115,9 +124,17 @@ CREATE TABLE `detalle_compra` (
 --
 
 INSERT INTO `detalle_compra` (`id_detalle`, `id_compra`, `cantidad`, `precio_unitario`, `subtotal`, `total_sin_iva`, `iva`, `total_con_iva`) VALUES
-(1, 1, 1, '2000.00', '2000.00', '2000.00', '380.00', '2380.00'),
-(2, 2, 1, '2000.00', '2000.00', '2000.00', '380.00', '2380.00'),
-(3, 3, 1, '2000.00', '2000.00', '2000.00', '380.00', '2380.00');
+(1, 1, 1, 2000.00, 2000.00, 2000.00, 380.00, 2380.00),
+(2, 2, 1, 2000.00, 2000.00, 2000.00, 380.00, 2380.00),
+(3, 3, 1, 2000.00, 2000.00, 2000.00, 380.00, 2380.00),
+(4, 4, 2, 2000.00, 4000.00, 4000.00, 760.00, 4760.00),
+(5, 5, 2, 2000.00, 4000.00, 4000.00, 760.00, 4760.00),
+(6, 6, 2, 2000.00, 4000.00, 4000.00, 760.00, 4760.00),
+(7, 7, 2, 2000.00, 4000.00, 4000.00, 760.00, 4760.00),
+(8, 8, 2, 2000.00, 4000.00, 4000.00, 760.00, 4760.00),
+(9, 9, 2, 2000.00, 4000.00, 4000.00, 760.00, 4760.00),
+(10, 10, 4, 2000.00, 8000.00, 8000.00, 1520.00, 9520.00),
+(11, 11, 4, 2000.00, 8000.00, 8000.00, 1520.00, 9520.00);
 
 -- --------------------------------------------------------
 
@@ -142,7 +159,15 @@ INSERT INTO `documento` (`id_documento`, `tipo_documento`, `tipo_pago`) VALUES
 (4, NULL, NULL),
 (5, NULL, NULL),
 (6, NULL, NULL),
-(7, NULL, NULL);
+(7, NULL, NULL),
+(8, NULL, NULL),
+(9, NULL, NULL),
+(10, NULL, NULL),
+(11, NULL, NULL),
+(12, NULL, NULL),
+(13, NULL, NULL),
+(14, NULL, NULL),
+(15, NULL, NULL);
 
 -- --------------------------------------------------------
 
@@ -187,7 +212,15 @@ INSERT INTO `envio` (`id_envio`, `direccion`, `destinatario`, `remitente`, `tiem
 (4, NULL, NULL, NULL, '2024-11-30 01:17:11', NULL, NULL, NULL),
 (5, NULL, NULL, NULL, '2024-11-30 01:18:23', NULL, NULL, NULL),
 (6, NULL, NULL, NULL, '2024-11-30 01:18:59', NULL, NULL, NULL),
-(7, NULL, NULL, NULL, '2024-11-30 01:24:26', NULL, NULL, NULL);
+(7, NULL, NULL, NULL, '2024-11-30 01:24:26', NULL, NULL, NULL),
+(8, NULL, NULL, NULL, '2024-12-03 01:24:55', NULL, NULL, NULL),
+(9, NULL, NULL, NULL, '2024-12-03 01:29:34', NULL, NULL, NULL),
+(10, NULL, NULL, NULL, '2024-12-03 01:33:32', NULL, NULL, NULL),
+(11, NULL, NULL, NULL, '2024-12-03 01:45:11', NULL, NULL, NULL),
+(12, NULL, NULL, NULL, '2024-12-03 01:48:22', NULL, NULL, NULL),
+(13, NULL, NULL, NULL, '2024-12-03 01:49:52', NULL, NULL, NULL),
+(14, NULL, NULL, NULL, '2024-12-03 01:51:18', NULL, NULL, NULL),
+(15, NULL, NULL, NULL, '2024-12-03 02:05:26', NULL, NULL, NULL);
 
 -- --------------------------------------------------------
 
@@ -344,62 +377,66 @@ CREATE TABLE `interacciones` (
   `id_perfil` int(11) NOT NULL,
   `id_producto` int(11) DEFAULT NULL,
   `tipo_interaccion` enum('View','Click','Purchase') NOT NULL,
-  `fecha_interaccion` timestamp NOT NULL DEFAULT current_timestamp()
+  `fecha_interaccion` timestamp NOT NULL DEFAULT current_timestamp(),
+  `cantidad` int(11) DEFAULT 1
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Volcado de datos para la tabla `interacciones`
 --
 
-INSERT INTO `interacciones` (`id_interaccion`, `id_perfil`, `id_producto`, `tipo_interaccion`, `fecha_interaccion`) VALUES
-(1, 1, 5, 'Click', '2024-11-17 16:37:49'),
-(2, 1, NULL, 'View', '2024-11-17 17:08:55'),
-(3, 2, NULL, 'View', '2024-11-17 17:09:16'),
-(4, 1, 5, 'Click', '2024-11-17 17:09:55'),
-(6, 1, NULL, 'View', '2024-11-18 18:43:06'),
-(7, 4, 30, 'Click', '2024-11-19 18:02:03'),
-(8, 1, 9, 'Click', '2024-11-19 18:02:09'),
-(9, 1, 9, 'Click', '2024-11-19 18:02:10'),
-(10, 1, 9, 'Click', '2024-11-19 18:02:10'),
-(11, 1, 9, 'Click', '2024-11-19 18:02:11'),
-(12, 1, 9, 'Click', '2024-11-19 18:02:11'),
-(13, 1, 9, 'Click', '2024-11-19 18:02:11'),
-(14, 1, 9, 'Click', '2024-11-19 18:03:47'),
-(15, 1, 5, 'Click', '2024-11-19 18:04:25'),
-(16, 1, 6, 'Click', '2024-11-19 18:04:34'),
-(17, 1, 6, 'Click', '2024-11-19 18:04:40'),
-(18, 1, 5, 'Click', '2024-11-19 18:06:08'),
-(19, 1, 9, 'Click', '2024-11-19 18:06:16'),
-(20, 4, NULL, 'View', '2024-11-19 18:06:39'),
-(21, 1, NULL, 'View', '2024-11-19 22:53:20'),
-(22, 1, NULL, 'View', '2024-11-19 23:01:01'),
-(23, 1, 6, 'Click', '2024-11-19 23:57:10'),
-(25, 4, 30, 'Click', '2024-11-20 00:01:26'),
-(26, 1, NULL, 'View', '2024-11-20 00:04:52'),
-(28, 1, 6, 'Click', '2024-11-22 21:48:13'),
-(29, 1, 6, 'Click', '2024-11-22 21:48:14'),
-(30, 1, NULL, 'View', '2024-11-22 22:04:26'),
-(31, 1, NULL, 'View', '2024-11-26 01:01:28'),
-(32, 1, NULL, 'View', '2024-11-26 01:18:10'),
-(33, 1, NULL, 'View', '2024-11-26 01:28:39'),
-(34, 1, NULL, 'View', '2024-11-26 02:37:23'),
-(35, 1, 6, 'Click', '2024-11-26 19:25:41'),
-(36, 3, NULL, 'View', '2024-11-26 19:31:41'),
-(37, 1, NULL, 'View', '2024-11-26 19:52:08'),
-(38, 3, NULL, 'View', '2024-11-26 20:20:35'),
-(39, 2, NULL, 'View', '2024-11-26 20:22:46'),
-(40, 1, NULL, 'View', '2024-11-26 20:22:53'),
-(41, 1, NULL, 'View', '2024-11-27 21:35:47'),
-(42, 1, NULL, 'View', '2024-11-27 22:31:04'),
-(43, 3, NULL, 'View', '2024-11-27 22:51:11'),
-(44, 3, NULL, 'View', '2024-11-27 22:56:43'),
-(45, 2, NULL, 'View', '2024-11-27 23:00:44'),
-(46, 1, NULL, 'View', '2024-11-29 22:41:28'),
-(47, 3, 35, 'Click', '2024-11-30 00:37:48'),
-(48, 3, 35, 'Click', '2024-11-30 00:46:48'),
-(49, 1, 6, 'Click', '2024-11-30 01:15:09'),
-(50, 3, 35, 'Click', '2024-11-30 01:15:19'),
-(51, 1, 6, 'Click', '2024-11-30 01:24:14');
+INSERT INTO `interacciones` (`id_interaccion`, `id_perfil`, `id_producto`, `tipo_interaccion`, `fecha_interaccion`, `cantidad`) VALUES
+(1, 1, 5, 'Click', '2024-11-17 16:37:49', 1),
+(2, 1, NULL, 'View', '2024-11-17 17:08:55', 1),
+(3, 2, NULL, 'View', '2024-11-17 17:09:16', 1),
+(4, 1, 5, 'Click', '2024-11-17 17:09:55', 1),
+(6, 1, NULL, 'View', '2024-11-18 18:43:06', 1),
+(7, 4, 30, 'Click', '2024-11-19 18:02:03', 1),
+(8, 1, 9, 'Click', '2024-11-19 18:02:09', 1),
+(9, 1, 9, 'Click', '2024-11-19 18:02:10', 1),
+(10, 1, 9, 'Click', '2024-11-19 18:02:10', 1),
+(11, 1, 9, 'Click', '2024-11-19 18:02:11', 1),
+(12, 1, 9, 'Click', '2024-11-19 18:02:11', 1),
+(13, 1, 9, 'Click', '2024-11-19 18:02:11', 1),
+(14, 1, 9, 'Click', '2024-11-19 18:03:47', 1),
+(15, 1, 5, 'Click', '2024-11-19 18:04:25', 1),
+(16, 1, 6, 'Click', '2024-11-19 18:04:34', 1),
+(17, 1, 6, 'Click', '2024-11-19 18:04:40', 1),
+(18, 1, 5, 'Click', '2024-11-19 18:06:08', 1),
+(19, 1, 9, 'Click', '2024-11-19 18:06:16', 1),
+(20, 4, NULL, 'View', '2024-11-19 18:06:39', 1),
+(21, 1, NULL, 'View', '2024-11-19 22:53:20', 1),
+(22, 1, NULL, 'View', '2024-11-19 23:01:01', 1),
+(23, 1, 6, 'Click', '2024-11-19 23:57:10', 1),
+(25, 4, 30, 'Click', '2024-11-20 00:01:26', 1),
+(26, 1, NULL, 'View', '2024-11-20 00:04:52', 1),
+(28, 1, 6, 'Click', '2024-11-22 21:48:13', 1),
+(29, 1, 6, 'Click', '2024-11-22 21:48:14', 1),
+(30, 1, NULL, 'View', '2024-11-22 22:04:26', 1),
+(31, 1, NULL, 'View', '2024-11-26 01:01:28', 1),
+(32, 1, NULL, 'View', '2024-11-26 01:18:10', 1),
+(33, 1, NULL, 'View', '2024-11-26 01:28:39', 1),
+(34, 1, NULL, 'View', '2024-11-26 02:37:23', 1),
+(35, 1, 6, 'Click', '2024-11-26 19:25:41', 1),
+(36, 3, NULL, 'View', '2024-11-26 19:31:41', 1),
+(37, 1, NULL, 'View', '2024-11-26 19:52:08', 1),
+(38, 3, NULL, 'View', '2024-11-26 20:20:35', 1),
+(39, 2, NULL, 'View', '2024-11-26 20:22:46', 1),
+(40, 1, NULL, 'View', '2024-11-26 20:22:53', 1),
+(41, 1, NULL, 'View', '2024-11-27 21:35:47', 1),
+(42, 1, NULL, 'View', '2024-11-27 22:31:04', 1),
+(43, 3, NULL, 'View', '2024-11-27 22:51:11', 1),
+(44, 3, NULL, 'View', '2024-11-27 22:56:43', 1),
+(45, 2, NULL, 'View', '2024-11-27 23:00:44', 1),
+(46, 1, NULL, 'View', '2024-11-29 22:41:28', 1),
+(47, 3, 35, 'Click', '2024-11-30 00:37:48', 1),
+(48, 3, 35, 'Click', '2024-11-30 00:46:48', 1),
+(49, 1, 6, 'Click', '2024-11-30 01:15:09', 1),
+(50, 3, 35, 'Click', '2024-11-30 01:15:19', 1),
+(51, 1, 6, 'Click', '2024-11-30 01:24:14', 1),
+(52, 1, 6, 'Click', '2024-12-03 01:24:30', 1),
+(53, 1, NULL, 'View', '2024-12-03 01:31:01', 1),
+(54, 1, 5, 'Purchase', '2024-12-03 01:41:21', 3);
 
 -- --------------------------------------------------------
 
@@ -530,20 +567,15 @@ CREATE TABLE `productos` (
 --
 
 INSERT INTO `productos` (`id_producto`, `id_perfil`, `nombre`, `descripcion`, `id_imagen`, `precio`, `stock`, `tiempo_creacion`) VALUES
-(4, 1, 'artesania', 'artesania local echa a mano ', 2, '59990.00', 10, '2024-10-31 20:08:04'),
-(5, 1, 'torta', 'torta de chocolate relleno con manjar', 3, '12990.00', 8, '2024-10-31 20:13:04'),
-(6, 1, 'Notebook HP Victus ', ' Notebook gamer procesador i7°13Genreacion 8Gb RAM 512 SSD', 4, '899990.00', 5, '2024-10-31 20:25:07'),
-(7, 2, 'babershopking', 'cortes de pelo y perfilado de barba en la mejor barberia de rancagua', 5, '10000.00', 0, '2024-10-31 20:36:03'),
-(8, 2, 'insumos barbershop', 'insumos de barberia  los mejores a muy buen precio ', 6, '19990.00', 20, '2024-11-01 16:30:03'),
-(9, 1, 'Poncho de Huaso', 'poncho de huaso echo a mano artesania regional ', 7, '32990.00', 5, '2024-11-01 16:46:40'),
-(25, 1, 'sdg', 'gsdgs', NULL, '2442.00', 1, '2024-11-02 19:40:46'),
-(26, 1, 'sdg', 'gsdgs', NULL, '2442.00', 1, '2024-11-02 19:40:47'),
-(27, 1, 'sdg', 'gsdgs', NULL, '2442.00', 1, '2024-11-02 19:41:00'),
-(28, 1, 'sdg', 'gsdgs', NULL, '2442.00', 1, '2024-11-02 19:41:08'),
-(29, 1, 'sdgs', 'sdgs', NULL, '232.00', 1, '2024-11-02 19:42:29'),
-(30, 4, 'Producto 1', 'Descripción del producto 1', 9, '1000.00', 10, '2024-11-18 18:43:06'),
-(31, 4, 'Producto 2', 'Descripción del producto 2', 9, '2000.00', 5, '2024-11-18 18:43:06'),
-(35, 3, 'claveles', 'mejore claveles', NULL, '2000.00', 48, '2024-11-29 22:59:03');
+(4, 1, 'artesania', 'artesania local echa a mano ', 2, 59990.00, 10, '2024-10-31 20:08:04'),
+(5, 1, 'torta', 'torta de chocolate relleno con manjar', 3, 12990.00, 8, '2024-10-31 20:13:04'),
+(6, 1, 'Notebook HP Victus ', ' Notebook gamer procesador i7°13Genreacion 8Gb RAM 512 SSD', 4, 899990.00, 5, '2024-10-31 20:25:07'),
+(7, 2, 'babershopking', 'cortes de pelo y perfilado de barba en la mejor barberia de rancagua', 5, 10000.00, 0, '2024-10-31 20:36:03'),
+(8, 2, 'insumos barbershop', 'insumos de barberia  los mejores a muy buen precio ', 6, 19990.00, 20, '2024-11-01 16:30:03'),
+(9, 1, 'Poncho de Huaso', 'poncho de huaso echo a mano artesania regional ', 7, 32990.00, 5, '2024-11-01 16:46:40'),
+(30, 4, 'Producto 1', 'Descripción del producto 1', 9, 1000.00, 10, '2024-11-18 18:43:06'),
+(31, 4, 'Producto 2', 'Descripción del producto 2', 9, 2000.00, 5, '2024-11-18 18:43:06'),
+(35, 3, 'claveles', 'mejore claveles', NULL, 2000.00, 28, '2024-11-29 22:59:03');
 
 -- --------------------------------------------------------
 
@@ -631,6 +663,20 @@ INSERT INTO `publicaciones_foro` (`id_publicaciones`, `id_usuario`, `id_imagen`,
 (14, 1, 12, 2, 'hola', 'dfs', '2024-11-07 22:49:04'),
 (15, 1, 13, 8, 'hola', 'adfafa', '2024-11-17 16:06:09'),
 (16, 1, 16, 2, 'xd', 'xd', '2024-11-20 00:05:49');
+
+-- --------------------------------------------------------
+
+--
+-- Estructura de tabla para la tabla `respuestas_foro`
+--
+
+CREATE TABLE `respuestas_foro` (
+  `id_respuesta` int(11) NOT NULL,
+  `id_publicaciones` int(11) NOT NULL,
+  `id_usuario` int(11) NOT NULL,
+  `respuesta` text NOT NULL,
+  `tiempo_creacion` timestamp NOT NULL DEFAULT current_timestamp()
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- --------------------------------------------------------
 
@@ -821,7 +867,8 @@ ALTER TABLE `perfil_negocio`
 --
 ALTER TABLE `productos`
   ADD PRIMARY KEY (`id_producto`),
-  ADD KEY `profile_id` (`id_perfil`);
+  ADD KEY `profile_id` (`id_perfil`),
+  ADD KEY `productos_ibfk_3` (`id_imagen`);
 
 --
 -- Indices de la tabla `producto_imagenes`
@@ -855,6 +902,14 @@ ALTER TABLE `publicaciones_foro`
   ADD KEY `id_foro` (`id_foro`);
 
 --
+-- Indices de la tabla `respuestas_foro`
+--
+ALTER TABLE `respuestas_foro`
+  ADD PRIMARY KEY (`id_respuesta`),
+  ADD KEY `id_publicaciones` (`id_publicaciones`),
+  ADD KEY `id_usuario` (`id_usuario`);
+
+--
 -- Indices de la tabla `usuarios`
 --
 ALTER TABLE `usuarios`
@@ -881,25 +936,25 @@ ALTER TABLE `admin`
 -- AUTO_INCREMENT de la tabla `compra`
 --
 ALTER TABLE `compra`
-  MODIFY `id_compra` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+  MODIFY `id_compra` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=12;
 
 --
 -- AUTO_INCREMENT de la tabla `conversaciones`
 --
 ALTER TABLE `conversaciones`
-  MODIFY `id_conversacion` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
+  MODIFY `id_conversacion` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
 
 --
 -- AUTO_INCREMENT de la tabla `detalle_compra`
 --
 ALTER TABLE `detalle_compra`
-  MODIFY `id_detalle` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+  MODIFY `id_detalle` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=12;
 
 --
 -- AUTO_INCREMENT de la tabla `documento`
 --
 ALTER TABLE `documento`
-  MODIFY `id_documento` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
+  MODIFY `id_documento` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=16;
 
 --
 -- AUTO_INCREMENT de la tabla `entrepreneur_reviews`
@@ -911,7 +966,7 @@ ALTER TABLE `entrepreneur_reviews`
 -- AUTO_INCREMENT de la tabla `envio`
 --
 ALTER TABLE `envio`
-  MODIFY `id_envio` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
+  MODIFY `id_envio` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=16;
 
 --
 -- AUTO_INCREMENT de la tabla `favemprendedor`
@@ -953,7 +1008,7 @@ ALTER TABLE `imagen_publicacion`
 -- AUTO_INCREMENT de la tabla `interacciones`
 --
 ALTER TABLE `interacciones`
-  MODIFY `id_interaccion` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=52;
+  MODIFY `id_interaccion` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=55;
 
 --
 -- AUTO_INCREMENT de la tabla `mensajes`
@@ -1008,6 +1063,12 @@ ALTER TABLE `promociones`
 --
 ALTER TABLE `publicaciones_foro`
   MODIFY `id_publicaciones` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=17;
+
+--
+-- AUTO_INCREMENT de la tabla `respuestas_foro`
+--
+ALTER TABLE `respuestas_foro`
+  MODIFY `id_respuesta` int(11) NOT NULL AUTO_INCREMENT;
 
 --
 -- AUTO_INCREMENT de la tabla `usuarios`
@@ -1152,6 +1213,13 @@ ALTER TABLE `promociones`
 ALTER TABLE `publicaciones_foro`
   ADD CONSTRAINT `publicaciones_foro_ibfk_1` FOREIGN KEY (`id_imagen`) REFERENCES `imagen_publicacion` (`id_imagen`),
   ADD CONSTRAINT `publicaciones_foro_ibfk_2` FOREIGN KEY (`id_foro`) REFERENCES `foro` (`id_foro`);
+
+--
+-- Filtros para la tabla `respuestas_foro`
+--
+ALTER TABLE `respuestas_foro`
+  ADD CONSTRAINT `respuestas_foro_ibfk_1` FOREIGN KEY (`id_publicaciones`) REFERENCES `publicaciones_foro` (`id_publicaciones`),
+  ADD CONSTRAINT `respuestas_foro_ibfk_2` FOREIGN KEY (`id_usuario`) REFERENCES `usuarios` (`id_usuario`);
 
 --
 -- Filtros para la tabla `visibilidad_busqueda`
