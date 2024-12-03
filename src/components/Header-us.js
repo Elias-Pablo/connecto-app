@@ -141,7 +141,7 @@ export default function Header() {
   return (
     <>
       <CartProvider>
-        <header className="bg-fuchsia-800 px-6 flex items-center justify-center">
+        <header className="bg-zinc-800 px-6 flex items-center justify-center">
           <div className="flex h-20 items-center justify-between w-full">
             <Link href="/">
               <Image

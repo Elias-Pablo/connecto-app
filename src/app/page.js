@@ -140,14 +140,17 @@ export default function Home() {
       }).format(price);
     };
 
-    const handleInteraction = async (type, id_perfil, id_producto) => {
+    const handleInteraction = async (type, id_perfil, id_producto = null) => {
       const token = localStorage.getItem("token");
-      if (!token) return;
-
+      if (!token) {
+        console.error("Token no encontrado");
+        return;
+      }
+    
       const { userId } = jwtDecode(token);
-
+    
       try {
-        await fetch("/api/interactions", {
+        const response = await fetch("/api/interactions", {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
@@ -160,12 +163,20 @@ export default function Home() {
             id_producto,
           }),
         });
-        console.log(`Interacción de tipo ${type} registrada con éxito.`);
-        router.push(`/products/${id_producto}`);
+    
+        if (response.ok) {
+          console.log(`Interacción de tipo ${type} registrada con éxito.`);
+        } else {
+          const errorData = await response.json();
+          console.error(
+            `Error al registrar la interacción. Status: ${response.status}, Mensaje: ${errorData.message}`
+          );
+        }
       } catch (error) {
-        console.error("Error al registrar la interacción:", error);
+        console.error("Error en la solicitud de interacción:", error);
       }
-    };
+    };     
+
     const sliderSettings = {
       dots: true,
       infinite: true,
@@ -230,18 +241,20 @@ export default function Home() {
                       Vendedor:{" "}
                       <Link
                         href={`/user/emprendedores/profile?id_perfil=${product.id_perfil}`}
+                        onClick={() => handleInteraction("View", product.id_perfil)} // Registrar interacción de tipo "View"
                         className="text-sky-500"
                       >
                         {product.businessName}
                       </Link>
                     </p>
-                    <button
-                      onClick={() => {
-                        addToCart(product);
-                      }}
-                      className="bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600"
-                    >
-                      Agregar al Carrito
+                      <button
+                        onClick={() => {
+                          handleInteraction("Click", product.id_perfil, product.id); // Registrar interacción de tipo "Click"
+                          addToCart(product); // Agregar producto al carrito
+                        }}
+                        className="bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600"
+                      >
+                        Agregar al Carrito
                     </button>
                     <button
                       onClick={() =>

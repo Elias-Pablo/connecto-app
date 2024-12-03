@@ -12,8 +12,16 @@ export default function PaymentPage() {
 
   const handlePayment = async () => {
     const total = calculateTotal();
-
+    const token = localStorage.getItem("token");
+  
     try {
+      console.log("Cart items:", cartItems); // Asegúrate de que sea un array válido
+  
+      if (!Array.isArray(cartItems) || cartItems.length === 0) {
+        throw new Error("El carrito está vacío o no tiene un formato válido.");
+      }
+  
+      // Lógica de pago
       const response = await fetch("/api/checkout", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -23,19 +31,53 @@ export default function PaymentPage() {
           shippingDetails: { method: shippingMethod },
         }),
       });
-
+  
       if (response.ok) {
-        alert("Pago realizado con éxito.");
+        console.log("Pago realizado con éxito");
+  
+        // Registrar interacción de compra
+        for (const item of cartItems) {
+          console.log("Procesando item:", item);
+  
+          if (!item.sellerProfileId || !item.id || !item.quantity) {
+            console.error("Faltan datos en el item:", item);
+            continue;
+          }
+  
+          const interactionResponse = await fetch("/api/interactions", {
+            method: "POST",
+            headers: {
+              Authorization: `Bearer ${token}`,
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+              tipo_interaccion: "Purchase",
+              id_perfil: item.sellerProfileId,
+              id_producto: item.id,
+              cantidad: item.quantity,
+            }),
+          });
+  
+          if (!interactionResponse.ok) {
+            console.error(
+              `Error al registrar la compra del producto ${item.name}`
+            );
+          }
+        }
+  
+        alert("Pedido confirmado y compras registradas.");
         router.push("/user/orders");
       } else {
+        console.error("Error al procesar el pago");
         alert("Error al procesar el pago.");
       }
     } catch (error) {
-      console.error("Error al procesar el pago:", error);
-      alert("Ocurrió un error al procesar el pago.");
+      console.error("Error en la solicitud de pago o interacción:", error);
+      alert("Ocurrió un error al procesar el pedido.");
     }
   };
-
+  
+  
   const formatPrice = (price) => {
     return new Intl.NumberFormat("es-CL", {
       style: "currency",

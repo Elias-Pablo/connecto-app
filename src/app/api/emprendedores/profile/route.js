@@ -23,6 +23,7 @@ export async function GET(req) {
       connection.query(
         `
           SELECT 
+            id_perfil,  -- Incluye el id_perfil aquí
             nombre_negocio, 
             descripcion, 
             direccion, 

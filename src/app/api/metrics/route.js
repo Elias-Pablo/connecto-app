@@ -1,96 +1,109 @@
 import connection from "@/lib/db";
-import { jwtDecode } from "jwt-decode";
 
 export async function GET(req) {
   try {
-    const token = req.headers.get("authorization")?.split(" ")[1];
-    if (!token) {
+    const url = new URL(req.url);
+    const period = url.searchParams.get("period"); // 'daily', 'weekly', 'monthly'
+    const id_perfil = url.searchParams.get("id_perfil"); // ID del perfil del emprendedor
+
+    if (!id_perfil) {
       return new Response(
-        JSON.stringify({ message: "Token no proporcionado" }),
-        { status: 401 }
+        JSON.stringify({ message: "Falta el id_perfil" }),
+        { status: 400 }
       );
     }
 
-    const decoded = jwtDecode(token);
-    const userId = decoded.userId;
+    let groupBy;
+    if (period === "daily") {
+      groupBy = "DATE(fecha_interaccion)";
+    } else if (period === "weekly") {
+      groupBy = "YEAR(fecha_interaccion), WEEK(fecha_interaccion)";
+    } else if (period === "monthly") {
+      groupBy = "YEAR(fecha_interaccion), MONTH(fecha_interaccion)";
+    } else {
+      return new Response(
+        JSON.stringify({ message: "Período no válido" }),
+        { status: 400 }
+      );
+    }
 
-    return new Promise((resolve, reject) => {
-      const profileQuery = `SELECT id_perfil FROM perfil_negocio WHERE id_usuario = ?`;
+    const query = `
+      SELECT ${groupBy} AS periodo, tipo_interaccion,
+             SUM(cantidad) AS total
+      FROM interacciones
+      WHERE id_perfil = ?
+      GROUP BY periodo, tipo_interaccion
+      ORDER BY periodo ASC;
+    `;
 
-      connection.query(profileQuery, [userId], (error, profileResults) => {
-        if (error || profileResults.length === 0) {
-          console.error("Error al obtener id_perfil:", error);
-          resolve(
-            new Response(JSON.stringify({ message: "Perfil no encontrado" }), {
-              status: 404,
-            })
-          );
-          return;
-        }
-
-        const id_perfil = profileResults[0].id_perfil;
-
-        const metricsQuery = `
-          SELECT tipo_metrica, intervalo, cantidad, fecha_creacion
-          FROM metricas
-          WHERE id_perfil = ?
-          ORDER BY fecha_creacion ASC
-        `;
-
-        connection.query(metricsQuery, [id_perfil], (error, metricsResults) => {
-          if (error) {
-            console.error("Error al obtener métricas:", error);
-            resolve(
-              new Response(
-                JSON.stringify({ message: "Error al obtener métricas" }),
-                { status: 500 }
-              )
-            );
-            return;
-          }
-
-          if (metricsResults.length === 0) {
-            resolve(
-              new Response(JSON.stringify({ metrics: null }), { status: 200 })
-            );
-            return;
-          }
-
-          const formattedData = {
-            daily: { visits: [], sales: [] },
-            weekly: { visits: [], sales: [] },
-            monthly: { visits: [], sales: [] },
-          };
-
-          metricsResults.forEach((row) => {
-            const { tipo_metrica, intervalo, cantidad } = row;
-            if (intervalo === "diarias") {
-              formattedData.daily[
-                tipo_metrica === "visitas" ? "visits" : "sales"
-              ].push(cantidad);
-            } else if (intervalo === "semanales") {
-              formattedData.weekly[
-                tipo_metrica === "visitas" ? "visits" : "sales"
-              ].push(cantidad);
-            } else if (intervalo === "mensuales") {
-              formattedData.monthly[
-                tipo_metrica === "visitas" ? "visits" : "sales"
-              ].push(cantidad);
-            }
-          });
-
-          resolve(
-            new Response(JSON.stringify({ metrics: formattedData }), {
-              status: 200,
-            })
-          );
-        });
+    const metrics = await new Promise((resolve, reject) => {
+      connection.query(query, [id_perfil], (error, results) => {
+        if (error) return reject(error);
+        resolve(results);
       });
     });
-  } catch (error) {
-    console.error("Error al procesar el token:", error);
-    return new Response(JSON.stringify({ message: "Token inválido" }), {
-      status: 401,
+
+    const formattedMetrics = {
+      daily: { views: [], purchases: [] },
+      weekly: { views: [], purchases: [] },
+      monthly: { views: [], purchases: [] },
+    };
+
+    // Rellenar los días faltantes (si es `daily`)
+    if (period === "daily") {
+      const startDate = new Date();
+      startDate.setDate(startDate.getDate() - 6); // Últimos 7 días
+      const days = [];
+      for (let i = 0; i < 7; i++) {
+        const currentDate = new Date(startDate);
+        currentDate.setDate(startDate.getDate() + i);
+        const formattedDate = currentDate.toISOString().split("T")[0]; // Formato YYYY-MM-DD
+        days.push({
+          fecha: formattedDate,
+          day: currentDate.toLocaleDateString("es-ES", { weekday: "long" }),
+        });
+      }
+
+      days.forEach((day) => {
+        const viewData = metrics.find(
+          (m) =>
+            m.periodo === day.fecha && m.tipo_interaccion === "View"
+        );
+        const purchaseData = metrics.find(
+          (m) =>
+            m.periodo === day.fecha && m.tipo_interaccion === "Purchase"
+        );
+
+        formattedMetrics.daily.views.push({
+          fecha: day.day,
+          total: viewData ? viewData.total : 0,
+        });
+        formattedMetrics.daily.purchases.push({
+          fecha: day.day,
+          total: purchaseData ? purchaseData.total : 0,
+        });
+      });
+    } else {
+      metrics.forEach((row) => {
+        const { periodo, tipo_interaccion, total } = row;
+        if (tipo_interaccion === "View") {
+          formattedMetrics[period].views.push({ fecha: periodo, total });
+        } else if (tipo_interaccion === "Purchase") {
+          formattedMetrics[period].purchases.push({ fecha: periodo, total });
+        }
+      });
+    }
+
+    return new Response(JSON.stringify({ metrics: formattedMetrics }), {
+      status: 200,
+      headers: { "Content-Type": "application/json" },
     });
+  } catch (error) {
+    console.error("Error al obtener métricas:", error);
+    return new Response(
+      JSON.stringify({ message: "Error al obtener métricas" }),
+      { status: 500 }
+    );
   }
 }
+
