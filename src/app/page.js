@@ -12,6 +12,8 @@ import Slider from "react-slick"; // Importación del carrusel de react-slick
 import "slick-carousel/slick/slick.css"; // Importar estilos de slick-carousel
 import "slick-carousel/slick/slick-theme.css";
 import { GoHeart, GoHeartFill } from "react-icons/go";
+import { toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 export default function Home() {
   const router = useRouter();
@@ -63,6 +65,8 @@ export default function Home() {
         console.error(
           "Error al agregar producto a favoritos en la base de datos"
         );
+      } else {
+        toast.success("Producto agregado a favoritos");
       }
     } catch (error) {
       console.error("Error en la solicitud de agregar a favoritos:", error);
@@ -85,6 +89,8 @@ export default function Home() {
         console.error(
           "Error al eliminar el producto de favoritos en la base de datos"
         );
+      } else {
+        toast.info("Producto eliminado de favoritos");
       }
     } catch (error) {
       console.error("Error en la solicitud de eliminar de favoritos:", error);
@@ -182,36 +188,38 @@ export default function Home() {
                   key={product.id}
                   className="text-center p-5 bg-gray-200 w-auto rounded-lg shadow-lg"
                 >
-                  <button
-                    onClick={() =>
-                      handleInteraction("Click", product.id_perfil, product.id)
-                    }
-                    className="cursor-pointer hover:opacity-80 transition-opacity duration-300"
-                    key={product.id}
-                  >
-                    {product.images && product.images.length > 0 ? (
-                      <Slider {...sliderSettings}>
-                        {product.images.map((image, index) => (
-                          <div key={index}>
-                            <img
-                              src={image}
-                              alt={product.name}
-                              className="mx-auto rounded-lg mb-2 w-full h-64 object-cover"
-                            />
-                          </div>
-                        ))}
-                      </Slider>
-                    ) : (
-                      <img
-                        src="/placeholder.webp"
-                        alt="Sin imagen"
-                        className="mx-auto rounded-lg mb-2 w-full h-64 object-cover"
-                      />
-                    )}
-                    <h3 className="text-lg font-semibold mt-5 text-black">
-                      {product.name}
-                    </h3>
-                  </button>
+                  {product.images && product.images.length > 0 ? (
+                    <Slider {...sliderSettings}>
+                      {product.images.map((image, index) => (
+                        <div
+                          key={index}
+                          onClick={() =>
+                            handleInteraction(
+                              "Click",
+                              product.id_perfil,
+                              product.id
+                            )
+                          }
+                        >
+                          <img
+                            src={image}
+                            alt={product.name}
+                            className="mx-auto rounded-lg mb-2 w-full h-64 object-cover"
+                          />
+                        </div>
+                      ))}
+                    </Slider>
+                  ) : (
+                    <img
+                      src="/placeholder.webp"
+                      alt="Sin imagen"
+                      className="mx-auto rounded-lg mb-2 w-full h-64 object-cover"
+                    />
+                  )}
+
+                  <h3 className="text-lg font-semibold mt-5 text-black">
+                    {product.name}
+                  </h3>
 
                   <p className="text-sm text-gray-600">
                     {formatPrice(product.price)}

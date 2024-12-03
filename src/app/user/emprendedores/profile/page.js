@@ -7,6 +7,7 @@ import { jwtDecode } from "jwt-decode";
 import Slider from "react-slick"; // Importación del carrusel de react-slick
 import "slick-carousel/slick/slick.css"; // Importar estilos de slick-carousel
 import "slick-carousel/slick/slick-theme.css";
+import { FaStar } from "react-icons/fa";
 
 export default function EmprendedorProfile() {
   const [emprendedorData, setEmprendedorData] = useState(null);
@@ -281,36 +282,16 @@ export default function EmprendedorProfile() {
     }
   };
   const renderStars = (rating) => {
-    let stars = [];
+    const stars = [];
     for (let i = 1; i <= 5; i++) {
-      if (i <= rating) {
-        stars.push(
-          <svg
-            key={i}
-            xmlns="http://www.w3.org/2000/svg"
-            fill="#ebdc23"
-            viewBox="0 0 24 24"
-            width="24"
-            height="24"
-          >
-            <path d="M12 2l2.1 6.4h6.7l-5.4 3.9 2.1 6.6-5.4-3.9-5.4 3.9 2.1-6.6-5.4-3.9h6.7z" />
-          </svg>
-        );
-      } else {
-        stars.push(
-          <svg
-            key={i}
-            xmlns="http://www.w3.org/2000/svg"
-            fill="none"
-            stroke="currentColor"
-            viewBox="0 0 24 24"
-            width="24"
-            height="24"
-          >
-            <path d="M12 2l2.1 6.4h6.7l-5.4 3.9 2.1 6.6-5.4-3.9-5.4 3.9 2.1-6.6-5.4-3.9h6.7z" />
-          </svg>
-        );
-      }
+      stars.push(
+        <FaStar
+          key={i}
+          className={`h-5 w-5 ${
+            i <= rating ? "text-yellow-400" : "text-gray-300"
+          }`}
+        />
+      );
     }
     return stars;
   };
@@ -436,11 +417,21 @@ export default function EmprendedorProfile() {
                     required
                   >
                     <option value="0">Seleccionar calificación</option>
-                    <option value="1">1 ⭐</option>
-                    <option value="2">2 ⭐</option>
-                    <option value="3">3 ⭐</option>
-                    <option value="4">4 ⭐</option>
-                    <option value="5">5 ⭐</option>
+                    <option value="1" className="text-center">
+                      ⭐
+                    </option>
+                    <option value="2" className="text-center">
+                      ⭐⭐
+                    </option>
+                    <option value="3" className="text-center">
+                      ⭐⭐⭐
+                    </option>
+                    <option value="4" className="text-center">
+                      ⭐⭐⭐⭐
+                    </option>
+                    <option value="5" className="text-center">
+                      ⭐⭐⭐⭐⭐
+                    </option>
                   </select>
                 </div>
                 <button

@@ -14,6 +14,8 @@ import {
 import Slider from "react-slick"; // Importación del carrusel de react-slick
 import "slick-carousel/slick/slick.css"; // Importar estilos de slick-carousel
 import "slick-carousel/slick/slick-theme.css"; // Importar tema de slick-carousel
+import { toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 export default function EmprendedorProfile() {
   const [selectedMetric, setSelectedMetric] = useState("weekly");
@@ -183,6 +185,7 @@ export default function EmprendedorProfile() {
 
       if (profileResponse.ok) {
         console.log("Perfil de negocio actualizado correctamente");
+        toast.success("Perfil actualizado correctamente");
       } else {
         console.error("Error al actualizar el perfil de negocio");
       }
@@ -224,6 +227,7 @@ export default function EmprendedorProfile() {
         setProducts((prevProducts) =>
           prevProducts.filter((product) => product.id !== productId)
         );
+        toast.info("Producto eliminado correctamente");
         console.log("Producto eliminado exitosamente");
       } else {
         console.error("Error al eliminar el producto");
@@ -293,8 +297,10 @@ export default function EmprendedorProfile() {
           setProducts([...products, { ...currentProduct, id: data.id }]);
         }
         console.log("Producto guardado exitosamente");
+        toast.success("Producto guardado correctamente");
       } else {
         console.error("Error al guardar el producto");
+        toast.error("Error al guardar el producto");
       }
     } catch (error) {
       console.error("Error en la solicitud:", error);
