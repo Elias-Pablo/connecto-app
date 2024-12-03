@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import Header from "@/components/Header-em";
 import MetricChart from "@/components/MetricChart";
 import { jwtDecode } from "jwt-decode";
+import { FaStar } from "react-icons/fa";
 import {
   FaEye,
   FaShoppingCart,
@@ -18,6 +19,8 @@ export default function EmprendedorProfile() {
   const [selectedMetric, setSelectedMetric] = useState("weekly");
   const [products, setProducts] = useState([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [productReviews, setProductReviews] = useState([]);
+  const [entrepreneurReviews, setEntrepreneurReviews] = useState([]);
 
   const [currentProduct, setCurrentProduct] = useState({
     id: null,
@@ -52,6 +55,60 @@ export default function EmprendedorProfile() {
       }
     }
   }, []);
+
+  useEffect(() => {
+    const fetchProductReviews = async () => {
+      try {
+        const token = localStorage.getItem("token");
+        const response = await fetch(`/api/reviews/products/get`, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+        if (response.ok) {
+          const data = await response.json();
+          if (data.reviews.length === 0) {
+            console.warn("No se encontraron reseñas de productos.");
+          }
+          setProductReviews(data.reviews);
+        } else {
+          console.error("Error al cargar reseñas de productos");
+        }
+      } catch (error) {
+        console.error("Error en la solicitud de reseñas de productos:", error);
+      }
+    };
+
+    const fetchEntrepreneurReviews = async () => {
+      try {
+        const token = localStorage.getItem("token");
+        const response = await fetch(`/api/reviews/emprendedor/get`, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+        if (response.ok) {
+          const data = await response.json();
+          if (data.reviews.length === 0) {
+            console.warn("No se encontraron reseñas del emprendedor.");
+          }
+          setEntrepreneurReviews(data.reviews);
+        } else {
+          console.error("Error al cargar reseñas del emprendedor");
+        }
+      } catch (error) {
+        console.error(
+          "Error en la solicitud de reseñas del emprendedor:",
+          error
+        );
+      }
+    };
+
+    if (user) {
+      fetchProductReviews();
+      fetchEntrepreneurReviews();
+    }
+  }, [user]);
 
   useEffect(() => {
     if (user) {
@@ -310,6 +367,20 @@ export default function EmprendedorProfile() {
     slidesToScroll: 1,
     arrows: true,
   };
+  const renderStars = (rating) => {
+    const stars = [];
+    for (let i = 1; i <= 5; i++) {
+      stars.push(
+        <FaStar
+          key={i}
+          className={`h-5 w-5 ${
+            i <= rating ? "text-yellow-400" : "text-gray-300"
+          }`}
+        />
+      );
+    }
+    return stars;
+  };
 
   return (
     <>
@@ -554,35 +625,122 @@ export default function EmprendedorProfile() {
         )}
 
         {/* Métricas y Estadísticas */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-10 ">
+          <div className="bg-white p-6 rounded-lg shadow-lg">
+            <h2 className="text-2xl font-bold mb-4">Métricas</h2>
+            <div className="flex items-center mb-2">
+              <FaEye className="text-indigo-500 mr-2" />
+              <p>
+                <strong>Visitas al Perfil:</strong> {}
+              </p>
+            </div>
+            <div className="flex items-center mb-2">
+              <FaShoppingCart className="text-green-500 mr-2" />
+              <p>
+                <strong>Ventas Totales:</strong> {}
+              </p>
+            </div>
+            <div className="flex items-center mb-2">
+              <FaDollarSign className="text-yellow-500 mr-2" />
+              <p>
+                <strong>Ingresos Totales:</strong> ${}
+              </p>
+            </div>
+            <div className="flex items-center mb-2">
+              <FaChartLine className="text-blue-500 mr-2" />
+              <p>
+                <strong>Tasa de Conversión:</strong> {}%
+              </p>
+            </div>
+          </div>
           <MetricChart />
         </div>
-        <div className="bg-white p-6 rounded-lg shadow-lg">
-          <h2 className="text-2xl font-bold mb-4">Métricas</h2>
-          <div className="flex items-center mb-2">
-            <FaEye className="text-indigo-500 mr-2" />
-            <p>
-              <strong>Visitas al Perfil:</strong> {}
-            </p>
-          </div>
-          <div className="flex items-center mb-2">
-            <FaShoppingCart className="text-green-500 mr-2" />
-            <p>
-              <strong>Ventas Totales:</strong> {}
-            </p>
-          </div>
-          <div className="flex items-center mb-2">
-            <FaDollarSign className="text-yellow-500 mr-2" />
-            <p>
-              <strong>Ingresos Totales:</strong> ${}
-            </p>
-          </div>
-          <div className="flex items-center mb-2">
-            <FaChartLine className="text-blue-500 mr-2" />
-            <p>
-              <strong>Tasa de Conversión:</strong> {}%
-            </p>
-          </div>
+        <div className="container mx-auto p-6">
+          {/* Reseñas de Productos */}
+          <section className="mb-10">
+            <h2 className="text-2xl font-bold mb-6">Reseñas de Productos</h2>
+            {productReviews.length > 0 ? (
+              Object.entries(
+                productReviews.reduce((groupedReviews, review) => {
+                  // Agrupamos reseñas por producto
+                  if (!groupedReviews[review.producto]) {
+                    groupedReviews[review.producto] = [];
+                  }
+                  groupedReviews[review.producto].push(review);
+                  return groupedReviews;
+                }, {})
+              ).map(([producto, reviews], index) => (
+                <div
+                  key={index}
+                  className="mb-8 bg-fuchsia-200 p-8 rounded-lg "
+                >
+                  <h3 className="text-xl font-bold text-black mb-4">
+                    {producto}
+                  </h3>
+                  <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-6">
+                    {reviews.map((review, i) => (
+                      <div
+                        key={i}
+                        className="bg-white shadow-md rounded-lg p-4 border"
+                      >
+                        <div className="flex items-center mb-3">
+                          {renderStars(review.calificacion)}
+                        </div>
+                        <p>
+                          <span className="text-gray-500 text-sm">
+                            Cliente:{" "}
+                          </span>
+                          <span className="font-semibold">
+                            {review.usuario}
+                          </span>
+                        </p>
+                        <p className="text-gray-700">{review.comentario}</p>
+                        <p className="text-xs text-gray-500 mt-2">
+                          {new Date(review.fecha_creacion).toLocaleDateString()}
+                        </p>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              ))
+            ) : (
+              <p className="text-gray-500">
+                No hay reseñas para tus productos.
+              </p>
+            )}
+          </section>
+
+          {/* Reseñas del Emprendedor */}
+          <section>
+            <h2 className="text-2xl font-bold mb-6">
+              Reseñas sobre Ti como Emprendedor
+            </h2>
+            {entrepreneurReviews.length > 0 ? (
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                {entrepreneurReviews.map((review, index) => (
+                  <div
+                    key={index}
+                    className="bg-white shadow-md rounded-lg p-4 border"
+                  >
+                    <h3 className="text-lg font-semibold text-black mb-2">
+                      {review.usuario}
+                    </h3>
+                    <div className="flex items-center mb-3">
+                      {renderStars(review.calificacion)}
+                    </div>
+                    <p className="text-gray-700">{review.comentario}</p>
+                    <p className="text-xs text-gray-500 mt-2">
+                      {new Date(review.fecha_creacion).toLocaleDateString()}
+                    </p>
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <p className="text-gray-500">
+                Aún no has recibido reseñas como emprendedor.
+              </p>
+            )}
+          </section>
         </div>
       </div>
     </>
