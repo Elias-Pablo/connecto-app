@@ -1,10 +1,13 @@
 "use client";
 import Image from "next/image";
-import { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from 'react';
 import Header from "@/components/Header-em";
 import MetricChart from "@/components/MetricChart";
 import { jwtDecode } from "jwt-decode";
+import "leaflet/dist/leaflet.css"; // Importa estilos de Leaflet
+import L from "leaflet"; // Importa Leaflet
 import { FaStar } from "react-icons/fa";
+
 import {
   FaEye,
   FaShoppingCart,
@@ -21,8 +24,12 @@ export default function EmprendedorProfile() {
   const [selectedMetric, setSelectedMetric] = useState("weekly");
   const [products, setProducts] = useState([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [currentLocation, setCurrentLocation] = useState(null);
+  const mapRef = useRef(null);
+
   const [productReviews, setProductReviews] = useState([]);
   const [entrepreneurReviews, setEntrepreneurReviews] = useState([]);
+
 
   const [currentProduct, setCurrentProduct] = useState({
     id: null,
@@ -57,6 +64,38 @@ export default function EmprendedorProfile() {
       }
     }
   }, []);
+
+    useEffect(() => {
+    // Obtén la ubicación actual del usuario
+    navigator.geolocation.getCurrentPosition(
+      (position) => {
+        setCurrentLocation({
+          lat: position.coords.latitude,
+          lng: position.coords.longitude,
+        });
+      },
+      (error) => {
+        console.error("Error obteniendo la ubicación:", error);
+      }
+    );
+  }, []);
+
+  useEffect(() => {
+      if (currentLocation && mapRef.current) {
+        console.log("Ubicación actual:", currentLocation); // Asegúrate de que se esté estableciendo correctamente.
+        const map = L.map(mapRef.current).setView([currentLocation.lat, currentLocation.lng], 13);
+        L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
+          maxZoom: 19,
+        }).addTo(map);
+        L.marker([currentLocation.lat, currentLocation.lng])
+          .addTo(map)
+          .bindPopup("Tu ubicación actual")
+          .openPopup();
+      }
+    }, [currentLocation]);
+    
+
+
 
   useEffect(() => {
     const fetchProductReviews = async () => {
@@ -629,6 +668,12 @@ export default function EmprendedorProfile() {
             </div>
           </div>
         )}
+        </div>
+         {/*Mapa de ubicación*/}
+        <div className="mb-12">
+          <h3 className="text-xl font-semibold mb-4">Ubicación Actual</h3>
+          <div ref={mapRef} className="h-64 w-full rounded-lg shadow-md"></div>
+        </div>
 
         {/* Métricas y Estadísticas */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-10 ">
@@ -748,7 +793,6 @@ export default function EmprendedorProfile() {
             )}
           </section>
         </div>
-      </div>
     </>
   );
 }
