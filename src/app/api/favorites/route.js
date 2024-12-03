@@ -45,6 +45,7 @@ export async function GET(req) {
           images: favorite.url_imagen ? [favorite.url_imagen] : [], // Inicializar el array de imágenes
           businessName: favorite.business_name,
           id_perfil: favorite.id_perfil,
+          id_favorito: favorite.id_favorito,
         };
       } else {
         // Si el producto ya está en el mapa, agregar la imagen a su array

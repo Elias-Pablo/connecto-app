@@ -126,9 +126,10 @@ export default function FavoritesPage() {
   };
 
   const handleRemoveFromEntrepreneurs = async (idFavorito) => {
-    setFavoriteEntrepreneurs((prevFavorites) =>
-      prevFavorites.filter((item) => item.id_favorito !== idFavorito)
-    );
+    if (!idFavorito) {
+      console.error("ID de favorito no proporcionado");
+      return;
+    }
 
     try {
       const response = await fetch(
@@ -138,7 +139,13 @@ export default function FavoritesPage() {
         }
       );
 
-      if (!response.ok) {
+      if (response.ok) {
+        // Actualiza el estado eliminando solo el elemento correspondiente
+        setFavoriteEntrepreneurs((prevFavorites) =>
+          prevFavorites.filter((item) => item.id !== idFavorito)
+        );
+        console.log("Emprendedor eliminado de favoritos");
+      } else {
         console.error(
           "Error al eliminar el emprendedor de favoritos en la base de datos"
         );

@@ -11,6 +11,7 @@ import { jwtDecode } from "jwt-decode";
 import Slider from "react-slick"; // Importación del carrusel de react-slick
 import "slick-carousel/slick/slick.css"; // Importar estilos de slick-carousel
 import "slick-carousel/slick/slick-theme.css";
+import { GoHeart, GoHeartFill } from "react-icons/go";
 
 export default function Home() {
   const router = useRouter();
@@ -154,6 +155,7 @@ export default function Home() {
           }),
         });
         console.log(`Interacción de tipo ${type} registrada con éxito.`);
+        router.push(`/products/${id_producto}`);
       } catch (error) {
         console.error("Error al registrar la interacción:", error);
       }
@@ -169,80 +171,90 @@ export default function Home() {
 
     return (
       <section className="bg-white p-10">
-        <div className="container mx-auto">
-          <h2 className="text-2xl font-semibold mb-5 text-center text-black">
-            Productos Destacados
-          </h2>
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-            {products.map((product) => (
-              <div
-                key={product.id}
-                className="text-center p-5 bg-gray-200 w-auto rounded-lg shadow-lg"
-              >
-                <Link href={`/products/${product.id}`} key={product.id}>
-                  {product.images && product.images.length > 0 ? (
-                    <Slider {...sliderSettings}>
-                      {product.images.map((image, index) => (
-                        <div key={index}>
-                          <img
-                            src={image}
-                            alt={product.name}
-                            className="mx-auto rounded-lg mb-2 w-full h-64 object-cover"
-                          />
-                        </div>
-                      ))}
-                    </Slider>
-                  ) : (
-                    <img
-                      src="/placeholder.webp"
-                      alt="Sin imagen"
-                      className="mx-auto rounded-lg mb-2 w-full h-64 object-cover"
-                    />
-                  )}
-                  <h3 className="text-lg font-semibold mt-5 text-black">
-                    {product.name}
-                  </h3>
-                </Link>
-                <p className="text-sm text-gray-600">
-                  {formatPrice(product.price)}
-                </p>
-                <p className="text-sm text-black">{product.description}</p>
-                <div className="flex flex-col space-y-2 mt-2">
-                  <p className="text-xs text-gray-500 my-2">
-                    Vendedor:{" "}
-                    <Link
-                      href={`/user/emprendedores/profile?id_perfil=${product.id_perfil}`}
-                      className="text-sky-500"
-                    >
-                      {product.businessName}
-                    </Link>
-                  </p>
-                  <button
-                    onClick={() => {
-                      handleInteraction("Click", product.id_perfil, product.id);
-                      addToCart(product);
-                    }}
-                    className="bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600"
-                  >
-                    Agregar al Carrito
-                  </button>
+        <>
+          <div className="container mx-auto">
+            <h2 className="text-2xl font-semibold mb-5 text-center text-black">
+              Productos Destacados
+            </h2>
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+              {products.map((product) => (
+                <div
+                  key={product.id}
+                  className="text-center p-5 bg-gray-200 w-auto rounded-lg shadow-lg"
+                >
                   <button
                     onClick={() =>
-                      favorites.some((fav) => fav.id === product.id)
-                        ? handleRemoveFromFavorites(product.id)
-                        : handleAddToFavorites(product)
+                      handleInteraction("Click", product.id_perfil, product.id)
                     }
-                    className="bg-red-500 text-white px-4 py-2 rounded-lg hover:bg-red-600"
+                    className="cursor-pointer hover:opacity-80 transition-opacity duration-300"
+                    key={product.id}
                   >
-                    {favorites.some((fav) => fav.id === product.id)
-                      ? "Eliminar de Favoritos"
-                      : "Agregar a Favoritos"}
+                    {product.images && product.images.length > 0 ? (
+                      <Slider {...sliderSettings}>
+                        {product.images.map((image, index) => (
+                          <div key={index}>
+                            <img
+                              src={image}
+                              alt={product.name}
+                              className="mx-auto rounded-lg mb-2 w-full h-64 object-cover"
+                            />
+                          </div>
+                        ))}
+                      </Slider>
+                    ) : (
+                      <img
+                        src="/placeholder.webp"
+                        alt="Sin imagen"
+                        className="mx-auto rounded-lg mb-2 w-full h-64 object-cover"
+                      />
+                    )}
+                    <h3 className="text-lg font-semibold mt-5 text-black">
+                      {product.name}
+                    </h3>
                   </button>
+
+                  <p className="text-sm text-gray-600">
+                    {formatPrice(product.price)}
+                  </p>
+                  <p className="text-sm text-black">{product.description}</p>
+                  <div className="flex flex-col space-y-2 mt-2">
+                    <p className="text-xs text-gray-500 my-2">
+                      Vendedor:{" "}
+                      <Link
+                        href={`/user/emprendedores/profile?id_perfil=${product.id_perfil}`}
+                        className="text-sky-500"
+                      >
+                        {product.businessName}
+                      </Link>
+                    </p>
+                    <button
+                      onClick={() => {
+                        addToCart(product);
+                      }}
+                      className="bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600"
+                    >
+                      Agregar al Carrito
+                    </button>
+                    <button
+                      onClick={() =>
+                        favorites.some((fav) => fav.id === product.id)
+                          ? handleRemoveFromFavorites(product.id)
+                          : handleAddToFavorites(product)
+                      }
+                      className="bg-red-500 text-white px-4 py-2 rounded-lg hover:bg-red-600 flex items-center justify-center"
+                    >
+                      {favorites.some((fav) => fav.id === product.id) ? (
+                        <GoHeart className="text-white w-8 h-8 " />
+                      ) : (
+                        <GoHeartFill className="text-white w-8 h-8 " />
+                      )}
+                    </button>
+                  </div>
                 </div>
-              </div>
-            ))}
+              ))}
+            </div>
           </div>
-        </div>
+        </>
       </section>
     );
   };
