@@ -1,6 +1,6 @@
 "use client";
 import Image from "next/image";
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef } from "react";
 import Header from "@/components/Header-em";
 import MetricChart from "@/components/MetricChart";
 import { jwtDecode } from "jwt-decode";
@@ -29,7 +29,6 @@ export default function EmprendedorProfile() {
 
   const [productReviews, setProductReviews] = useState([]);
   const [entrepreneurReviews, setEntrepreneurReviews] = useState([]);
-
 
   const [currentProduct, setCurrentProduct] = useState({
     id: null,
@@ -65,7 +64,7 @@ export default function EmprendedorProfile() {
     }
   }, []);
 
-    useEffect(() => {
+  useEffect(() => {
     // Obtén la ubicación actual del usuario
     navigator.geolocation.getCurrentPosition(
       (position) => {
@@ -81,21 +80,21 @@ export default function EmprendedorProfile() {
   }, []);
 
   useEffect(() => {
-      if (currentLocation && mapRef.current) {
-        console.log("Ubicación actual:", currentLocation); // Asegúrate de que se esté estableciendo correctamente.
-        const map = L.map(mapRef.current).setView([currentLocation.lat, currentLocation.lng], 13);
-        L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
-          maxZoom: 19,
-        }).addTo(map);
-        L.marker([currentLocation.lat, currentLocation.lng])
-          .addTo(map)
-          .bindPopup("Tu ubicación actual")
-          .openPopup();
-      }
-    }, [currentLocation]);
-    
-
-
+    if (currentLocation && mapRef.current) {
+      console.log("Ubicación actual:"); // Asegúrate de que se esté estableciendo correctamente.
+      const map = L.map(mapRef.current).setView(
+        [currentLocation.lat, currentLocation.lng],
+        13
+      );
+      L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
+        maxZoom: 19,
+      }).addTo(map);
+      L.marker([currentLocation.lat, currentLocation.lng])
+        .addTo(map)
+        .bindPopup(user.username)
+        .openPopup();
+    }
+  }, [currentLocation]);
 
   useEffect(() => {
     const fetchProductReviews = async () => {
@@ -520,6 +519,12 @@ export default function EmprendedorProfile() {
                 </a>
               )}
               <p className="text-black mt-2">{profileInfo.direccion}</p>
+
+              <div
+                ref={mapRef}
+                className=" w-1/4 h-28 sm:h-40 md:h-64 lg:h-64 mx-auto mt-4 shadow-lg rounded-2xl"
+              ></div>
+
               <p className="text-black mt-2">{profileInfo.telefono}</p>
             </>
           )}
@@ -668,131 +673,118 @@ export default function EmprendedorProfile() {
             </div>
           </div>
         )}
-        </div>
-         {/*Mapa de ubicación*/}
-        <div className="mb-12">
-          <h3 className="text-xl font-semibold mb-4">Ubicación Actual</h3>
-          <div ref={mapRef} className="h-64 w-full rounded-lg shadow-md"></div>
-        </div>
+      </div>
+      {/*Mapa de ubicación*/}
 
-        {/* Métricas y Estadísticas */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-10 ">
-          <div className="bg-white p-6 rounded-lg shadow-lg">
-            <h2 className="text-2xl font-bold mb-4">Métricas</h2>
-            <div className="flex items-center mb-2">
-              <FaEye className="text-indigo-500 mr-2" />
-              <p>
-                <strong>Visitas al Perfil:</strong> {}
-              </p>
-            </div>
-            <div className="flex items-center mb-2">
-              <FaShoppingCart className="text-green-500 mr-2" />
-              <p>
-                <strong>Ventas Totales:</strong> {}
-              </p>
-            </div>
-            <div className="flex items-center mb-2">
-              <FaDollarSign className="text-yellow-500 mr-2" />
-              <p>
-                <strong>Ingresos Totales:</strong> ${}
-              </p>
-            </div>
-            <div className="flex items-center mb-2">
-              <FaChartLine className="text-blue-500 mr-2" />
-              <p>
-                <strong>Tasa de Conversión:</strong> {}%
-              </p>
-            </div>
+      {/* Métricas y Estadísticas */}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-10 ">
+        <div className="bg-white p-6 rounded-lg shadow-lg">
+          <h2 className="text-2xl font-bold mb-4">Métricas</h2>
+          <div className="flex items-center mb-2">
+            <FaEye className="text-indigo-500 mr-2" />
+            <p>
+              <strong>Visitas al Perfil:</strong> {}
+            </p>
           </div>
-          <MetricChart />
+          <div className="flex items-center mb-2">
+            <FaShoppingCart className="text-green-500 mr-2" />
+            <p>
+              <strong>Ventas Totales:</strong> {}
+            </p>
+          </div>
+          <div className="flex items-center mb-2">
+            <FaDollarSign className="text-yellow-500 mr-2" />
+            <p>
+              <strong>Ingresos Totales:</strong> ${}
+            </p>
+          </div>
+          <div className="flex items-center mb-2">
+            <FaChartLine className="text-blue-500 mr-2" />
+            <p>
+              <strong>Tasa de Conversión:</strong> {}%
+            </p>
+          </div>
         </div>
-        <div className="container mx-auto p-6">
-          {/* Reseñas de Productos */}
-          <section className="mb-10">
-            <h2 className="text-2xl font-bold mb-6">Reseñas de Productos</h2>
-            {productReviews.length > 0 ? (
-              Object.entries(
-                productReviews.reduce((groupedReviews, review) => {
-                  // Agrupamos reseñas por producto
-                  if (!groupedReviews[review.producto]) {
-                    groupedReviews[review.producto] = [];
-                  }
-                  groupedReviews[review.producto].push(review);
-                  return groupedReviews;
-                }, {})
-              ).map(([producto, reviews], index) => (
+        <MetricChart />
+      </div>
+      <div className="container mx-auto p-6">
+        {/* Reseñas de Productos */}
+        <section className="mb-10">
+          <h2 className="text-2xl font-bold mb-6">Reseñas de Productos</h2>
+          {productReviews.length > 0 ? (
+            Object.entries(
+              productReviews.reduce((groupedReviews, review) => {
+                // Agrupamos reseñas por producto
+                if (!groupedReviews[review.producto]) {
+                  groupedReviews[review.producto] = [];
+                }
+                groupedReviews[review.producto].push(review);
+                return groupedReviews;
+              }, {})
+            ).map(([producto, reviews], index) => (
+              <div key={index} className="mb-8 bg-fuchsia-200 p-8 rounded-lg ">
+                <h3 className="text-xl font-bold text-black mb-4">
+                  {producto}
+                </h3>
+                <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-6">
+                  {reviews.map((review, i) => (
+                    <div
+                      key={i}
+                      className="bg-white shadow-md rounded-lg p-4 border"
+                    >
+                      <div className="flex items-center mb-3">
+                        {renderStars(review.calificacion)}
+                      </div>
+                      <p>
+                        <span className="text-gray-500 text-sm">Cliente: </span>
+                        <span className="font-semibold">{review.usuario}</span>
+                      </p>
+                      <p className="text-gray-700">{review.comentario}</p>
+                      <p className="text-xs text-gray-500 mt-2">
+                        {new Date(review.fecha_creacion).toLocaleDateString()}
+                      </p>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            ))
+          ) : (
+            <p className="text-gray-500">No hay reseñas para tus productos.</p>
+          )}
+        </section>
+
+        {/* Reseñas del Emprendedor */}
+        <section>
+          <h2 className="text-2xl font-bold mb-6">
+            Reseñas sobre Ti como Emprendedor
+          </h2>
+          {entrepreneurReviews.length > 0 ? (
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+              {entrepreneurReviews.map((review, index) => (
                 <div
                   key={index}
-                  className="mb-8 bg-fuchsia-200 p-8 rounded-lg "
+                  className="bg-white shadow-md rounded-lg p-4 border"
                 >
-                  <h3 className="text-xl font-bold text-black mb-4">
-                    {producto}
+                  <h3 className="text-lg font-semibold text-black mb-2">
+                    {review.usuario}
                   </h3>
-                  <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-6">
-                    {reviews.map((review, i) => (
-                      <div
-                        key={i}
-                        className="bg-white shadow-md rounded-lg p-4 border"
-                      >
-                        <div className="flex items-center mb-3">
-                          {renderStars(review.calificacion)}
-                        </div>
-                        <p>
-                          <span className="text-gray-500 text-sm">
-                            Cliente:{" "}
-                          </span>
-                          <span className="font-semibold">
-                            {review.usuario}
-                          </span>
-                        </p>
-                        <p className="text-gray-700">{review.comentario}</p>
-                        <p className="text-xs text-gray-500 mt-2">
-                          {new Date(review.fecha_creacion).toLocaleDateString()}
-                        </p>
-                      </div>
-                    ))}
+                  <div className="flex items-center mb-3">
+                    {renderStars(review.calificacion)}
                   </div>
+                  <p className="text-gray-700">{review.comentario}</p>
+                  <p className="text-xs text-gray-500 mt-2">
+                    {new Date(review.fecha_creacion).toLocaleDateString()}
+                  </p>
                 </div>
-              ))
-            ) : (
-              <p className="text-gray-500">
-                No hay reseñas para tus productos.
-              </p>
-            )}
-          </section>
-
-          {/* Reseñas del Emprendedor */}
-          <section>
-            <h2 className="text-2xl font-bold mb-6">
-              Reseñas sobre Ti como Emprendedor
-            </h2>
-            {entrepreneurReviews.length > 0 ? (
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-                {entrepreneurReviews.map((review, index) => (
-                  <div
-                    key={index}
-                    className="bg-white shadow-md rounded-lg p-4 border"
-                  >
-                    <h3 className="text-lg font-semibold text-black mb-2">
-                      {review.usuario}
-                    </h3>
-                    <div className="flex items-center mb-3">
-                      {renderStars(review.calificacion)}
-                    </div>
-                    <p className="text-gray-700">{review.comentario}</p>
-                    <p className="text-xs text-gray-500 mt-2">
-                      {new Date(review.fecha_creacion).toLocaleDateString()}
-                    </p>
-                  </div>
-                ))}
-              </div>
-            ) : (
-              <p className="text-gray-500">
-                Aún no has recibido reseñas como emprendedor.
-              </p>
-            )}
-          </section>
-        </div>
+              ))}
+            </div>
+          ) : (
+            <p className="text-gray-500">
+              Aún no has recibido reseñas como emprendedor.
+            </p>
+          )}
+        </section>
+      </div>
     </>
   );
 }

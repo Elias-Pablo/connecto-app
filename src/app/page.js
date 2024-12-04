@@ -146,9 +146,9 @@ export default function Home() {
         console.error("Token no encontrado");
         return;
       }
-    
+
       const { userId } = jwtDecode(token);
-    
+
       try {
         const response = await fetch("/api/interactions", {
           method: "POST",
@@ -163,7 +163,7 @@ export default function Home() {
             id_producto,
           }),
         });
-    
+
         if (response.ok) {
           console.log(`Interacción de tipo ${type} registrada con éxito.`);
         } else {
@@ -175,7 +175,7 @@ export default function Home() {
       } catch (error) {
         console.error("Error en la solicitud de interacción:", error);
       }
-    };     
+    };
 
     const sliderSettings = {
       dots: true,
@@ -199,62 +199,70 @@ export default function Home() {
                   key={product.id}
                   className="text-center p-5 bg-gray-200 w-auto rounded-lg shadow-lg"
                 >
-                  {product.images && product.images.length > 0 ? (
-                    <Slider {...sliderSettings}>
-                      {product.images.map((image, index) => (
-                        <div
-                          key={index}
-                          onClick={() =>
-                            handleInteraction(
-                              "Click",
-                              product.id_perfil,
-                              product.id
-                            )
-                          }
-                        >
-                          <img
-                            src={image}
-                            alt={product.name}
-                            className="mx-auto rounded-lg mb-2 w-full h-64 object-cover"
-                          />
-                        </div>
-                      ))}
-                    </Slider>
-                  ) : (
-                    <img
-                      src="/placeholder.webp"
-                      alt="Sin imagen"
-                      className="mx-auto rounded-lg mb-2 w-full h-64 object-cover"
-                    />
-                  )}
+                  <Link href={`/products/${product.id}`}>
+                    {product.images && product.images.length > 0 ? (
+                      <Slider {...sliderSettings}>
+                        {product.images.map((image, index) => (
+                          <div
+                            key={index}
+                            onClick={() =>
+                              handleInteraction(
+                                "Click",
+                                product.id_perfil,
+                                product.id
+                              )
+                            }
+                          >
+                            <img
+                              src={image}
+                              alt={product.name}
+                              className="mx-auto rounded-lg mb-2 w-full h-64 object-cover"
+                            />
+                          </div>
+                        ))}
+                      </Slider>
+                    ) : (
+                      <img
+                        src="/placeholder.webp"
+                        alt="Sin imagen"
+                        className="mx-auto rounded-lg mb-2 w-full h-64 object-cover"
+                      />
+                    )}
 
-                  <h3 className="text-lg font-semibold mt-5 text-black">
-                    {product.name}
-                  </h3>
+                    <h3 className="text-lg font-semibold mt-5 text-black">
+                      {product.name}
+                    </h3>
 
-                  <p className="text-sm text-gray-600">
-                    {formatPrice(product.price)}
-                  </p>
-                  <p className="text-sm text-black">{product.description}</p>
+                    <p className="text-sm text-gray-600">
+                      {formatPrice(product.price)}
+                    </p>
+                    <p className="text-sm text-black">{product.description}</p>
+                  </Link>
                   <div className="flex flex-col space-y-2 mt-2">
                     <p className="text-xs text-gray-500 my-2">
                       Vendedor:{" "}
                       <Link
                         href={`/user/emprendedores/profile?id_perfil=${product.id_perfil}`}
-                        onClick={() => handleInteraction("View", product.id_perfil)} // Registrar interacción de tipo "View"
+                        onClick={() =>
+                          handleInteraction("View", product.id_perfil)
+                        } // Registrar interacción de tipo "View"
                         className="text-sky-500"
                       >
                         {product.businessName}
                       </Link>
                     </p>
-                      <button
-                        onClick={() => {
-                          handleInteraction("Click", product.id_perfil, product.id); // Registrar interacción de tipo "Click"
-                          addToCart(product); // Agregar producto al carrito
-                        }}
-                        className="bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600"
-                      >
-                        Agregar al Carrito
+                    <button
+                      onClick={() => {
+                        handleInteraction(
+                          "Click",
+                          product.id_perfil,
+                          product.id
+                        ); // Registrar interacción de tipo "Click"
+                        addToCart(product); // Agregar producto al carrito
+                      }}
+                      className="bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600"
+                    >
+                      Agregar al Carrito
                     </button>
                     <button
                       onClick={() =>
