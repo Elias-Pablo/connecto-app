@@ -140,15 +140,13 @@ export default function Home() {
       }).format(price);
     };
 
-    const handleInteraction = async (type, id_perfil, id_producto = null) => {
+    const handleInteraction = async (type, id_perfil, id_producto = null, cantidad = null) => {
       const token = localStorage.getItem("token");
       if (!token) {
         console.error("Token no encontrado");
         return;
       }
-
-      const { userId } = jwtDecode(token);
-
+    
       try {
         const response = await fetch("/api/interactions", {
           method: "POST",
@@ -157,13 +155,13 @@ export default function Home() {
             Authorization: `Bearer ${token}`,
           },
           body: JSON.stringify({
-            userId,
             tipo_interaccion: type,
             id_perfil,
             id_producto,
+            cantidad, // Send cantidad as null if not provided
           }),
         });
-
+    
         if (response.ok) {
           console.log(`Interacción de tipo ${type} registrada con éxito.`);
         } else {
@@ -176,6 +174,7 @@ export default function Home() {
         console.error("Error en la solicitud de interacción:", error);
       }
     };
+    
 
     const sliderSettings = {
       dots: true,

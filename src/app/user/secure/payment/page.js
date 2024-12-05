@@ -15,13 +15,13 @@ export default function PaymentPage() {
     const token = localStorage.getItem("token");
   
     try {
-      console.log("Cart items:", cartItems); // Asegúrate de que sea un array válido
+      console.log("Cart items:", cartItems);
   
       if (!Array.isArray(cartItems) || cartItems.length === 0) {
         throw new Error("El carrito está vacío o no tiene un formato válido.");
       }
   
-      // Lógica de pago
+      // Process payment
       const response = await fetch("/api/checkout", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -35,11 +35,16 @@ export default function PaymentPage() {
       if (response.ok) {
         console.log("Pago realizado con éxito");
   
-        // Registrar interacción de compra
+        // Register purchase interactions
         for (const item of cartItems) {
           console.log("Procesando item:", item);
   
-          if (!item.sellerProfileId || !item.id || !item.quantity) {
+          // Map item data to required fields
+          const id_perfil = item.id_perfil || item.sellerProfileId; // Use the correct field
+          const id_producto = item.id; // Product ID
+          const cantidad = item.quantity; // Quantity
+  
+          if (!id_perfil || !id_producto || !cantidad) {
             console.error("Faltan datos en el item:", item);
             continue;
           }
@@ -52,9 +57,9 @@ export default function PaymentPage() {
             },
             body: JSON.stringify({
               tipo_interaccion: "Purchase",
-              id_perfil: item.sellerProfileId,
-              id_producto: item.id,
-              cantidad: item.quantity,
+              id_perfil,
+              id_producto,
+              cantidad,
             }),
           });
   
@@ -76,6 +81,7 @@ export default function PaymentPage() {
       alert("Ocurrió un error al procesar el pedido.");
     }
   };
+  
   
   
   const formatPrice = (price) => {
@@ -230,12 +236,7 @@ export default function PaymentPage() {
                   </li>
                 ))}
               </ul>
-
               <div className="border-t mt-4 pt-4 space-y-2">
-                <div className="flex justify-between">
-                  <p className="text-gray-600">Subtotal</p>
-                  <p>{formatPrice(calculateTotal())}</p>
-                </div>
                 <div className="flex justify-between">
                   <p className="text-gray-600">Envío</p>
                   <p>

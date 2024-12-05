@@ -3,7 +3,7 @@ import connection from "@/lib/db";
 export async function POST(req) {
   const { tipo_interaccion, id_perfil, id_producto, cantidad } = await req.json();
 
-  if (!tipo_interaccion || !id_perfil || !id_producto || !cantidad) {
+  if (!tipo_interaccion || !id_perfil) {
     return new Response(JSON.stringify({ message: "Datos incompletos" }), {
       status: 400,
     });
@@ -17,7 +17,12 @@ export async function POST(req) {
 
     connection.query(
       queryInsert,
-      [id_perfil, id_producto, tipo_interaccion, cantidad],
+      [
+        id_perfil,
+        id_producto || null, // Handle null for optional product
+        tipo_interaccion,
+        cantidad || null, // Insert null if cantidad is not provided
+      ],
       (error, results) => {
         if (error) {
           console.error("Error al registrar la interacción:", error);

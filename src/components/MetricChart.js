@@ -13,15 +13,17 @@ export default function MetricChart() {
   });
   const [period, setPeriod] = useState("daily");
   const [idPerfil, setIdPerfil] = useState(null);
+  const [currentPage, setCurrentPage] = useState(1);
+  const daysPerPage = 7; // Límite de días por página
 
-  // Obtener el token JWT y decodificarlo
+  // Obtener el token JWT y extraer el `id_perfil`
   useEffect(() => {
-    const token = localStorage.getItem("token"); // Leer el token desde localStorage (como en otros lugares de tu proyecto)
+    const token = localStorage.getItem("token");
     if (token) {
       try {
-        const decoded = jwt.decode(token); // Decodificar el payload del token
+        const decoded = jwt.decode(token);
         if (decoded && decoded.id_perfil) {
-          setIdPerfil(decoded.id_perfil); // Extraer el id_perfil
+          setIdPerfil(decoded.id_perfil);
         } else {
           console.error("El token no contiene un id_perfil válido.");
         }
@@ -33,21 +35,17 @@ export default function MetricChart() {
     }
   }, []);
 
-  // Fetch metrics
+  // Fetch metrics desde el backend
   useEffect(() => {
     const fetchMetrics = async () => {
-      const token = localStorage.getItem("token"); // Leer el token desde localStorage
-      if (!idPerfil) return; // Esperar a que el id_perfil esté disponible
+      const token = localStorage.getItem("token");
+      if (!idPerfil) return;
 
+      const url = `/api/metrics?period=${period}&id_perfil=${idPerfil}&page=${currentPage}`;
       try {
-        const response = await fetch(
-          `/api/metrics?period=${period}&id_perfil=${idPerfil}`,
-          {
-            headers: {
-              Authorization: `Bearer ${token}`, // Enviar el token como header de autorización
-            },
-          }
-        );
+        const response = await fetch(url, {
+          headers: { Authorization: `Bearer ${token}` },
+        });
         if (response.ok) {
           const data = await response.json();
           setMetrics(data.metrics);
@@ -60,19 +58,20 @@ export default function MetricChart() {
     };
 
     fetchMetrics();
-  }, [period, idPerfil]);
+  }, [period, idPerfil, currentPage]);
 
-  const periodLabels = {
-    daily: metrics.daily.views.map((data) => data.fecha),
-    weekly: ["Semana 1", "Semana 2", "Semana 3", "Semana 4"],
-    monthly: [
-      "Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio", "Julio",
-      "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre",
-    ],
+  // Configuración de etiquetas de los gráficos
+  const formatLabels = {
+    daily: () =>
+      metrics.daily.views.map((data) => data.fecha),
+    weekly: () =>
+      metrics.weekly.views.map((data) => data.fecha),
+    monthly: () =>
+      metrics.monthly.views.map((data) => data.fecha),
   };
-  
+
   const chartData = {
-    labels: periodLabels[period],
+    labels: formatLabels[period](),
     datasets: [
       {
         label: "Visitas al Perfil",
@@ -90,7 +89,6 @@ export default function MetricChart() {
       },
     ],
   };
-  
 
   const chartOptions = {
     responsive: true,
@@ -101,16 +99,23 @@ export default function MetricChart() {
       x: {
         title: {
           display: true,
-          text: period === "daily" ? "Días" : period === "weekly" ? "Semanas" : "Meses",
+          text: period === "daily"
+            ? "Días"
+            : period === "weekly"
+            ? "Semanas"
+            : "Meses",
         },
       },
-      y: { title: { display: true, text: "Cantidad" } },
+      y: {
+        title: { display: true, text: "Cantidad" },
+      },
     },
   };
 
-  if (!idPerfil) {
-    return <p>Cargando métricas...</p>; // Mostrar un mensaje mientras se obtiene el id_perfil
-  }
+  const totalPages =
+    period === "daily"
+      ? Math.ceil(metrics.daily.views.length / daysPerPage)
+      : 1;
 
   return (
     <div className="p-6 bg-white rounded-lg shadow-lg">
@@ -124,12 +129,45 @@ export default function MetricChart() {
                 ? "bg-indigo-600 text-white"
                 : "bg-gray-200 hover:bg-gray-300"
             }`}
-            onClick={() => setPeriod(key)}
+            onClick={() => {
+              setPeriod(key);
+              setCurrentPage(1); // Reiniciar la página al cambiar el periodo
+            }}
           >
-            {key === "daily" ? "Diario" : key === "weekly" ? "Semanal" : "Mensual"}
+            {key === "daily"
+              ? "Diario"
+              : key === "weekly"
+              ? "Semanal"
+              : "Mensual"}
           </button>
         ))}
       </div>
+
+      {/* Paginación para gráficos diarios */}
+      {period === "daily" && (
+        <div className="flex justify-between items-center mb-4">
+          <button
+            onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
+            disabled={currentPage === 1}
+            className="px-4 py-2 bg-gray-300 rounded-lg disabled:opacity-50"
+          >
+            Anterior
+          </button>
+          <p>
+            Página {currentPage} de {totalPages}
+          </p>
+          <button
+            onClick={() =>
+              setCurrentPage((prev) => Math.min(prev + 1, totalPages))
+            }
+            disabled={currentPage === totalPages}
+            className="px-4 py-2 bg-gray-300 rounded-lg disabled:opacity-50"
+          >
+            Siguiente
+          </button>
+        </div>
+      )}
+
       {/* Gráfico */}
       <Bar data={chartData} options={chartOptions} />
     </div>

@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Servidor: 127.0.0.1
--- Tiempo de generación: 03-12-2024 a las 18:56:47
+-- Tiempo de generación: 05-12-2024 a las 20:19:40
 -- Versión del servidor: 10.4.32-MariaDB
 -- Versión de PHP: 8.2.12
 
@@ -73,7 +73,10 @@ INSERT INTO `compra` (`id_compra`, `id_documento`, `id_envio`, `id_usuario`, `de
 (8, 12, 12, 12, 'Compra de productos', 1, 1, 4000, '2024-12-03 01:48:22'),
 (9, 13, 13, 12, 'Compra de productos', 1, 1, 4000, '2024-12-03 01:49:52'),
 (10, 14, 14, 12, 'Compra de productos', 1, 1, 8000, '2024-12-03 01:51:18'),
-(11, 15, 15, 12, 'Compra de productos', 1, 1, 8000, '2024-12-03 02:05:26');
+(11, 15, 15, 12, 'Compra de productos', 1, 1, 8000, '2024-12-03 02:05:26'),
+(12, 16, 16, 7, 'Compra de productos', 1, 1, 2000, '2024-12-03 18:15:35'),
+(13, 17, 17, 11, 'Compra de productos', 1, 1, 6000, '2024-12-05 19:05:57'),
+(14, 18, 18, 11, 'Compra de productos', 3, 1, 111980, '2024-12-05 19:07:15');
 
 -- --------------------------------------------------------
 
@@ -134,7 +137,12 @@ INSERT INTO `detalle_compra` (`id_detalle`, `id_compra`, `cantidad`, `precio_uni
 (8, 8, 2, 2000.00, 4000.00, 4000.00, 760.00, 4760.00),
 (9, 9, 2, 2000.00, 4000.00, 4000.00, 760.00, 4760.00),
 (10, 10, 4, 2000.00, 8000.00, 8000.00, 1520.00, 9520.00),
-(11, 11, 4, 2000.00, 8000.00, 8000.00, 1520.00, 9520.00);
+(11, 11, 4, 2000.00, 8000.00, 8000.00, 1520.00, 9520.00),
+(12, 12, 1, 2000.00, 2000.00, 2000.00, 380.00, 2380.00),
+(13, 13, 3, 2000.00, 6000.00, 6000.00, 1140.00, 7140.00),
+(14, 14, 3, 2000.00, 6000.00, 6000.00, 1140.00, 7140.00),
+(15, 14, 1, 99990.00, 99990.00, 99990.00, 18998.10, 118988.10),
+(16, 14, 1, 5990.00, 5990.00, 5990.00, 1138.10, 7128.10);
 
 -- --------------------------------------------------------
 
@@ -167,7 +175,10 @@ INSERT INTO `documento` (`id_documento`, `tipo_documento`, `tipo_pago`) VALUES
 (12, NULL, NULL),
 (13, NULL, NULL),
 (14, NULL, NULL),
-(15, NULL, NULL);
+(15, NULL, NULL),
+(16, NULL, NULL),
+(17, NULL, NULL),
+(18, NULL, NULL);
 
 -- --------------------------------------------------------
 
@@ -220,7 +231,10 @@ INSERT INTO `envio` (`id_envio`, `direccion`, `destinatario`, `remitente`, `tiem
 (12, NULL, NULL, NULL, '2024-12-03 01:48:22', NULL, NULL, NULL),
 (13, NULL, NULL, NULL, '2024-12-03 01:49:52', NULL, NULL, NULL),
 (14, NULL, NULL, NULL, '2024-12-03 01:51:18', NULL, NULL, NULL),
-(15, NULL, NULL, NULL, '2024-12-03 02:05:26', NULL, NULL, NULL);
+(15, NULL, NULL, NULL, '2024-12-03 02:05:26', NULL, NULL, NULL),
+(16, NULL, NULL, NULL, '2024-12-03 18:15:35', NULL, NULL, NULL),
+(17, NULL, NULL, NULL, '2024-12-05 19:05:57', NULL, NULL, NULL),
+(18, NULL, NULL, NULL, '2024-12-05 19:07:15', NULL, NULL, NULL);
 
 -- --------------------------------------------------------
 
@@ -261,17 +275,6 @@ CREATE TABLE `favoritos` (
 --
 
 INSERT INTO `favoritos` (`id_favorito`, `id_usuario`, `id_producto`, `fecha_creacion`) VALUES
-(2, 1, 5, '2024-11-11 19:16:27'),
-(3, 1, 4, '2024-11-11 19:17:10'),
-(5, 1, 7, '2024-11-11 19:21:09'),
-(7, 1, 8, '2024-11-11 19:24:06'),
-(9, 1, 5, '2024-11-11 19:52:09'),
-(10, 1, 6, '2024-11-11 20:06:09'),
-(14, 13, 4, '2024-11-18 18:41:24'),
-(20, 11, 31, '2024-11-19 18:06:38'),
-(21, 16, 6, '2024-11-19 23:57:20'),
-(22, 9, 5, '2024-11-26 20:46:27'),
-(23, 7, 5, '2024-11-27 23:02:26'),
 (24, 11, 35, '2024-11-30 00:22:53'),
 (25, 11, 35, '2024-11-30 01:11:18');
 
@@ -378,7 +381,7 @@ CREATE TABLE `interacciones` (
   `id_producto` int(11) DEFAULT NULL,
   `tipo_interaccion` enum('View','Click','Purchase') NOT NULL,
   `fecha_interaccion` timestamp NOT NULL DEFAULT current_timestamp(),
-  `cantidad` int(11) DEFAULT 1
+  `cantidad` int(11) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
@@ -386,57 +389,40 @@ CREATE TABLE `interacciones` (
 --
 
 INSERT INTO `interacciones` (`id_interaccion`, `id_perfil`, `id_producto`, `tipo_interaccion`, `fecha_interaccion`, `cantidad`) VALUES
-(1, 1, 5, 'Click', '2024-11-17 16:37:49', 1),
-(2, 1, NULL, 'View', '2024-11-17 17:08:55', 1),
-(3, 2, NULL, 'View', '2024-11-17 17:09:16', 1),
-(4, 1, 5, 'Click', '2024-11-17 17:09:55', 1),
-(6, 1, NULL, 'View', '2024-11-18 18:43:06', 1),
-(7, 4, 30, 'Click', '2024-11-19 18:02:03', 1),
-(8, 1, 9, 'Click', '2024-11-19 18:02:09', 1),
-(9, 1, 9, 'Click', '2024-11-19 18:02:10', 1),
-(10, 1, 9, 'Click', '2024-11-19 18:02:10', 1),
-(11, 1, 9, 'Click', '2024-11-19 18:02:11', 1),
-(12, 1, 9, 'Click', '2024-11-19 18:02:11', 1),
-(13, 1, 9, 'Click', '2024-11-19 18:02:11', 1),
-(14, 1, 9, 'Click', '2024-11-19 18:03:47', 1),
-(15, 1, 5, 'Click', '2024-11-19 18:04:25', 1),
-(16, 1, 6, 'Click', '2024-11-19 18:04:34', 1),
-(17, 1, 6, 'Click', '2024-11-19 18:04:40', 1),
-(18, 1, 5, 'Click', '2024-11-19 18:06:08', 1),
-(19, 1, 9, 'Click', '2024-11-19 18:06:16', 1),
-(20, 4, NULL, 'View', '2024-11-19 18:06:39', 1),
-(21, 1, NULL, 'View', '2024-11-19 22:53:20', 1),
-(22, 1, NULL, 'View', '2024-11-19 23:01:01', 1),
-(23, 1, 6, 'Click', '2024-11-19 23:57:10', 1),
-(25, 4, 30, 'Click', '2024-11-20 00:01:26', 1),
-(26, 1, NULL, 'View', '2024-11-20 00:04:52', 1),
-(28, 1, 6, 'Click', '2024-11-22 21:48:13', 1),
-(29, 1, 6, 'Click', '2024-11-22 21:48:14', 1),
-(30, 1, NULL, 'View', '2024-11-22 22:04:26', 1),
-(31, 1, NULL, 'View', '2024-11-26 01:01:28', 1),
-(32, 1, NULL, 'View', '2024-11-26 01:18:10', 1),
-(33, 1, NULL, 'View', '2024-11-26 01:28:39', 1),
-(34, 1, NULL, 'View', '2024-11-26 02:37:23', 1),
-(35, 1, 6, 'Click', '2024-11-26 19:25:41', 1),
-(36, 3, NULL, 'View', '2024-11-26 19:31:41', 1),
-(37, 1, NULL, 'View', '2024-11-26 19:52:08', 1),
-(38, 3, NULL, 'View', '2024-11-26 20:20:35', 1),
-(39, 2, NULL, 'View', '2024-11-26 20:22:46', 1),
-(40, 1, NULL, 'View', '2024-11-26 20:22:53', 1),
-(41, 1, NULL, 'View', '2024-11-27 21:35:47', 1),
-(42, 1, NULL, 'View', '2024-11-27 22:31:04', 1),
-(43, 3, NULL, 'View', '2024-11-27 22:51:11', 1),
-(44, 3, NULL, 'View', '2024-11-27 22:56:43', 1),
-(45, 2, NULL, 'View', '2024-11-27 23:00:44', 1),
-(46, 1, NULL, 'View', '2024-11-29 22:41:28', 1),
-(47, 3, 35, 'Click', '2024-11-30 00:37:48', 1),
-(48, 3, 35, 'Click', '2024-11-30 00:46:48', 1),
-(49, 1, 6, 'Click', '2024-11-30 01:15:09', 1),
-(50, 3, 35, 'Click', '2024-11-30 01:15:19', 1),
-(51, 1, 6, 'Click', '2024-11-30 01:24:14', 1),
-(52, 1, 6, 'Click', '2024-12-03 01:24:30', 1),
-(53, 1, NULL, 'View', '2024-12-03 01:31:01', 1),
-(54, 1, 5, 'Purchase', '2024-12-03 01:41:21', 3);
+(2, 1, NULL, 'View', '2024-11-17 17:08:55', NULL),
+(3, 2, NULL, 'View', '2024-11-17 17:09:16', NULL),
+(6, 1, NULL, 'View', '2024-11-18 18:43:06', NULL),
+(20, 4, NULL, 'View', '2024-11-19 18:06:39', NULL),
+(21, 1, NULL, 'View', '2024-11-19 22:53:20', NULL),
+(22, 1, NULL, 'View', '2024-11-19 23:01:01', NULL),
+(26, 1, NULL, 'View', '2024-11-20 00:04:52', NULL),
+(30, 1, NULL, 'View', '2024-11-22 22:04:26', NULL),
+(31, 1, NULL, 'View', '2024-11-26 01:01:28', NULL),
+(32, 1, NULL, 'View', '2024-11-26 01:18:10', NULL),
+(33, 1, NULL, 'View', '2024-11-26 01:28:39', NULL),
+(34, 1, NULL, 'View', '2024-11-26 02:37:23', NULL),
+(36, 3, NULL, 'View', '2024-11-26 19:31:41', NULL),
+(37, 1, NULL, 'View', '2024-11-26 19:52:08', NULL),
+(38, 3, NULL, 'View', '2024-11-26 20:20:35', NULL),
+(39, 2, NULL, 'View', '2024-11-26 20:22:46', NULL),
+(40, 1, NULL, 'View', '2024-11-26 20:22:53', NULL),
+(41, 1, NULL, 'View', '2024-11-27 21:35:47', NULL),
+(42, 1, NULL, 'View', '2024-11-27 22:31:04', NULL),
+(43, 3, NULL, 'View', '2024-11-27 22:51:11', NULL),
+(44, 3, NULL, 'View', '2024-11-27 22:56:43', NULL),
+(45, 2, NULL, 'View', '2024-11-27 23:00:44', NULL),
+(46, 1, NULL, 'View', '2024-11-29 22:41:28', NULL),
+(47, 3, 35, 'Click', '2024-11-30 00:37:48', NULL),
+(48, 3, 35, 'Click', '2024-11-30 00:46:48', NULL),
+(50, 3, 35, 'Click', '2024-11-30 01:15:19', NULL),
+(53, 1, NULL, 'View', '2024-12-03 01:31:01', NULL),
+(55, 3, 35, 'Purchase', '2024-12-05 19:05:57', 3),
+(56, 3, NULL, 'View', '2024-12-05 19:06:17', NULL),
+(57, 2, 37, 'Click', '2024-12-05 19:06:40', NULL),
+(58, 2, 36, 'Click', '2024-12-05 19:06:57', NULL),
+(59, 3, 35, 'Purchase', '2024-12-05 19:07:15', 3),
+(60, 2, 37, 'Purchase', '2024-12-05 19:07:15', 1),
+(61, 2, 36, 'Purchase', '2024-12-05 19:07:15', 1);
 
 -- --------------------------------------------------------
 
@@ -567,15 +553,16 @@ CREATE TABLE `productos` (
 --
 
 INSERT INTO `productos` (`id_producto`, `id_perfil`, `nombre`, `descripcion`, `id_imagen`, `precio`, `stock`, `tiempo_creacion`) VALUES
-(4, 1, 'artesania', 'artesania local echa a mano ', 2, 59990.00, 10, '2024-10-31 20:08:04'),
-(5, 1, 'torta', 'torta de chocolate relleno con manjar', 3, 12990.00, 8, '2024-10-31 20:13:04'),
-(6, 1, 'Notebook HP Victus ', ' Notebook gamer procesador i7°13Genreacion 8Gb RAM 512 SSD', 4, 899990.00, 5, '2024-10-31 20:25:07'),
-(7, 2, 'babershopking', 'cortes de pelo y perfilado de barba en la mejor barberia de rancagua', 5, 10000.00, 0, '2024-10-31 20:36:03'),
-(8, 2, 'insumos barbershop', 'insumos de barberia  los mejores a muy buen precio ', 6, 19990.00, 20, '2024-11-01 16:30:03'),
-(9, 1, 'Poncho de Huaso', 'poncho de huaso echo a mano artesania regional ', 7, 32990.00, 5, '2024-11-01 16:46:40'),
-(30, 4, 'Producto 1', 'Descripción del producto 1', 9, 1000.00, 10, '2024-11-18 18:43:06'),
-(31, 4, 'Producto 2', 'Descripción del producto 2', 9, 2000.00, 5, '2024-11-18 18:43:06'),
-(35, 3, 'claveles', 'mejore claveles', NULL, 2000.00, 28, '2024-11-29 22:59:03');
+(35, 3, 'claveles', 'mejore claveles', NULL, 2000.00, 21, '2024-11-29 22:59:03'),
+(36, 2, 'cera para pelo', 'cera para cabello liso ', NULL, 5990.00, 14, '2024-12-03 18:21:35'),
+(37, 2, 'wahl', 'maquina para cortar el pelo profesional ...con set de peines..', NULL, 99990.00, 4, '2024-12-04 00:51:07'),
+(38, 2, 'Insumos de barberia', 'KIT COMBO COMPLETO INICIO INSUMOS BARBERÍA', NULL, 29990.00, 20, '2024-12-04 00:57:35'),
+(42, 1, 'Tortitas de amorshh', 'Las mejores tortas de la región a pedido.', NULL, 12990.00, 5, '2024-12-04 01:23:46'),
+(43, 1, 'Pastelitos', 'pastelitos a pedido , baratitos ', NULL, 10000.00, 5, '2024-12-04 01:26:51'),
+(44, 1, 'wafles', 'wafles para el regal@n ', NULL, 5990.00, 11, '2024-12-04 01:31:24'),
+(45, 4, 'productos de aseo ', 'Productos de limpieza imprescindibles en el hogar ', NULL, 20000.00, 20, '2024-12-04 01:39:17'),
+(46, 4, 'Limpieza de auto', 'Productos de limpieza para tu auto, que necesitas.', NULL, 10000.00, 8, '2024-12-04 01:45:54'),
+(47, 3, 'Rosas', 'Las rosas mas hermosas de la región ', NULL, 6990.00, 10, '2024-12-04 01:54:40');
 
 -- --------------------------------------------------------
 
@@ -597,7 +584,34 @@ CREATE TABLE `producto_imagenes` (
 INSERT INTO `producto_imagenes` (`id_imagen`, `id_producto`, `url_imagen`, `es_principal`) VALUES
 (4, 35, 'https://content.elmueble.com/medio/2023/05/23/claveles_8ea9bd65_230523104229_1000x1500.jpg', 0),
 (5, 35, 'https://blog.germigarden.com/wp-content/uploads/2022/04/carnation-chinese-3591757_1920-1024x768.jpg', 0),
-(6, 35, 'https://blog.germigarden.com/wp-content/uploads/2022/04/carnation-chinese-3591757_1920-1024x768.jpg', 0);
+(6, 35, 'https://blog.germigarden.com/wp-content/uploads/2022/04/carnation-chinese-3591757_1920-1024x768.jpg', 0),
+(7, 36, 'https://cdnx.jumpseller.com/casa-del-peluquero1/image/20635159/cera-obopekal-barber-black-200ml.jpg?1657736804', 0),
+(8, 36, 'https://sirfausto.cl/cdn/shop/products/oldwaxextrafuerte3.jpg?v=1715704483&width=1500', 0),
+(9, 36, 'https://http2.mlstatic.com/D_NQ_NP_879388-MLC77476862048_072024-O.webp', 0),
+(10, 37, 'https://cdnx.jumpseller.com/cabellocenter/image/15892170/7FB94044-E450-4B80-BA91-949A19A2A140.jpeg?1643767088', 0),
+(11, 37, 'https://cosmetic.cl/cdn/shop/products/1_b368fcb1-4b11-4f71-9958-9ea0dab9db92_800x.png?v=1681759634', 0),
+(12, 37, 'https://cloudfront-us-east-1.images.arcpublishing.com/copesa/5MIOYMO2KRAX3ESLTHTGKJ6R4A.png', 0),
+(13, 38, 'https://hairhuntersco.com/cdn/shop/files/p_800x.png?v=1725225888', 0),
+(14, 38, 'https://www.eurostil.com/wp-content/uploads/2019/10/navajas-barber-line.png', 0),
+(15, 38, 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSkyOlZ9HW2ZnG7d-maFxFviPbyKgCgW65i_w&s', 0),
+(23, 42, 'https://deliciasdeiquique.cl/wp-content/uploads/2022/09/Diseno-sin-titulo-2022-09-29T161129.912-1.png', 0),
+(24, 42, 'https://www.latorterie.cl/cdn/shop/files/4B15A767-00F3-4183-94BD-23AFD63DFD80.jpg?v=1725472001&width=1445', 0),
+(25, 42, 'https://i0.wp.com/mozart.cl/wp-content/uploads/2021/06/94_MIF_3221_Torta_Vegana_Tres_Berries_1080x1080.jpg?fit=1080%2C1080&ssl=1', 0),
+(26, 43, 'https://i0.wp.com/mozart.cl/wp-content/uploads/2018/04/269_MIF_2034_Surtido_de_Pastelitos_1080x1080.jpg?fit=1080%2C1080&ssl=1', 0),
+(27, 43, 'https://d2g2gko594h1qv.cloudfront.net/1051-large_default/pastelitos.jpg', 0),
+(28, 43, 'https://2.bp.blogspot.com/-Qdd_O5fWJgM/VMB9s8LWdYI/AAAAAAAACFM/_ZcM-1_gAhM/s1600/Chocolate%2BCupcakes%2BSySPMS.jpg', 0),
+(29, 44, 'https://www.gourmet.cl/wp-content/uploads/2019/04/Waffles-editada.jpg', 0),
+(30, 44, 'https://annaspasteleria.com/images/_imageBlock/DSC_3948web.jpg', 0),
+(31, 44, 'https://alimentossanluis.com/storage/SanLuis_Miel_Recetas_Wafles4.jpg', 0),
+(32, 45, 'https://www.timbrit.cl/blog/wp-content/uploads/2020/01/Productos-de-limpieza-imprescindibles-para-el-hogar.jpg', 0),
+(33, 45, 'https://www.mmtseguros.com/hubfs/productos-limpieza-hogar.jpg', 0),
+(34, 45, 'https://ecommerce.surtifamiliar.com/backend/admin/backend/web/archivosDelCliente/categorias/images/20201103104011-Aseo-Hogar-Cuidado-Hogar16044180118488.jpg', 0),
+(35, 46, 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTI-vF1K4Jlx37QO-BaiqatTt7strSWd9giIA&s', 0),
+(36, 46, 'https://detailing.cl/wp-content/uploads/2024/02/meguiars-detailing.cl_.jpg', 0),
+(37, 46, 'https://www.retail.cl/cdn/shop/files/1_6deb8f06-1584-4228-ab5c-dd755777fbdd.jpg?v=1698938021', 0),
+(38, 47, 'https://media.admagazine.com/photos/65ca727d564155b0f3dcdae4/4:3/w_2664,h_1998,c_limit/Rosas%2014%20febrero.jpg', 0),
+(39, 47, 'https://storage.googleapis.com/rosalinda-productos/producto/2396/14989/800/14989.jpg', 0),
+(40, 47, 'https://eljardinderosas.cl/inicio/wp-content/uploads/2020/10/RAMO-BUCHON-CON-100-ROSAS-ROJAS.png', 0);
 
 -- --------------------------------------------------------
 
@@ -936,7 +950,7 @@ ALTER TABLE `admin`
 -- AUTO_INCREMENT de la tabla `compra`
 --
 ALTER TABLE `compra`
-  MODIFY `id_compra` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=12;
+  MODIFY `id_compra` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=15;
 
 --
 -- AUTO_INCREMENT de la tabla `conversaciones`
@@ -948,13 +962,13 @@ ALTER TABLE `conversaciones`
 -- AUTO_INCREMENT de la tabla `detalle_compra`
 --
 ALTER TABLE `detalle_compra`
-  MODIFY `id_detalle` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=12;
+  MODIFY `id_detalle` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=17;
 
 --
 -- AUTO_INCREMENT de la tabla `documento`
 --
 ALTER TABLE `documento`
-  MODIFY `id_documento` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=16;
+  MODIFY `id_documento` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=19;
 
 --
 -- AUTO_INCREMENT de la tabla `entrepreneur_reviews`
@@ -966,7 +980,7 @@ ALTER TABLE `entrepreneur_reviews`
 -- AUTO_INCREMENT de la tabla `envio`
 --
 ALTER TABLE `envio`
-  MODIFY `id_envio` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=16;
+  MODIFY `id_envio` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=19;
 
 --
 -- AUTO_INCREMENT de la tabla `favemprendedor`
@@ -1008,7 +1022,7 @@ ALTER TABLE `imagen_publicacion`
 -- AUTO_INCREMENT de la tabla `interacciones`
 --
 ALTER TABLE `interacciones`
-  MODIFY `id_interaccion` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=55;
+  MODIFY `id_interaccion` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=62;
 
 --
 -- AUTO_INCREMENT de la tabla `mensajes`
@@ -1038,13 +1052,13 @@ ALTER TABLE `perfil_negocio`
 -- AUTO_INCREMENT de la tabla `productos`
 --
 ALTER TABLE `productos`
-  MODIFY `id_producto` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=36;
+  MODIFY `id_producto` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=48;
 
 --
 -- AUTO_INCREMENT de la tabla `producto_imagenes`
 --
 ALTER TABLE `producto_imagenes`
-  MODIFY `id_imagen` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
+  MODIFY `id_imagen` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=41;
 
 --
 -- AUTO_INCREMENT de la tabla `product_reviews`

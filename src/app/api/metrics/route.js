@@ -27,14 +27,14 @@ export async function GET(req) {
       );
     }
 
-    const query = `
-      SELECT ${groupBy} AS periodo, tipo_interaccion,
+    const query = 
+      `SELECT ${groupBy} AS periodo, tipo_interaccion,
              SUM(cantidad) AS total
       FROM interacciones
       WHERE id_perfil = ?
       GROUP BY periodo, tipo_interaccion
-      ORDER BY periodo ASC;
-    `;
+      ORDER BY periodo ASC`;
+    
 
     const metrics = await new Promise((resolve, reject) => {
       connection.query(query, [id_perfil], (error, results) => {
@@ -49,7 +49,7 @@ export async function GET(req) {
       monthly: { views: [], purchases: [] },
     };
 
-    // Rellenar los días faltantes (si es `daily`)
+    // Rellenar los días faltantes (si es daily)
     if (period === "daily") {
       const startDate = new Date();
       startDate.setDate(startDate.getDate() - 6); // Últimos 7 días
@@ -106,4 +106,3 @@ export async function GET(req) {
     );
   }
 }
-
