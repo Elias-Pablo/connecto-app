@@ -42,6 +42,8 @@ export async function GET(req) {
   const url = new URL(req.url);
   const id_publicaciones = url.searchParams.get("id_publicaciones");
 
+  console.log("ID de publicación recibido:", id_publicaciones); // Agregar esto
+
   if (!id_publicaciones) {
     return new Response(JSON.stringify({ message: "ID de publicación requerido" }), { status: 400 });
   }
@@ -49,10 +51,11 @@ export async function GET(req) {
   try {
     return new Promise((resolve, reject) => {
       connection.query(
-        `SELECT rf.id_respuesta, rf.respuesta, rf.tiempo_creacion, p.nombre
-         FROM respuestas_foro rf
-         JOIN perfiles p ON rf.id_perfil = p.id_perfil
-         WHERE rf.id_publicaciones = ?`,
+        `SELECT rf.id_respuesta, rf.respuesta, rf.tiempo_creacion, p.nombre_negocio
+          FROM respuestas_foro rf
+          JOIN perfil_negocio p ON rf.id_perfil = p.id_perfil
+          WHERE rf.id_publicaciones = ?`
+          ,
         [id_publicaciones],
         (error, results) => {
           if (error) {

@@ -2,6 +2,7 @@
 import { useState, useEffect } from "react";
 import Header from "@/components/Header-em";
 import { HandThumbUpIcon, LightBulbIcon } from "@heroicons/react/24/outline";
+import Image from "next/image";
 
 export default function Foro() {
   const [categorias, setCategorias] = useState([]);
@@ -10,15 +11,18 @@ export default function Foro() {
   const [mostrarFormulario, setMostrarFormulario] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [nuevoForo, setNuevoForo] = useState({
-    titulo: "",
-    descripcion: "",
-    id_foro: "",
+    titulo: "",       // Inicializar con un string vacío
+    descripcion: "",  // Inicializar con un string vacío
+    id_foro: "",      // Inicializar con un string vacío
+    url_imagen: "",   // Inicializar con un string vacío
   });
+  
   const [respuestaActiva, setRespuestaActiva] = useState(null);
   const [nuevaRespuesta, setNuevaRespuesta] = useState("");
   const [pagina, setPagina] = useState(1);
   const [totalPaginas, setTotalPaginas] = useState(1);
   const [filtroCategoria, setFiltroCategoria] = useState(null);
+  const [respuestasVisibles, setRespuestasVisibles] = useState({});
 
   // Obtener categorías y publicaciones
   useEffect(() => {
@@ -65,28 +69,29 @@ export default function Foro() {
 
   // Crear nueva publicación
   const handleCrearForo = async () => {
+    if (!nuevoForo.id_foro) {
+      alert("Por favor selecciona una categoría antes de publicar.");
+      return;
+    }
+  
     try {
       const token = localStorage.getItem("token");
       if (!token) throw new Error("Usuario no autorizado. Faltan credenciales.");
-
+  
       const response = await fetch("/api/auth/foro", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
           Authorization: `Bearer ${token}`,
         },
-        body: JSON.stringify({
-          titulo: nuevoForo.titulo,
-          descripcion: nuevoForo.descripcion,
-          id_foro: filtroCategoria,
-        }),
+        body: JSON.stringify(nuevoForo),
       });
-
+  
       if (response.ok) {
         const data = await response.json();
         setForosDestacados([...forosDestacados, { ...nuevoForo, id: data.id }]);
         setMostrarFormulario(false);
-        setNuevoForo({ titulo: "", descripcion: "", id_foro: "" });
+        setNuevoForo({ titulo: "", descripcion: "", id_foro: "", url_imagen: "" });
       } else {
         console.error("Error al crear la publicación");
       }
@@ -96,19 +101,35 @@ export default function Foro() {
       setIsLoading(false);
     }
   };
-
+  
   // Obtener respuestas
   const fetchRespuestas = async (id_publicaciones) => {
     try {
+      // Si ya está visible, al hacer clic de nuevo, se oculta
+      if (respuestasVisibles[id_publicaciones]) {
+        setRespuestasVisibles((prev) => ({
+          ...prev,
+          [id_publicaciones]: false,
+        }));
+        return; // No hace la llamada si ya están visibles
+      }
+  
       setIsLoading(true);
+  
       const response = await fetch(
         `/api/auth/foro/respuestas?id_publicaciones=${id_publicaciones}`
       );
       if (!response.ok) throw new Error("Error al cargar respuestas");
       const data = await response.json();
+  
       setRespuestas((prev) => ({
         ...prev,
         [id_publicaciones]: data,
+      }));
+  
+      setRespuestasVisibles((prev) => ({
+        ...prev,
+        [id_publicaciones]: true,
       }));
     } catch (error) {
       console.error("Error al obtener respuestas:", error);
@@ -116,13 +137,13 @@ export default function Foro() {
       setIsLoading(false);
     }
   };
-
+  
   // Crear nueva respuesta
   const handleCrearRespuesta = async (id_publicaciones) => {
     try {
       const token = localStorage.getItem("token");
       if (!token) throw new Error("Usuario no autorizado. Faltan credenciales.");
-
+  
       const response = await fetch("/api/auth/foro/respuestas", {
         method: "POST",
         headers: {
@@ -131,9 +152,9 @@ export default function Foro() {
         },
         body: JSON.stringify({ id_publicaciones, respuesta: nuevaRespuesta }),
       });
-
+  
       if (response.ok) {
-        await fetchRespuestas(id_publicaciones);
+        await fetchRespuestas(id_publicaciones); // Actualizar las respuestas
         setNuevaRespuesta("");
         setRespuestaActiva(null);
       } else {
@@ -142,14 +163,14 @@ export default function Foro() {
     } catch (error) {
       console.error("Error en la solicitud de creación de respuesta:", error);
     }
-  };
+  };  
 
   // Manejar reacciones
   const handleReaccionar = async (id_publicaciones, tipo) => {
     try {
       const token = localStorage.getItem("token");
       if (!token) throw new Error("Usuario no autorizado. Faltan credenciales.");
-
+  
       const response = await fetch("/api/auth/foro/reacciones", {
         method: "POST",
         headers: {
@@ -158,9 +179,25 @@ export default function Foro() {
         },
         body: JSON.stringify({ id_publicaciones, tipo }),
       });
-
+  
       if (response.ok) {
-        console.log("Reacción registrada exitosamente.");
+        // Actualizar los conteos localmente
+        setForosDestacados((prevForos) =>
+          prevForos.map((foro) => {
+            if (foro.id_publicaciones === id_publicaciones) {
+              const countKey = tipo === "me gusta" ? "meGusta" : "util";
+              const isAddingReaction = response.status === 201;
+  
+              return {
+                ...foro,
+                [countKey]: isAddingReaction
+                  ? foro[countKey] + 1
+                  : foro[countKey] - 1,
+              };
+            }
+            return foro;
+          })
+        );
       } else {
         console.error("Error al registrar la reacción");
       }
@@ -168,12 +205,44 @@ export default function Foro() {
       console.error("Error en la solicitud de reacción:", error);
     }
   };
-
+  
   const handlePaginaClick = (nuevaPagina) => {
     if (nuevaPagina > 0 && nuevaPagina <= totalPaginas) {
       setPagina(nuevaPagina);
     }
   };
+
+  // Función para alternar respuestas
+const toggleRespuestas = async (id_publicaciones) => {
+  if (respuestasVisibles[id_publicaciones]) {
+    // Si las respuestas están visibles, oculta
+    setRespuestasVisibles((prev) => ({
+      ...prev,
+      [id_publicaciones]: false,
+    }));
+  } else {
+    // Si las respuestas no están visibles, intenta cargar desde la API
+    try {
+      const response = await fetch(
+        `/api/auth/foro/respuestas?id_publicaciones=${id_publicaciones}`
+      );
+      if (!response.ok) throw new Error("Error al cargar respuestas");
+      const data = await response.json();
+
+      // Actualiza las respuestas y hazlas visibles
+      setRespuestas((prev) => ({
+        ...prev,
+        [id_publicaciones]: data,
+      }));
+      setRespuestasVisibles((prev) => ({
+        ...prev,
+        [id_publicaciones]: true,
+      }));
+    } catch (error) {
+      console.error("Error al obtener respuestas:", error);
+    }
+  }
+};
 
   return (
     <>
@@ -200,17 +269,31 @@ export default function Foro() {
                   onChange={handleChange}
                   className="w-full p-2 border rounded mt-2"
                 />
-                <textarea
+                <input
+                  type="text"
                   name="descripcion"
+                  value={nuevoForo.descripcion || ""}
                   placeholder="Descripción"
-                  value={nuevoForo.descripcion}
+                  onChange={handleChange}  
+                  className="w-full p-2 border rounded mt-2"
+                />
+                <select
+                  name="id_foro"
+                  value={nuevoForo.id_foro}
                   onChange={handleChange}
                   className="w-full p-2 border rounded mt-2"
-                ></textarea>
+                >
+                  <option value="">Selecciona una categoría</option>
+                  {categorias.map((categoria) => (
+                    <option key={categoria.id_foro} value={categoria.id_foro}>
+                      {categoria.nombre}
+                    </option>
+                  ))}
+                </select>
                 <input
                   type="text"
                   name="url_imagen"
-                  placeholder="URL de la imagen"
+                  placeholder="URL de la imagen (opcional)"
                   value={nuevoForo.url_imagen}
                   onChange={handleChange}
                   className="bg-gray-100 text-black border p-2 w-full mb-2 rounded"
@@ -252,54 +335,94 @@ export default function Foro() {
             <h2 className="text-2xl text-white font-bold mt-8">Publicaciones Destacadas</h2>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
               {forosDestacados.map((foro) => (
-                <div key={foro.id_publicaciones} className="bg-white p-4 rounded-lg shadow-lg">
-                  <h3 className="text-lg font-bold">{foro.titulo}</h3>
-                  <p className="text-gray-700">{foro.descripcion}</p>
-                  <div className="flex items-center mt-2 space-x-4">
+                <div
+                  key={foro.id_publicaciones}
+                  className="bg-white p-4 rounded-lg shadow-lg"
+                >
+                  {/* Imagen o Placeholder */}
+                  <div className="relative w-full h-48 rounded-lg overflow-hidden shadow-md">
+                    {foro.url_imagen?.startsWith("http") ? (
+                      <Image
+                        src={foro.url_imagen}
+                        alt={foro.titulo}
+                        layout="fill"
+                        objectFit="cover"
+                        className="transition-opacity duration-300 hover:opacity-90"
+                      />
+                    ) : (
+                      <div className="w-full h-full bg-gray-200 flex items-center justify-center text-gray-500">
+                        <span className="text-lg font-bold">Sin Imagen</span>
+                      </div>
+                    )}
+                  </div>
+
+                  {/* Título */}
+                  <h3 className="text-lg font-bold mt-4 text-gray-800">{foro.titulo}</h3>
+
+                  {/* Descripción */}
+                  <p className="text-gray-700 mt-2">{foro.descripcion}</p>
+
+                  {/* Botones de acciones */}
+                  <div className="flex items-center mt-4 space-x-4">
                     {/* Reacciones */}
                     <button
                       onClick={() => handleReaccionar(foro.id_publicaciones, "me gusta")}
-                      className="flex items-center text-blue-500"
+                      className="flex items-center text-blue-500 hover:underline"
                     >
-                      <HandThumbUpIcon className="h-5 w-5" /> 
+                      <HandThumbUpIcon className="h-5 w-5" />
                       <span className="ml-1">{foro.meGusta || 0}</span>
                     </button>
                     <button
                       onClick={() => handleReaccionar(foro.id_publicaciones, "útil")}
-                      className="flex items-center text-green-500"
+                      className="flex items-center text-green-500 hover:underline"
                     >
-                      <LightBulbIcon className="h-5 w-5" /> 
+                      <LightBulbIcon className="h-5 w-5" />
                       <span className="ml-1">{foro.util || 0}</span>
                     </button>
-                    {/* Ver Respuestas */}
+
+                    {/* Botón de Ver/Esconder Respuestas */}
                     <button
-                      onClick={() => fetchRespuestas(foro.id_publicaciones)}
+                      onClick={() => toggleRespuestas(foro.id_publicaciones)}
                       className="bg-yellow-500 text-white p-2 rounded-lg"
                     >
-                      Ver Respuestas ({foro.total_respuestas || 0})
+                      {respuestasVisibles[foro.id_publicaciones]
+                        ? "Ocultar Respuestas"
+                        : `Ver Respuestas (${foro.total_respuestas || 0})`}
                     </button>
+
+                    {/* Mostrar respuestas o mensaje */}
+                    {respuestasVisibles[foro.id_publicaciones] ? (
+                      Array.isArray(respuestas[foro.id_publicaciones]) && respuestas[foro.id_publicaciones].length > 0 ? (
+                        respuestas[foro.id_publicaciones].map((respuesta) => (
+                          <div
+                            key={respuesta.id_respuesta}
+                            className="bg-gray-100 p-4 rounded-lg shadow-md mt-4"
+                          >
+                            <p className="text-gray-700">{respuesta.respuesta}</p>
+                            <div className="flex justify-between mt-2">
+                              <small className="text-gray-500">Por: {respuesta.nombre_negocio}</small>
+                              <small className="text-gray-500">
+                                {new Date(respuesta.tiempo_creacion).toLocaleString()}
+                              </small>
+                            </div>
+                          </div>
+                        ))
+                      ) : (
+                        <p className="text-gray-500 mt-4">No hay respuestas aún.</p> // Mensaje si no hay respuestas cargadas
+                      )
+                    ) : null} {/* Oculta las respuestas cuando no están visibles */}
+
                     {/* Responder */}
                     <button
                       onClick={() => setRespuestaActiva(foro.id_publicaciones)}
-                      className="bg-yellow-500 text-white p-2 rounded-lg"
+                      className="bg-yellow-500 text-white p-2 rounded-lg hover:bg-yellow-600"
                     >
                       Responder
                     </button>
                   </div>
-                  {/* Mostrar respuestas */}
-                  {respuestas[foro.id_publicaciones] && (
-                    <div className="mt-4">
-                      {respuestas[foro.id_publicaciones].map((respuesta) => (
-                        <div
-                          key={respuesta.id_respuesta}
-                          className="bg-gray-100 p-2 rounded-lg shadow-md"
-                        >
-                          <p className="text-gray-700">{respuesta.respuesta}</p>
-                          <small className="text-gray-500">{respuesta.nombre_usuario}</small>
-                        </div>
-                      ))}
-                    </div>
-                  )}
+
+                  
+
                   {/* Formulario para responder */}
                   {respuestaActiva === foro.id_publicaciones && (
                     <div className="mt-4">
@@ -327,7 +450,7 @@ export default function Foro() {
               ))}             
                 </div>
                 {/* Paginación */}
-          <div className="flex justify-center mt-6 space-x-2">
+            <div className="flex justify-center mt-6 space-x-2">
             <button
               onClick={() => handlePaginaClick(1)}
               disabled={pagina === 1}
