@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Servidor: 127.0.0.1
--- Tiempo de generación: 06-12-2024 a las 06:44:40
+-- Tiempo de generación: 06-12-2024 a las 21:53:17
 -- Versión del servidor: 10.4.32-MariaDB
 -- Versión de PHP: 8.2.12
 
@@ -347,7 +347,7 @@ CREATE TABLE `hilos_foro` (
 
 CREATE TABLE `imagen_publicacion` (
   `id_imagen` int(11) NOT NULL,
-  `id_post` int(11) DEFAULT NULL,
+  `id_publicaciones` int(11) DEFAULT NULL,
   `url_imagen` varchar(255) DEFAULT NULL,
   `tiempo_creacion` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
@@ -356,7 +356,7 @@ CREATE TABLE `imagen_publicacion` (
 -- Volcado de datos para la tabla `imagen_publicacion`
 --
 
-INSERT INTO `imagen_publicacion` (`id_imagen`, `id_post`, `url_imagen`, `tiempo_creacion`) VALUES
+INSERT INTO `imagen_publicacion` (`id_imagen`, `id_publicaciones`, `url_imagen`, `tiempo_creacion`) VALUES
 (1, NULL, 'https://assets.adidas.com/images/w_600,f_auto,q_auto/02cd9a97ce874d89ba17ae2b003ebe50_9366/Zapatillas_adidas_Grand_Court_Lifestyle_para_Tenis_con_Cordones_Blanco_GW6511_01_standard.jpg', '2024-10-30 23:15:15'),
 (2, NULL, 'https://chilecultura.gob.cl/uploads/cropped_SOTkYrh.png', '2024-10-31 20:00:11'),
 (3, NULL, 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRXSCdX3pVcKLUyQ511oyaDDufnC9apP-5nwQ&s', '2024-10-31 20:09:44'),
@@ -372,7 +372,9 @@ INSERT INTO `imagen_publicacion` (`id_imagen`, `id_post`, `url_imagen`, `tiempo_
 (13, NULL, 'j', '2024-11-17 16:06:09'),
 (14, NULL, 'https://yt3.googleusercontent.com/ytc/AIdro_nQDRMfNCBCUumCBMlgwAwrVCNYZPmI6wnUME9B5EmxYNY=s900-c-k-c0x00ffffff-no-rj', '2024-11-19 17:53:29'),
 (15, NULL, 'https://elcomercio.pe/resizer/5oYD1gjh8HJ9bkviH3ODRHD448Q=/1200x800/smart/filters:format(jpeg):quality(75)/arc-anglerfish-arc2-prod-elcomercio.s3.amazonaws.com/public/CLVESG4AJRFX3E7TRTJI45R2MQ.jpg', '2024-11-19 23:58:38'),
-(16, NULL, '/placeholder.webp', '2024-11-20 00:05:49');
+(16, NULL, '/placeholder.webp', '2024-11-20 00:05:49'),
+(17, NULL, 'f', '2024-12-06 19:30:47'),
+(18, NULL, 'd', '2024-12-06 19:42:50');
 
 -- --------------------------------------------------------
 
@@ -558,7 +560,6 @@ CREATE TABLE `productos` (
   `id_perfil` int(11) NOT NULL,
   `nombre` varchar(100) NOT NULL,
   `descripcion` text DEFAULT NULL,
-  `id_imagen` int(11) DEFAULT NULL,
   `precio` decimal(10,2) NOT NULL,
   `stock` int(11) NOT NULL,
   `tiempo_creacion` timestamp NOT NULL DEFAULT current_timestamp()
@@ -568,17 +569,17 @@ CREATE TABLE `productos` (
 -- Volcado de datos para la tabla `productos`
 --
 
-INSERT INTO `productos` (`id_producto`, `id_perfil`, `nombre`, `descripcion`, `id_imagen`, `precio`, `stock`, `tiempo_creacion`) VALUES
-(35, 3, 'claveles', 'mejore claveles', NULL, 2000.00, 21, '2024-11-29 22:59:03'),
-(36, 2, 'cera para pelo', 'cera para cabello liso ', NULL, 5990.00, 14, '2024-12-03 18:21:35'),
-(37, 2, 'wahl', 'maquina para cortar el pelo profesional ...con set de peines..', NULL, 99990.00, 4, '2024-12-04 00:51:07'),
-(38, 2, 'Insumos de barberia', 'KIT COMBO COMPLETO INICIO INSUMOS BARBERÍA', NULL, 29990.00, 20, '2024-12-04 00:57:35'),
-(42, 1, 'Tortitas de amorshh', 'Las mejores tortas de la región a pedido.', NULL, 12990.00, 5, '2024-12-04 01:23:46'),
-(43, 1, 'Pastelitos', 'pastelitos a pedido , baratitos ', NULL, 10000.00, 5, '2024-12-04 01:26:51'),
-(44, 1, 'wafles', 'wafles para el regal@n ', NULL, 5990.00, 11, '2024-12-04 01:31:24'),
-(45, 4, 'productos de aseo ', 'Productos de limpieza imprescindibles en el hogar ', NULL, 20000.00, 20, '2024-12-04 01:39:17'),
-(46, 4, 'Limpieza de auto', 'Productos de limpieza para tu auto, que necesitas.', NULL, 10000.00, 8, '2024-12-04 01:45:54'),
-(47, 3, 'Rosas', 'Las rosas mas hermosas de la región ', NULL, 6990.00, 9, '2024-12-04 01:54:40');
+INSERT INTO `productos` (`id_producto`, `id_perfil`, `nombre`, `descripcion`, `precio`, `stock`, `tiempo_creacion`) VALUES
+(35, 3, 'claveles', 'mejore claveles', 2000.00, 21, '2024-11-29 22:59:03'),
+(36, 2, 'cera para pelo', 'cera para cabello liso ', 5990.00, 14, '2024-12-03 18:21:35'),
+(37, 2, 'wahl', 'maquina para cortar el pelo profesional ...con set de peines..', 99990.00, 4, '2024-12-04 00:51:07'),
+(38, 2, 'Insumos de barberia', 'KIT COMBO COMPLETO INICIO INSUMOS BARBERÍA', 29990.00, 20, '2024-12-04 00:57:35'),
+(42, 1, 'Tortitas de amorshh', 'Las mejores tortas de la región a pedido.', 12990.00, 5, '2024-12-04 01:23:46'),
+(43, 1, 'Pastelitos', 'pastelitos a pedido , baratitos ', 10000.00, 5, '2024-12-04 01:26:51'),
+(44, 1, 'wafles', 'wafles para el regal@n ', 5990.00, 11, '2024-12-04 01:31:24'),
+(45, 4, 'productos de aseo ', 'Productos de limpieza imprescindibles en el hogar ', 20000.00, 20, '2024-12-04 01:39:17'),
+(46, 4, 'Limpieza de auto', 'Productos de limpieza para tu auto, que necesitas.', 10000.00, 8, '2024-12-04 01:45:54'),
+(47, 3, 'Rosas', 'Las rosas mas hermosas de la región ', 6990.00, 9, '2024-12-04 01:54:40');
 
 -- --------------------------------------------------------
 
@@ -681,18 +682,17 @@ CREATE TABLE `publicaciones_foro` (
 --
 
 INSERT INTO `publicaciones_foro` (`id_publicaciones`, `id_perfil`, `id_imagen`, `id_foro`, `titulo`, `descripcion`, `tiempo_creacion`) VALUES
-(5, 1, NULL, 1, 'hola', 'ssfsf', '2024-12-06 03:41:01'),
-(6, 1, NULL, 1, 'hd', 'df', '2024-12-06 03:41:01'),
-(7, 1, NULL, 8, 'hhh', 'hh', '2024-12-06 03:41:01'),
-(8, 1, 9, 6, 'Busco trabajador', 'no venecos', '2024-12-06 03:41:01'),
-(9, 1, NULL, 1, 'dd', 'd', '2024-12-06 03:41:01'),
-(10, 1, NULL, 6, 'Busco una colaboracion de comida', 'Tengo un restaurante en santiago', '2024-12-06 03:41:01'),
-(11, 1, NULL, 3, 'ff', 'ff', '2024-12-06 03:41:01'),
-(12, 1, 10, 2, 'ff', 'hola', '2024-12-06 03:41:01'),
-(13, 1, 11, 4, 'prueba', 'hola', '2024-12-06 03:41:01'),
-(14, 1, 12, 2, 'hola', 'dfs', '2024-12-06 03:41:01'),
-(15, 1, 13, 8, 'hola', 'adfafa', '2024-12-06 03:41:01'),
-(16, 1, 16, 2, 'xd', 'xd', '2024-12-06 03:41:01');
+(29, 1, NULL, 1, 'Cómo empezar un negocio', 'Consejos prácticos para emprendedores', '2024-12-06 20:00:00'),
+(30, 2, 5, 2, 'Marketing para principiantes', 'Estrategias básicas de marketing para pequeños negocios', '2024-12-06 20:05:00'),
+(31, 3, NULL, 3, 'Logística eficiente', 'Cómo optimizar los procesos de entrega', '2024-12-06 20:10:00'),
+(32, 4, 8, 4, 'Atención al cliente', 'Claves para ofrecer una excelente atención al cliente', '2024-12-06 20:15:00'),
+(33, 5, NULL, 5, 'Finanzas personales', 'Cómo manejar tus finanzas mientras emprendes', '2024-12-06 20:20:00'),
+(34, 1, 9, 6, 'Innovación en ventas', 'Estrategias creativas para aumentar las ventas', '2024-12-06 19:47:25'),
+(35, 2, 11, 1, 'Desarrollo de producto', 'Cómo diseñar un producto que tus clientes amen', '2024-12-06 19:47:25'),
+(36, 3, NULL, 2, 'Publicidad en redes sociales', 'Cómo aprovechar Facebook Ads y Google Ads', '2024-12-06 19:47:25'),
+(37, 4, 13, 3, 'Gestión del tiempo', 'Consejos para gestionar tu tiempo como emprendedor', '2024-12-06 19:47:25'),
+(38, 5, NULL, 4, 'Casos de éxito', 'Historias de emprendedores que marcaron la diferencia', '2024-12-06 19:47:25'),
+(39, 3, NULL, 1, 'Buenas tardes', 'Busco ayuda en un documento de empresa', '2024-12-06 20:51:11');
 
 -- --------------------------------------------------------
 
@@ -704,7 +704,7 @@ CREATE TABLE `reacciones_foro` (
   `id_reaccion` int(11) NOT NULL,
   `id_publicaciones` int(11) NOT NULL,
   `id_perfil` int(11) DEFAULT NULL,
-  `tipo` varchar(50) NOT NULL,
+  `tipo` enum('me gusta','útil') NOT NULL,
   `tiempo_creacion` timestamp NOT NULL DEFAULT current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
@@ -713,11 +713,12 @@ CREATE TABLE `reacciones_foro` (
 --
 
 INSERT INTO `reacciones_foro` (`id_reaccion`, `id_publicaciones`, `id_perfil`, `tipo`, `tiempo_creacion`) VALUES
-(1, 5, 1, 'me gusta', '2024-12-06 04:25:47'),
-(2, 7, 1, 'útil', '2024-12-06 04:26:07'),
-(3, 5, 1, 'útil', '2024-12-06 04:34:46'),
-(4, 5, 1, 'útil', '2024-12-06 04:39:47'),
-(5, 6, 3, 'me gusta', '2024-12-06 05:22:07');
+(6, 29, 3, 'me gusta', '2024-12-06 19:54:47'),
+(7, 29, 3, 'útil', '2024-12-06 19:54:47'),
+(8, 35, 3, 'me gusta', '2024-12-06 20:03:11'),
+(9, 35, 3, 'útil', '2024-12-06 20:19:50'),
+(10, 38, 3, 'me gusta', '2024-12-06 20:24:18'),
+(11, 38, 3, 'útil', '2024-12-06 20:26:52');
 
 -- --------------------------------------------------------
 
@@ -738,10 +739,17 @@ CREATE TABLE `respuestas_foro` (
 --
 
 INSERT INTO `respuestas_foro` (`id_respuesta`, `id_perfil`, `id_publicaciones`, `respuesta`, `tiempo_creacion`) VALUES
-(1, 1, 5, 'g', '2024-12-06 04:35:46'),
-(2, 1, 5, 'h', '2024-12-06 04:39:51'),
-(3, 1, 7, 'xfxf', '2024-12-06 04:49:20'),
-(4, 3, 5, 'fd', '2024-12-06 05:21:32');
+(5, 2, 29, 'Me parecen excelentes consejos para iniciar un negocio.', '2024-12-06 21:00:00'),
+(6, 3, 29, '¿Puedes profundizar en cómo manejar clientes difíciles?', '2024-12-06 21:05:00'),
+(7, 1, 34, 'Gracias por estas ideas de ventas, son muy útiles.', '2024-12-06 21:10:00'),
+(8, 5, 34, '¿Qué herramientas recomiendas para analizar las ventas?', '2024-12-06 21:15:00'),
+(9, 4, 35, '¡Interesante tema! El diseño del producto es clave.', '2024-12-06 21:20:00'),
+(10, 2, 35, '¿Cómo validas la idea del producto antes de lanzarlo?', '2024-12-06 21:25:00'),
+(11, 3, 36, 'La logística puede ser un reto, ¿qué software recomiendas?', '2024-12-06 21:30:00'),
+(12, 1, 36, 'El proceso de optimización es clave para ahorrar costos.', '2024-12-06 21:35:00'),
+(13, 4, 33, 'Me encantó el enfoque en la gestión del tiempo.', '2024-12-06 21:40:00'),
+(14, 2, 33, '¿Qué técnicas usas para priorizar tareas?', '2024-12-06 21:45:00'),
+(15, 3, 33, 'hola', '2024-12-06 20:49:50');
 
 -- --------------------------------------------------------
 
@@ -885,7 +893,8 @@ ALTER TABLE `hilos_foro`
 -- Indices de la tabla `imagen_publicacion`
 --
 ALTER TABLE `imagen_publicacion`
-  ADD PRIMARY KEY (`id_imagen`);
+  ADD PRIMARY KEY (`id_imagen`),
+  ADD KEY `id_publicaciones` (`id_publicaciones`);
 
 --
 -- Indices de la tabla `interacciones`
@@ -932,8 +941,7 @@ ALTER TABLE `perfil_negocio`
 --
 ALTER TABLE `productos`
   ADD PRIMARY KEY (`id_producto`),
-  ADD KEY `profile_id` (`id_perfil`),
-  ADD KEY `productos_ibfk_3` (`id_imagen`);
+  ADD KEY `profile_id` (`id_perfil`);
 
 --
 -- Indices de la tabla `producto_imagenes`
@@ -971,8 +979,8 @@ ALTER TABLE `publicaciones_foro`
 --
 ALTER TABLE `reacciones_foro`
   ADD PRIMARY KEY (`id_reaccion`),
-  ADD KEY `id_publicaciones` (`id_publicaciones`),
-  ADD KEY `id_perfil` (`id_perfil`);
+  ADD UNIQUE KEY `unique_reaccion` (`id_perfil`,`id_publicaciones`,`tipo`),
+  ADD KEY `id_publicaciones` (`id_publicaciones`);
 
 --
 -- Indices de la tabla `respuestas_foro`
@@ -1075,7 +1083,7 @@ ALTER TABLE `hilos_foro`
 -- AUTO_INCREMENT de la tabla `imagen_publicacion`
 --
 ALTER TABLE `imagen_publicacion`
-  MODIFY `id_imagen` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=17;
+  MODIFY `id_imagen` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=19;
 
 --
 -- AUTO_INCREMENT de la tabla `interacciones`
@@ -1135,19 +1143,19 @@ ALTER TABLE `promociones`
 -- AUTO_INCREMENT de la tabla `publicaciones_foro`
 --
 ALTER TABLE `publicaciones_foro`
-  MODIFY `id_publicaciones` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=17;
+  MODIFY `id_publicaciones` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=40;
 
 --
 -- AUTO_INCREMENT de la tabla `reacciones_foro`
 --
 ALTER TABLE `reacciones_foro`
-  MODIFY `id_reaccion` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
+  MODIFY `id_reaccion` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=12;
 
 --
 -- AUTO_INCREMENT de la tabla `respuestas_foro`
 --
 ALTER TABLE `respuestas_foro`
-  MODIFY `id_respuesta` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
+  MODIFY `id_respuesta` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=16;
 
 --
 -- AUTO_INCREMENT de la tabla `usuarios`
@@ -1229,6 +1237,12 @@ ALTER TABLE `hilos_foro`
   ADD CONSTRAINT `hilos_foro_ibfk_4` FOREIGN KEY (`id_perfil`) REFERENCES `perfil_negocio` (`id_perfil`);
 
 --
+-- Filtros para la tabla `imagen_publicacion`
+--
+ALTER TABLE `imagen_publicacion`
+  ADD CONSTRAINT `imagen_publicacion_ibfk_1` FOREIGN KEY (`id_publicaciones`) REFERENCES `publicaciones_foro` (`id_publicaciones`);
+
+--
 -- Filtros para la tabla `interacciones`
 --
 ALTER TABLE `interacciones`
@@ -1267,8 +1281,7 @@ ALTER TABLE `perfil_negocio`
 -- Filtros para la tabla `productos`
 --
 ALTER TABLE `productos`
-  ADD CONSTRAINT `productos_ibfk_1` FOREIGN KEY (`id_perfil`) REFERENCES `perfil_negocio` (`id_perfil`),
-  ADD CONSTRAINT `productos_ibfk_3` FOREIGN KEY (`id_imagen`) REFERENCES `imagen_publicacion` (`id_imagen`);
+  ADD CONSTRAINT `productos_ibfk_1` FOREIGN KEY (`id_perfil`) REFERENCES `perfil_negocio` (`id_perfil`);
 
 --
 -- Filtros para la tabla `producto_imagenes`
