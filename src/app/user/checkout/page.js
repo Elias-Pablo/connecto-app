@@ -126,13 +126,9 @@ export default function Checkout() {
               <span>Subtotal</span>
               <span>{formatPrice(calculateTotal())}</span>
             </div>
-            <div className="flex justify-between mb-2">
-              <span>Impuestos</span>
-              <span>{formatPrice(calculateTotal() * 0.19)}</span>
-            </div>
             <div className="flex justify-between font-bold text-lg">
               <span>Total</span>
-              <span>{formatPrice(calculateTotal() + 5)}</span>
+              <span>{formatPrice(calculateTotal())}</span>
             </div>
             <button
               onClick={handleConfirmPurchase}

@@ -99,8 +99,7 @@ export const CartProvider = ({ children }) => {
   const calculateSubtotal = () =>
     cartItems.reduce((acc, item) => acc + item.price * item.quantity, 0);
 
-  const calculateTax = () => calculateSubtotal() * 0.19;
-  const calculateTotal = () => calculateSubtotal() + calculateTax();
+  const calculateTotal = () => calculateSubtotal();
 
   return (
     <CartContext.Provider
@@ -111,7 +110,6 @@ export const CartProvider = ({ children }) => {
         removeFromCart,
         updateQuantity, // Se expone la nueva función
         calculateSubtotal,
-        calculateTax,
         calculateTotal,
       }}
     >
