@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Servidor: 127.0.0.1
--- Tiempo de generación: 05-12-2024 a las 20:19:40
+-- Tiempo de generación: 06-12-2024 a las 06:44:40
 -- Versión del servidor: 10.4.32-MariaDB
 -- Versión de PHP: 8.2.12
 
@@ -76,7 +76,8 @@ INSERT INTO `compra` (`id_compra`, `id_documento`, `id_envio`, `id_usuario`, `de
 (11, 15, 15, 12, 'Compra de productos', 1, 1, 8000, '2024-12-03 02:05:26'),
 (12, 16, 16, 7, 'Compra de productos', 1, 1, 2000, '2024-12-03 18:15:35'),
 (13, 17, 17, 11, 'Compra de productos', 1, 1, 6000, '2024-12-05 19:05:57'),
-(14, 18, 18, 11, 'Compra de productos', 3, 1, 111980, '2024-12-05 19:07:15');
+(14, 18, 18, 11, 'Compra de productos', 3, 1, 111980, '2024-12-05 19:07:15'),
+(15, 19, 19, 12, 'Compra de productos', 1, 1, 6990, '2024-12-05 22:54:33');
 
 -- --------------------------------------------------------
 
@@ -103,7 +104,8 @@ INSERT INTO `conversaciones` (`id_conversacion`, `nombre_conversacion`, `id_usua
 (4, 'Chat entre 7 y 10', 7, 10, '2024-11-26 20:22:47'),
 (5, 'Chat entre 11 y 9', 11, 9, '2024-11-29 22:41:29'),
 (6, 'Chat entre 11 y 11', 11, 11, '2024-11-30 00:05:12'),
-(7, 'Chat entre 12 y 9', 12, 9, '2024-12-03 01:31:05');
+(7, 'Chat entre 12 y 9', 12, 9, '2024-12-03 01:31:05'),
+(8, 'Chat entre 12 y 11', 12, 11, '2024-12-05 22:40:29');
 
 -- --------------------------------------------------------
 
@@ -142,7 +144,8 @@ INSERT INTO `detalle_compra` (`id_detalle`, `id_compra`, `cantidad`, `precio_uni
 (13, 13, 3, 2000.00, 6000.00, 6000.00, 1140.00, 7140.00),
 (14, 14, 3, 2000.00, 6000.00, 6000.00, 1140.00, 7140.00),
 (15, 14, 1, 99990.00, 99990.00, 99990.00, 18998.10, 118988.10),
-(16, 14, 1, 5990.00, 5990.00, 5990.00, 1138.10, 7128.10);
+(16, 14, 1, 5990.00, 5990.00, 5990.00, 1138.10, 7128.10),
+(17, 15, 1, 6990.00, 6990.00, 6990.00, 1328.10, 8318.10);
 
 -- --------------------------------------------------------
 
@@ -178,7 +181,8 @@ INSERT INTO `documento` (`id_documento`, `tipo_documento`, `tipo_pago`) VALUES
 (15, NULL, NULL),
 (16, NULL, NULL),
 (17, NULL, NULL),
-(18, NULL, NULL);
+(18, NULL, NULL),
+(19, NULL, NULL);
 
 -- --------------------------------------------------------
 
@@ -234,7 +238,8 @@ INSERT INTO `envio` (`id_envio`, `direccion`, `destinatario`, `remitente`, `tiem
 (15, NULL, NULL, NULL, '2024-12-03 02:05:26', NULL, NULL, NULL),
 (16, NULL, NULL, NULL, '2024-12-03 18:15:35', NULL, NULL, NULL),
 (17, NULL, NULL, NULL, '2024-12-05 19:05:57', NULL, NULL, NULL),
-(18, NULL, NULL, NULL, '2024-12-05 19:07:15', NULL, NULL, NULL);
+(18, NULL, NULL, NULL, '2024-12-05 19:07:15', NULL, NULL, NULL),
+(19, NULL, NULL, NULL, '2024-12-05 22:54:33', NULL, NULL, NULL);
 
 -- --------------------------------------------------------
 
@@ -328,7 +333,7 @@ CREATE TABLE `gestion_redes_sociales` (
 
 CREATE TABLE `hilos_foro` (
   `id_hilos` int(11) NOT NULL,
-  `id_usuario` int(11) DEFAULT NULL,
+  `id_perfil` int(11) NOT NULL,
   `id_publicaciones` int(11) DEFAULT NULL,
   `comentario` varchar(255) DEFAULT NULL,
   `tiempo_creacion` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp()
@@ -422,7 +427,18 @@ INSERT INTO `interacciones` (`id_interaccion`, `id_perfil`, `id_producto`, `tipo
 (58, 2, 36, 'Click', '2024-12-05 19:06:57', NULL),
 (59, 3, 35, 'Purchase', '2024-12-05 19:07:15', 3),
 (60, 2, 37, 'Purchase', '2024-12-05 19:07:15', 1),
-(61, 2, 36, 'Purchase', '2024-12-05 19:07:15', 1);
+(61, 2, 36, 'Purchase', '2024-12-05 19:07:15', 1),
+(62, 3, NULL, 'View', '2024-12-05 22:40:23', NULL),
+(63, 3, NULL, 'View', '2024-12-05 22:40:24', NULL),
+(64, 3, NULL, 'View', '2024-12-05 22:46:31', NULL),
+(65, 3, 47, 'Click', '2024-12-05 22:53:57', NULL),
+(66, 3, 47, 'Click', '2024-12-05 22:54:16', NULL),
+(67, 3, 47, 'Purchase', '2024-12-05 22:54:33', 1),
+(68, 2, 37, 'Click', '2024-12-06 01:28:37', NULL),
+(69, 2, 37, 'Click', '2024-12-06 01:30:17', NULL),
+(70, 2, 37, 'Click', '2024-12-06 01:30:18', NULL),
+(71, 2, 36, 'Click', '2024-12-06 01:30:20', NULL),
+(72, 2, 37, 'Click', '2024-12-06 01:31:01', NULL);
 
 -- --------------------------------------------------------
 
@@ -562,7 +578,7 @@ INSERT INTO `productos` (`id_producto`, `id_perfil`, `nombre`, `descripcion`, `i
 (44, 1, 'wafles', 'wafles para el regal@n ', NULL, 5990.00, 11, '2024-12-04 01:31:24'),
 (45, 4, 'productos de aseo ', 'Productos de limpieza imprescindibles en el hogar ', NULL, 20000.00, 20, '2024-12-04 01:39:17'),
 (46, 4, 'Limpieza de auto', 'Productos de limpieza para tu auto, que necesitas.', NULL, 10000.00, 8, '2024-12-04 01:45:54'),
-(47, 3, 'Rosas', 'Las rosas mas hermosas de la región ', NULL, 6990.00, 10, '2024-12-04 01:54:40');
+(47, 3, 'Rosas', 'Las rosas mas hermosas de la región ', NULL, 6990.00, 9, '2024-12-04 01:54:40');
 
 -- --------------------------------------------------------
 
@@ -652,7 +668,7 @@ CREATE TABLE `promociones` (
 
 CREATE TABLE `publicaciones_foro` (
   `id_publicaciones` int(11) NOT NULL,
-  `id_usuario` int(11) DEFAULT NULL,
+  `id_perfil` int(11) NOT NULL,
   `id_imagen` int(11) DEFAULT NULL,
   `id_foro` int(11) DEFAULT NULL,
   `titulo` varchar(255) DEFAULT NULL,
@@ -664,19 +680,44 @@ CREATE TABLE `publicaciones_foro` (
 -- Volcado de datos para la tabla `publicaciones_foro`
 --
 
-INSERT INTO `publicaciones_foro` (`id_publicaciones`, `id_usuario`, `id_imagen`, `id_foro`, `titulo`, `descripcion`, `tiempo_creacion`) VALUES
-(5, 1, NULL, 1, 'hola', 'ssfsf', '2024-11-07 21:40:49'),
-(6, 1, NULL, 1, 'hd', 'df', '2024-11-07 21:41:42'),
-(7, 1, NULL, 8, 'hhh', 'hh', '2024-11-07 21:58:41'),
-(8, 1, 9, 6, 'Busco trabajador', 'no venecos', '2024-11-07 22:43:41'),
-(9, 1, NULL, 1, 'dd', 'd', '2024-11-07 22:07:55'),
-(10, 1, NULL, 6, 'Busco una colaboracion de comida', 'Tengo un restaurante en santiago', '2024-11-07 22:14:26'),
-(11, 1, NULL, 3, 'ff', 'ff', '2024-11-07 22:25:56'),
-(12, 1, 10, 2, 'ff', 'hola', '2024-11-07 22:38:20'),
-(13, 1, 11, 4, 'prueba', 'hola', '2024-11-07 22:46:00'),
-(14, 1, 12, 2, 'hola', 'dfs', '2024-11-07 22:49:04'),
-(15, 1, 13, 8, 'hola', 'adfafa', '2024-11-17 16:06:09'),
-(16, 1, 16, 2, 'xd', 'xd', '2024-11-20 00:05:49');
+INSERT INTO `publicaciones_foro` (`id_publicaciones`, `id_perfil`, `id_imagen`, `id_foro`, `titulo`, `descripcion`, `tiempo_creacion`) VALUES
+(5, 1, NULL, 1, 'hola', 'ssfsf', '2024-12-06 03:41:01'),
+(6, 1, NULL, 1, 'hd', 'df', '2024-12-06 03:41:01'),
+(7, 1, NULL, 8, 'hhh', 'hh', '2024-12-06 03:41:01'),
+(8, 1, 9, 6, 'Busco trabajador', 'no venecos', '2024-12-06 03:41:01'),
+(9, 1, NULL, 1, 'dd', 'd', '2024-12-06 03:41:01'),
+(10, 1, NULL, 6, 'Busco una colaboracion de comida', 'Tengo un restaurante en santiago', '2024-12-06 03:41:01'),
+(11, 1, NULL, 3, 'ff', 'ff', '2024-12-06 03:41:01'),
+(12, 1, 10, 2, 'ff', 'hola', '2024-12-06 03:41:01'),
+(13, 1, 11, 4, 'prueba', 'hola', '2024-12-06 03:41:01'),
+(14, 1, 12, 2, 'hola', 'dfs', '2024-12-06 03:41:01'),
+(15, 1, 13, 8, 'hola', 'adfafa', '2024-12-06 03:41:01'),
+(16, 1, 16, 2, 'xd', 'xd', '2024-12-06 03:41:01');
+
+-- --------------------------------------------------------
+
+--
+-- Estructura de tabla para la tabla `reacciones_foro`
+--
+
+CREATE TABLE `reacciones_foro` (
+  `id_reaccion` int(11) NOT NULL,
+  `id_publicaciones` int(11) NOT NULL,
+  `id_perfil` int(11) DEFAULT NULL,
+  `tipo` varchar(50) NOT NULL,
+  `tiempo_creacion` timestamp NOT NULL DEFAULT current_timestamp()
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Volcado de datos para la tabla `reacciones_foro`
+--
+
+INSERT INTO `reacciones_foro` (`id_reaccion`, `id_publicaciones`, `id_perfil`, `tipo`, `tiempo_creacion`) VALUES
+(1, 5, 1, 'me gusta', '2024-12-06 04:25:47'),
+(2, 7, 1, 'útil', '2024-12-06 04:26:07'),
+(3, 5, 1, 'útil', '2024-12-06 04:34:46'),
+(4, 5, 1, 'útil', '2024-12-06 04:39:47'),
+(5, 6, 3, 'me gusta', '2024-12-06 05:22:07');
 
 -- --------------------------------------------------------
 
@@ -686,11 +727,21 @@ INSERT INTO `publicaciones_foro` (`id_publicaciones`, `id_usuario`, `id_imagen`,
 
 CREATE TABLE `respuestas_foro` (
   `id_respuesta` int(11) NOT NULL,
+  `id_perfil` int(11) NOT NULL,
   `id_publicaciones` int(11) NOT NULL,
-  `id_usuario` int(11) NOT NULL,
   `respuesta` text NOT NULL,
   `tiempo_creacion` timestamp NOT NULL DEFAULT current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Volcado de datos para la tabla `respuestas_foro`
+--
+
+INSERT INTO `respuestas_foro` (`id_respuesta`, `id_perfil`, `id_publicaciones`, `respuesta`, `tiempo_creacion`) VALUES
+(1, 1, 5, 'g', '2024-12-06 04:35:46'),
+(2, 1, 5, 'h', '2024-12-06 04:39:51'),
+(3, 1, 7, 'xfxf', '2024-12-06 04:49:20'),
+(4, 3, 5, 'fd', '2024-12-06 05:21:32');
 
 -- --------------------------------------------------------
 
@@ -827,8 +878,8 @@ ALTER TABLE `gestion_redes_sociales`
 --
 ALTER TABLE `hilos_foro`
   ADD PRIMARY KEY (`id_hilos`),
-  ADD KEY `id_usuario` (`id_usuario`),
-  ADD KEY `id_publicaciones` (`id_publicaciones`);
+  ADD KEY `id_publicaciones` (`id_publicaciones`),
+  ADD KEY `id_perfil` (`id_perfil`);
 
 --
 -- Indices de la tabla `imagen_publicacion`
@@ -912,8 +963,16 @@ ALTER TABLE `promociones`
 ALTER TABLE `publicaciones_foro`
   ADD PRIMARY KEY (`id_publicaciones`),
   ADD KEY `id_imagen` (`id_imagen`),
-  ADD KEY `id_usuario` (`id_usuario`),
-  ADD KEY `id_foro` (`id_foro`);
+  ADD KEY `id_foro` (`id_foro`),
+  ADD KEY `id_perfil` (`id_perfil`);
+
+--
+-- Indices de la tabla `reacciones_foro`
+--
+ALTER TABLE `reacciones_foro`
+  ADD PRIMARY KEY (`id_reaccion`),
+  ADD KEY `id_publicaciones` (`id_publicaciones`),
+  ADD KEY `id_perfil` (`id_perfil`);
 
 --
 -- Indices de la tabla `respuestas_foro`
@@ -921,7 +980,7 @@ ALTER TABLE `publicaciones_foro`
 ALTER TABLE `respuestas_foro`
   ADD PRIMARY KEY (`id_respuesta`),
   ADD KEY `id_publicaciones` (`id_publicaciones`),
-  ADD KEY `id_usuario` (`id_usuario`);
+  ADD KEY `id_perfil` (`id_perfil`);
 
 --
 -- Indices de la tabla `usuarios`
@@ -950,25 +1009,25 @@ ALTER TABLE `admin`
 -- AUTO_INCREMENT de la tabla `compra`
 --
 ALTER TABLE `compra`
-  MODIFY `id_compra` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=15;
+  MODIFY `id_compra` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=16;
 
 --
 -- AUTO_INCREMENT de la tabla `conversaciones`
 --
 ALTER TABLE `conversaciones`
-  MODIFY `id_conversacion` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
+  MODIFY `id_conversacion` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
 
 --
 -- AUTO_INCREMENT de la tabla `detalle_compra`
 --
 ALTER TABLE `detalle_compra`
-  MODIFY `id_detalle` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=17;
+  MODIFY `id_detalle` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=18;
 
 --
 -- AUTO_INCREMENT de la tabla `documento`
 --
 ALTER TABLE `documento`
-  MODIFY `id_documento` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=19;
+  MODIFY `id_documento` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=20;
 
 --
 -- AUTO_INCREMENT de la tabla `entrepreneur_reviews`
@@ -980,7 +1039,7 @@ ALTER TABLE `entrepreneur_reviews`
 -- AUTO_INCREMENT de la tabla `envio`
 --
 ALTER TABLE `envio`
-  MODIFY `id_envio` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=19;
+  MODIFY `id_envio` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=20;
 
 --
 -- AUTO_INCREMENT de la tabla `favemprendedor`
@@ -1022,7 +1081,7 @@ ALTER TABLE `imagen_publicacion`
 -- AUTO_INCREMENT de la tabla `interacciones`
 --
 ALTER TABLE `interacciones`
-  MODIFY `id_interaccion` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=62;
+  MODIFY `id_interaccion` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=73;
 
 --
 -- AUTO_INCREMENT de la tabla `mensajes`
@@ -1079,10 +1138,16 @@ ALTER TABLE `publicaciones_foro`
   MODIFY `id_publicaciones` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=17;
 
 --
+-- AUTO_INCREMENT de la tabla `reacciones_foro`
+--
+ALTER TABLE `reacciones_foro`
+  MODIFY `id_reaccion` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
+
+--
 -- AUTO_INCREMENT de la tabla `respuestas_foro`
 --
 ALTER TABLE `respuestas_foro`
-  MODIFY `id_respuesta` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `id_respuesta` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
 
 --
 -- AUTO_INCREMENT de la tabla `usuarios`
@@ -1158,7 +1223,10 @@ ALTER TABLE `gestion_redes_sociales`
 -- Filtros para la tabla `hilos_foro`
 --
 ALTER TABLE `hilos_foro`
-  ADD CONSTRAINT `hilos_foro_ibfk_1` FOREIGN KEY (`id_publicaciones`) REFERENCES `publicaciones_foro` (`id_publicaciones`);
+  ADD CONSTRAINT `hilos_foro_ibfk_1` FOREIGN KEY (`id_publicaciones`) REFERENCES `publicaciones_foro` (`id_publicaciones`),
+  ADD CONSTRAINT `hilos_foro_ibfk_2` FOREIGN KEY (`id_perfil`) REFERENCES `perfil_negocio` (`id_perfil`),
+  ADD CONSTRAINT `hilos_foro_ibfk_3` FOREIGN KEY (`id_perfil`) REFERENCES `perfil_negocio` (`id_perfil`),
+  ADD CONSTRAINT `hilos_foro_ibfk_4` FOREIGN KEY (`id_perfil`) REFERENCES `perfil_negocio` (`id_perfil`);
 
 --
 -- Filtros para la tabla `interacciones`
@@ -1226,14 +1294,22 @@ ALTER TABLE `promociones`
 --
 ALTER TABLE `publicaciones_foro`
   ADD CONSTRAINT `publicaciones_foro_ibfk_1` FOREIGN KEY (`id_imagen`) REFERENCES `imagen_publicacion` (`id_imagen`),
-  ADD CONSTRAINT `publicaciones_foro_ibfk_2` FOREIGN KEY (`id_foro`) REFERENCES `foro` (`id_foro`);
+  ADD CONSTRAINT `publicaciones_foro_ibfk_2` FOREIGN KEY (`id_foro`) REFERENCES `foro` (`id_foro`),
+  ADD CONSTRAINT `publicaciones_foro_ibfk_3` FOREIGN KEY (`id_perfil`) REFERENCES `perfil_negocio` (`id_perfil`);
+
+--
+-- Filtros para la tabla `reacciones_foro`
+--
+ALTER TABLE `reacciones_foro`
+  ADD CONSTRAINT `reacciones_foro_ibfk_1` FOREIGN KEY (`id_publicaciones`) REFERENCES `publicaciones_foro` (`id_publicaciones`),
+  ADD CONSTRAINT `reacciones_foro_ibfk_2` FOREIGN KEY (`id_perfil`) REFERENCES `perfil_negocio` (`id_perfil`);
 
 --
 -- Filtros para la tabla `respuestas_foro`
 --
 ALTER TABLE `respuestas_foro`
   ADD CONSTRAINT `respuestas_foro_ibfk_1` FOREIGN KEY (`id_publicaciones`) REFERENCES `publicaciones_foro` (`id_publicaciones`),
-  ADD CONSTRAINT `respuestas_foro_ibfk_2` FOREIGN KEY (`id_usuario`) REFERENCES `usuarios` (`id_usuario`);
+  ADD CONSTRAINT `respuestas_foro_ibfk_2` FOREIGN KEY (`id_perfil`) REFERENCES `perfil_negocio` (`id_perfil`);
 
 --
 -- Filtros para la tabla `visibilidad_busqueda`
