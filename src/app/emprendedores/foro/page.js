@@ -207,6 +207,14 @@ export default function Foro() {
                   onChange={handleChange}
                   className="w-full p-2 border rounded mt-2"
                 ></textarea>
+                <input
+                  type="text"
+                  name="url_imagen"
+                  placeholder="URL de la imagen"
+                  value={nuevoForo.url_imagen}
+                  onChange={handleChange}
+                  className="bg-gray-100 text-black border p-2 w-full mb-2 rounded"
+                />
                 <button
                   onClick={handleCrearForo}
                   className="bg-blue-500 text-white p-2 rounded-lg mt-4"
