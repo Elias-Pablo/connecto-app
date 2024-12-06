@@ -6,6 +6,8 @@ import { jwtDecode } from "jwt-decode";
 import Slider from "react-slick"; // Importación del carrusel de react-slick
 import "slick-carousel/slick/slick.css"; // Importar estilos de slick-carousel
 import "slick-carousel/slick/slick-theme.css";
+import { toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 export default function FavoritesPage() {
   const [favorites, setFavorites] = useState([]); // Productos favoritos
@@ -105,20 +107,24 @@ export default function FavoritesPage() {
     fetchEntrepreneurFavorites();
   }, [userId]);
 
-  const handleRemoveFromFavorites = async (idFavorito) => {
+  const handleRemoveFromFavorites = async (productId) => {
     setFavorites((prevFavorites) =>
-      prevFavorites.filter((item) => item.id_favorito !== idFavorito)
+      prevFavorites.filter((item) => item.id !== productId)
     );
 
     try {
-      const response = await fetch(`/api/favorites/${idFavorito}`, {
-        method: "DELETE",
-      });
+      // Obtener el userId desde el estado `user`
+      const response = await fetch(
+        `/api/favorites/${productId}?userId=${userId}`,
+        {
+          method: "DELETE",
+        }
+      );
 
       if (!response.ok) {
-        console.error(
-          "Error al eliminar el producto de favoritos en la base de datos"
-        );
+        console.error("Error al eliminar el producto de favoritos");
+      } else {
+        toast.info("Producto eliminado de favoritos");
       }
     } catch (error) {
       console.error("Error en la solicitud de eliminar de favoritos:", error);
@@ -212,9 +218,7 @@ export default function FavoritesPage() {
                       </p>
                       <button
                         className="mt-4 w-full bg-red-500 text-white py-2 rounded-md hover:bg-red-600 transition-colors"
-                        onClick={() =>
-                          handleRemoveFromFavorites(product.id_favorito)
-                        }
+                        onClick={() => handleRemoveFromFavorites(product.id)}
                       >
                         Quitar de Favoritos
                       </button>
