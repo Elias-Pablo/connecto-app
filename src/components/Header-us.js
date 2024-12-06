@@ -25,7 +25,14 @@ export default function Header() {
   useEffect(() => {
     const fetchUnreadMessages = async () => {
       try {
-        const response = await fetch("/api/chat/unread"); // Endpoint para obtener mensajes no leídos
+        const token = localStorage.getItem("token"); // Obtener el token desde localStorage
+        const response = await fetch("/api/chat/unread", {
+          method: "GET",
+          headers: {
+            Authorization: `Bearer ${token}`, // Enviar el token correctamente en el encabezado Authorization
+          },
+        });
+
         if (response.ok) {
           const data = await response.json();
           setUnreadMessages(data.totalUnread || 0);

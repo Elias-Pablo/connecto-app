@@ -20,6 +20,8 @@ export default function Home() {
   const [searchedProducts, setSearchedProducts] = useState([]);
   const [favorites, setFavorites] = useState([]);
   const [user, setUser] = useState(null);
+  const [products, setProducts] = useState([]);
+  const [profileData, setProfileData] = useState([]);
 
   useEffect(() => {
     const token = localStorage.getItem("token");
@@ -36,6 +38,61 @@ export default function Home() {
   const handleFAQClick = () => {
     router.push("/emprendedores/faq");
   };
+  useEffect(() => {
+    const fetchFavorites = async () => {
+      if (!userId) return;
+      try {
+        const response = await fetch(`/api/favorites?userId=${userId}`);
+        if (response.ok) {
+          const data = await response.json();
+          setFavorites(data.favorites); // Guardar productos favoritos en el estado
+        } else {
+          console.error("Error al cargar productos favoritos");
+        }
+      } catch (error) {
+        console.error("Error en la solicitud de productos favoritos:", error);
+      }
+    };
+
+    fetchFavorites();
+  }, [userId]);
+
+  useEffect(() => {
+    const fetchProfiles = async () => {
+      try {
+        const response = await fetch(`/api/user/emprendedores`);
+        if (response.ok) {
+          const data = await response.json();
+          console.log("Datos de los perfiles recibidos:", data);
+          setProfileData(data.perfiles);
+        } else {
+          console.error("Error al cargar los perfiles de emprendedores");
+        }
+      } catch (error) {
+        console.error("Error en la solicitud de los perfiles:", error);
+      }
+    };
+
+    fetchProfiles();
+  }, []);
+
+  useEffect(() => {
+    const fetchProducts = async () => {
+      try {
+        const response = await fetch("/api/products");
+        if (response.ok) {
+          const data = await response.json();
+          setProducts(data.products);
+        } else {
+          console.error("Error al cargar productos");
+        }
+      } catch (error) {
+        console.error("Error en la solicitud:", error);
+      }
+    };
+
+    fetchProducts();
+  }, []);
 
   const handleSearch = async (query) => {
     try {
@@ -79,16 +136,16 @@ export default function Home() {
     );
 
     try {
+      const userId = user?.userId; // Obtener el userId desde el estado `user`
       const response = await fetch(
         `/api/favorites/${productId}?userId=${userId}`,
         {
           method: "DELETE",
         }
       );
+
       if (!response.ok) {
-        console.error(
-          "Error al eliminar el producto de favoritos en la base de datos"
-        );
+        console.error("Error al eliminar el producto de favoritos");
       } else {
         toast.info("Producto eliminado de favoritos");
       }
@@ -112,25 +169,6 @@ export default function Home() {
 
   const ProductSection = () => {
     const { addToCart } = useCart();
-    const [products, setProducts] = useState([]);
-
-    useEffect(() => {
-      const fetchProducts = async () => {
-        try {
-          const response = await fetch("/api/products");
-          if (response.ok) {
-            const data = await response.json();
-            setProducts(data.products);
-          } else {
-            console.error("Error al cargar productos");
-          }
-        } catch (error) {
-          console.error("Error en la solicitud:", error);
-        }
-      };
-
-      fetchProducts();
-    }, []);
 
     const formatPrice = (price) => {
       return new Intl.NumberFormat("es-CL", {
@@ -140,13 +178,18 @@ export default function Home() {
       }).format(price);
     };
 
-    const handleInteraction = async (type, id_perfil, id_producto = null, cantidad = null) => {
+    const handleInteraction = async (
+      type,
+      id_perfil,
+      id_producto = null,
+      cantidad = null
+    ) => {
       const token = localStorage.getItem("token");
       if (!token) {
         console.error("Token no encontrado");
         return;
       }
-    
+
       try {
         const response = await fetch("/api/interactions", {
           method: "POST",
@@ -161,7 +204,7 @@ export default function Home() {
             cantidad, // Send cantidad as null if not provided
           }),
         });
-    
+
         if (response.ok) {
           console.log(`Interacción de tipo ${type} registrada con éxito.`);
         } else {
@@ -174,7 +217,6 @@ export default function Home() {
         console.error("Error en la solicitud de interacción:", error);
       }
     };
-    
 
     const sliderSettings = {
       dots: true,
@@ -288,27 +330,6 @@ export default function Home() {
   };
 
   const ProfileSection = () => {
-    const [profileData, setProfileData] = useState([]);
-
-    useEffect(() => {
-      const fetchProfiles = async () => {
-        try {
-          const response = await fetch(`/api/user/emprendedores`);
-          if (response.ok) {
-            const data = await response.json();
-            console.log("Datos de los perfiles recibidos:", data);
-            setProfileData(data.perfiles);
-          } else {
-            console.error("Error al cargar los perfiles de emprendedores");
-          }
-        } catch (error) {
-          console.error("Error en la solicitud de los perfiles:", error);
-        }
-      };
-
-      fetchProfiles();
-    }, []);
-
     return (
       <section className="p-10 bg-white">
         <div className="container mx-auto">
