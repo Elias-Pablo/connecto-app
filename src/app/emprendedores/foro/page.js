@@ -3,6 +3,10 @@ import { useState, useEffect } from "react";
 import Header from "@/components/Header-em";
 import { HandThumbUpIcon, LightBulbIcon } from "@heroicons/react/24/outline";
 import Image from "next/image";
+import ModalAdmin from "@/components/ModalAdmin";
+import ModalPublicacion from "@/components/ModalPublicacion";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 export default function Foro() {
   const [categorias, setCategorias] = useState([]);
@@ -16,13 +20,16 @@ export default function Foro() {
     id_foro: "",      // Inicializar con un string vacío
     url_imagen: "",   // Inicializar con un string vacío
   });
-  
   const [respuestaActiva, setRespuestaActiva] = useState(null);
   const [nuevaRespuesta, setNuevaRespuesta] = useState("");
   const [pagina, setPagina] = useState(1);
   const [totalPaginas, setTotalPaginas] = useState(1);
   const [filtroCategoria, setFiltroCategoria] = useState(null);
   const [respuestasVisibles, setRespuestasVisibles] = useState({});
+  const [mostrarAdmin, setMostrarAdmin] = useState(false); // Mostrar o no la interfaz de administración
+  const [misPublicaciones, setMisPublicaciones] = useState([]); // Publicaciones del usuario actual  
+  const [mostrarCrear, setMostrarCrear] = useState(false);
+
 
   // Obtener categorías y publicaciones
   useEffect(() => {
@@ -68,12 +75,7 @@ export default function Foro() {
   };
 
   // Crear nueva publicación
-  const handleCrearForo = async () => {
-    if (!nuevoForo.id_foro) {
-      alert("Por favor selecciona una categoría antes de publicar.");
-      return;
-    }
-  
+  const handleCrearForo = async (nuevoForo) => {
     try {
       const token = localStorage.getItem("token");
       if (!token) throw new Error("Usuario no autorizado. Faltan credenciales.");
@@ -90,17 +92,14 @@ export default function Foro() {
       if (response.ok) {
         const data = await response.json();
         setForosDestacados([...forosDestacados, { ...nuevoForo, id: data.id }]);
-        setMostrarFormulario(false);
-        setNuevoForo({ titulo: "", descripcion: "", id_foro: "", url_imagen: "" });
       } else {
         console.error("Error al crear la publicación");
       }
     } catch (error) {
       console.error("Error en la solicitud de creación:", error);
-    } finally {
-      setIsLoading(false);
     }
   };
+  
   
   // Obtener respuestas
   const fetchRespuestas = async (id_publicaciones) => {
@@ -212,99 +211,130 @@ export default function Foro() {
     }
   };
 
-  // Función para alternar respuestas
-const toggleRespuestas = async (id_publicaciones) => {
-  if (respuestasVisibles[id_publicaciones]) {
-    // Si las respuestas están visibles, oculta
-    setRespuestasVisibles((prev) => ({
-      ...prev,
-      [id_publicaciones]: false,
-    }));
-  } else {
-    // Si las respuestas no están visibles, intenta cargar desde la API
-    try {
-      const response = await fetch(
-        `/api/auth/foro/respuestas?id_publicaciones=${id_publicaciones}`
-      );
-      if (!response.ok) throw new Error("Error al cargar respuestas");
-      const data = await response.json();
-
-      // Actualiza las respuestas y hazlas visibles
-      setRespuestas((prev) => ({
-        ...prev,
-        [id_publicaciones]: data,
-      }));
+    // Función para alternar respuestas
+  const toggleRespuestas = async (id_publicaciones) => {
+    if (respuestasVisibles[id_publicaciones]) {
+      // Si las respuestas están visibles, oculta
       setRespuestasVisibles((prev) => ({
         ...prev,
-        [id_publicaciones]: true,
+        [id_publicaciones]: false,
       }));
-    } catch (error) {
-      console.error("Error al obtener respuestas:", error);
+    } else {
+      // Si las respuestas no están visibles, intenta cargar desde la API
+      try {
+        const response = await fetch(
+          `/api/auth/foro/respuestas?id_publicaciones=${id_publicaciones}`
+        );
+        if (!response.ok) throw new Error("Error al cargar respuestas");
+        const data = await response.json();
+
+        // Actualiza las respuestas y hazlas visibles
+        setRespuestas((prev) => ({
+          ...prev,
+          [id_publicaciones]: data,
+        }));
+        setRespuestasVisibles((prev) => ({
+          ...prev,
+          [id_publicaciones]: true,
+        }));
+      } catch (error) {
+        console.error("Error al obtener respuestas:", error);
+      }
     }
-  }
-};
+  };
+
+  const handleEditar = async (publicacion) => {
+    try {
+      const token = localStorage.getItem("token");
+      if (!token) throw new Error("Usuario no autorizado.");
+  
+      await fetch("/api/auth/foro/publicaciones", {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({
+          id_publicaciones: publicacion.id_publicaciones,
+          titulo: publicacion.titulo,
+          descripcion: publicacion.descripcion,
+        }),
+      });
+  
+      fetchMisPublicaciones(); // Refresca las publicaciones
+    } catch (error) {
+      console.error("Error al editar publicación:", error);
+    }
+  };
+  
+  const handleEliminar = async (id_publicaciones) => {
+    try {
+      const token = localStorage.getItem("token");
+      await fetch(
+        `/api/auth/foro/publicaciones?id_publicaciones=${id_publicaciones}`,
+        {
+          method: "DELETE",
+          headers: { Authorization: `Bearer ${token}` },
+        }
+      );
+  
+      fetchMisPublicaciones(); // Refresca las publicaciones
+    } catch (error) {
+      console.error("Error al eliminar publicación:", error);
+    }
+  };
+  
+
+  const fetchMisPublicaciones = async () => {
+    try {
+      const token = localStorage.getItem("token");
+      const response = await fetch("/api/auth/foro/publicaciones/id", {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      if (!response.ok) throw new Error("Error al cargar publicaciones");
+      const data = await response.json();
+      setMisPublicaciones(data);
+    } catch (error) {
+      console.error("Error al obtener publicaciones del usuario:", error);
+    }
+  };  
 
   return (
     <>
       <Header />
+      <ToastContainer />
       <div className="bg-sky-700 flex flex-col items-center justify-center w-full">
         <h1 className="text-4xl font-bold text-white mt-4">Foro de Emprendedores</h1>
         <div className="w-full p-4">
-            {/* Botón para abrir formulario de creación */}
             <button
-              onClick={() => setMostrarFormulario(!mostrarFormulario)}
-              className="bg-green-500 text-white p-2 rounded-lg mb-4"
+              onClick={() => setMostrarCrear(true)}
+              className="bg-green-500 text-white p-2 rounded-lg mb-4 mr-4" // Agrega 'mr-4' para margen derecho
             >
-              {mostrarFormulario ? "Cerrar Formulario" : "Crear Publicación"}
+              Crear Publicación
             </button>
-            {/* Formulario para crear publicación */}
-            {mostrarFormulario && (
-              <div className="bg-white p-4 rounded-lg shadow-md">
-                <h2 className="text-xl font-bold">Nueva Publicación</h2>
-                <input
-                  type="text"
-                  name="titulo"
-                  placeholder="Título"
-                  value={nuevoForo.titulo}
-                  onChange={handleChange}
-                  className="w-full p-2 border rounded mt-2"
-                />
-                <input
-                  type="text"
-                  name="descripcion"
-                  value={nuevoForo.descripcion || ""}
-                  placeholder="Descripción"
-                  onChange={handleChange}  
-                  className="w-full p-2 border rounded mt-2"
-                />
-                <select
-                  name="id_foro"
-                  value={nuevoForo.id_foro}
-                  onChange={handleChange}
-                  className="w-full p-2 border rounded mt-2"
-                >
-                  <option value="">Selecciona una categoría</option>
-                  {categorias.map((categoria) => (
-                    <option key={categoria.id_foro} value={categoria.id_foro}>
-                      {categoria.nombre}
-                    </option>
-                  ))}
-                </select>
-                <input
-                  type="text"
-                  name="url_imagen"
-                  placeholder="URL de la imagen (opcional)"
-                  value={nuevoForo.url_imagen}
-                  onChange={handleChange}
-                  className="bg-gray-100 text-black border p-2 w-full mb-2 rounded"
-                />
-                <button
-                  onClick={handleCrearForo}
-                  className="bg-blue-500 text-white p-2 rounded-lg mt-4"
-                >
-                  Publicar
-                </button>
-              </div>
+            {mostrarCrear && (
+              <ModalPublicacion
+                onClose={() => setMostrarCrear(false)}
+                categorias={categorias} // Pasar las categorías disponibles
+                onSubmit={(nuevoForo) => handleCrearForo(nuevoForo)} // Función de creación
+              />
+            )}
+            <button
+              onClick={() => {
+                setMostrarAdmin(true);
+                fetchMisPublicaciones();
+              }}
+              className="bg-blue-500 text-white p-2 rounded-lg"
+            >
+              Administrar Publicaciones
+            </button>
+            {mostrarAdmin && (
+              <ModalAdmin
+                misPublicaciones={misPublicaciones}
+                onClose={() => setMostrarAdmin(false)}
+                onEdit={handleEditar}
+                onDelete={handleEliminar}
+              />
             )}
             {/* Filtros por categoría */}
             <h2 className="text-2xl text-white font-bold mt-8">Categorías</h2>
@@ -334,11 +364,14 @@ const toggleRespuestas = async (id_publicaciones) => {
             {/* Publicaciones */}
             <h2 className="text-2xl text-white font-bold mt-8">Publicaciones Destacadas</h2>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
-              {forosDestacados.map((foro) => (
+                {forosDestacados.map((foro, index) => (
                 <div
-                  key={foro.id_publicaciones}
+                  key={foro.id_publicaciones || `foro-${index}`}
                   className="bg-white p-4 rounded-lg shadow-lg"
                 >
+                  {/* Mostrar el autor */}
+                  <p className="text-sm text-gray-600">Autor: {foro.nombre_negocio || "Anónimo"}</p>
+
                   {/* Imagen o Placeholder */}
                   <div className="relative w-full h-48 rounded-lg overflow-hidden shadow-md">
                     {foro.url_imagen?.startsWith("http") ? (
@@ -420,9 +453,6 @@ const toggleRespuestas = async (id_publicaciones) => {
                       Responder
                     </button>
                   </div>
-
-                  
-
                   {/* Formulario para responder */}
                   {respuestaActiva === foro.id_publicaciones && (
                     <div className="mt-4">
@@ -493,8 +523,8 @@ const toggleRespuestas = async (id_publicaciones) => {
               Última
             </button>
           </div>
-            </div>
-          </div>
+        </div>
+      </div>
     </>
   );
 }

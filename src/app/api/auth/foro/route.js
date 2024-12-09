@@ -101,12 +101,13 @@ export async function GET(req) {
   
     const query = `
       SELECT pf.id_publicaciones, pf.titulo, pf.descripcion, pf.id_foro, pf.id_perfil,
-             pf.tiempo_creacion, ip.url_imagen,
+             pf.tiempo_creacion, ip.url_imagen, pn.nombre_negocio,
              (SELECT COUNT(*) FROM respuestas_foro WHERE id_publicaciones = pf.id_publicaciones) AS total_respuestas,
              (SELECT COUNT(*) FROM reacciones_foro WHERE id_publicaciones = pf.id_publicaciones AND tipo = 'me gusta') AS meGusta,
              (SELECT COUNT(*) FROM reacciones_foro WHERE id_publicaciones = pf.id_publicaciones AND tipo = 'útil') AS util
       FROM publicaciones_foro pf
       LEFT JOIN imagen_publicacion ip ON pf.id_imagen = ip.id_imagen
+      LEFT JOIN perfil_negocio pn ON pf.id_perfil = pn.id_perfil
       WHERE (? IS NULL OR pf.id_foro = ?)
       ORDER BY pf.tiempo_creacion DESC
       LIMIT ? OFFSET ?
@@ -125,7 +126,6 @@ export async function GET(req) {
       });
     });
   }
-  
 
   return new Response(JSON.stringify({ message: "Tipo de solicitud inválido" }), { status: 400 });
 }
