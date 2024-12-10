@@ -1,6 +1,6 @@
 "use client";
 import { useState, useEffect, Suspense, useRef } from "react";
-import { useRouter, useSearchParams } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation"; // Agregado useSearchParams
 import Header from "@/components/Header-us";
 import { useCart, CartProvider } from "../../../context/CartContext";
 import { jwtDecode } from "jwt-decode";
@@ -10,6 +10,9 @@ import "slick-carousel/slick/slick-theme.css";
 import { FaStar } from "react-icons/fa";
 
 export default function EmprendedorProfile() {
+  const searchParams = useSearchParams();
+  const idPerfil = searchParams ? searchParams.get("id_perfil") : null;
+
   const [emprendedorData, setEmprendedorData] = useState(null);
   const [productos, setProductos] = useState([]);
   const [favorites, setFavorites] = useState([]); // Para manejar los favoritos
@@ -22,8 +25,6 @@ export default function EmprendedorProfile() {
     comentario: "",
     calificacion: 0,
   });
-  const searchParams = useSearchParams();
-  const idPerfil = searchParams.get("id_perfil");
   const [username, setUsername] = useState("");
   const router = useRouter();
   const [idDestinatario, setIdDestinatario] = useState(null);

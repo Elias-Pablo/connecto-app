@@ -107,7 +107,6 @@ export default function Header() {
             <Link
               href="/user/profile"
               className="flex justify-center items-center gap-2"
-              passHref
             >
               <img
                 src={profilePicture || "/avatar.jpg"}
@@ -180,22 +179,22 @@ export default function Header() {
             </button>
             {menuOpen && (
               <div className="absolute top-16 right-6 bg-white rounded-md shadow-lg p-4 w-40 z-20">
-                <Link href="/emprendedores/ventas" passHref>
+                <Link href="/emprendedores/ventas">
                   <p className="text-black hover:text-fuchsia-800 cursor-pointer py-2">
                     Ventas
                   </p>
                 </Link>
-                <Link href="/user/orders" passHref>
+                <Link href="/user/orders">
                   <p className="text-black hover:text-fuchsia-800 cursor-pointer py-2">
                     Pedidos
                   </p>
                 </Link>
-                <Link href="/user/favorites" passHref>
+                <Link href="/user/favorites">
                   <p className="text-black hover:text-fuchsia-800 cursor-pointer py-2">
                     Favoritos
                   </p>
                 </Link>
-                <Link href="/user/profile" passHref>
+                <Link href="/user/profile">
                   <p className="text-black hover:text-fuchsia-800 cursor-pointer py-2">
                     Perfil
                   </p>
