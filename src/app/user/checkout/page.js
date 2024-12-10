@@ -39,7 +39,10 @@ export default function Checkout() {
 
   // Confirmación antes de eliminar
   const handleRemoveItem = (productId) => {
-    if (window.confirm("¿Estás seguro de que deseas eliminar este producto?")) {
+    if (
+      typeof window !== "undefined" &&
+      window.confirm("¿Estás seguro de que deseas eliminar este producto?")
+    ) {
       removeFromCart(productId);
     }
   };
