@@ -3,8 +3,10 @@ import connection from "@/lib/db";
 export async function GET(req) {
   try {
     const url = new URL(req.url);
-    const period = url.searchParams.get("period"); // 'daily', 'weekly', 'monthly'
-    const id_perfil = url.searchParams.get("id_perfil"); // ID del perfil del emprendedor
+    const period = url.searchParams.get("period");
+    const id_perfil = url.searchParams.get("id_perfil");
+    const page = parseInt(url.searchParams.get("page"), 10) || 1;
+    const daysPerPage = 7;
 
     if (!id_perfil) {
       return new Response(
@@ -13,13 +15,83 @@ export async function GET(req) {
       );
     }
 
-    let groupBy;
+    let metricsQuery, formattedMetrics, totalPages;
+
     if (period === "daily") {
-      groupBy = "DATE(fecha_interaccion)";
-    } else if (period === "weekly") {
-      groupBy = "YEAR(fecha_interaccion), WEEK(fecha_interaccion)";
-    } else if (period === "monthly") {
-      groupBy = "YEAR(fecha_interaccion), MONTH(fecha_interaccion)";
+      // Generar fechas del mes actual
+      const startDate = new Date(new Date().getFullYear(), new Date().getMonth(), 1);
+      const endDate = new Date(new Date().getFullYear(), new Date().getMonth() + 1, 0);
+      const allDates = Array.from(
+        { length: (endDate - startDate) / (1000 * 60 * 60 * 24) + 1 },
+        (_, i) => new Date(startDate.getTime() + i * (1000 * 60 * 60 * 24))
+      ).map((d) => d.toISOString().split("T")[0]);
+
+      const startIndex = (page - 1) * daysPerPage;
+      const endIndex = startIndex + daysPerPage;
+      const paginatedDates = allDates.slice(startIndex, endIndex);
+
+      metricsQuery = `
+       SELECT DATE_FORMAT(fecha_interaccion, '%Y-%m-%d') AS fecha,
+       COUNT(CASE WHEN tipo_interaccion = 'View' THEN 1 ELSE NULL END) AS total_views,
+       SUM(CASE WHEN tipo_interaccion = 'Purchase' THEN cantidad ELSE 0 END) AS total_purchases
+FROM interacciones
+WHERE id_perfil = ?
+  AND DATE(fecha_interaccion) BETWEEN ? AND ?
+GROUP BY fecha
+ORDER BY fecha ASC
+      `;
+
+      const metrics = await new Promise((resolve, reject) => {
+        connection.query(
+          metricsQuery,
+          [id_perfil, startDate.toISOString().split("T")[0], endDate.toISOString().split("T")[0]],
+          (error, results) => {
+            if (error) return reject(error);
+            resolve(results);
+          }
+        );
+      });
+
+      const metricsMap = metrics.reduce((acc, { fecha, total_views, total_purchases }) => {
+        acc[fecha] = { views: total_views || 0, purchases: total_purchases || 0 };
+        return acc;
+      }, {});
+
+      formattedMetrics = paginatedDates.map((date) => ({
+        fecha: date,
+        views: metricsMap[date]?.views || 0,
+        purchases: metricsMap[date]?.purchases || 0,
+      }));
+
+      totalPages = Math.ceil(allDates.length / daysPerPage);
+    } else if (["weekly", "monthly"].includes(period)) {
+      const groupBy =
+        period === "weekly"
+          ? "YEAR(fecha_interaccion), WEEK(fecha_interaccion)"
+          : "YEAR(fecha_interaccion), MONTH(fecha_interaccion)";
+
+      metricsQuery = `
+        SELECT ${groupBy} AS periodo,
+               COUNT(CASE WHEN tipo_interaccion = 'View' THEN 1 ELSE NULL END) AS total_views,
+               SUM(CASE WHEN tipo_interaccion = 'Purchase' THEN cantidad ELSE 0 END) AS total_purchases
+        FROM interacciones
+        WHERE id_perfil = ?
+        GROUP BY periodo
+        ORDER BY periodo ASC
+      `;
+
+      const metrics = await new Promise((resolve, reject) => {
+        connection.query(metricsQuery, [id_perfil], (error, results) => {
+          if (error) return reject(error);
+          resolve(results);
+        });
+      });
+
+      formattedMetrics = metrics.map(({ periodo, total_views, total_purchases }) => ({
+        fecha: periodo,
+        views: total_views || 0,
+        purchases: total_purchases || 0,
+      }));
     } else {
       return new Response(
         JSON.stringify({ message: "Período no válido" }),
@@ -27,79 +99,37 @@ export async function GET(req) {
       );
     }
 
-    const query = 
-      `SELECT ${groupBy} AS periodo, tipo_interaccion,
-             SUM(cantidad) AS total
-      FROM interacciones
-      WHERE id_perfil = ?
-      GROUP BY periodo, tipo_interaccion
-      ORDER BY periodo ASC`;
-    
+    // Query para el resumen
+    const resumenQuery = `
+      SELECT 
+        COUNT(CASE WHEN tipo_interaccion = 'View' THEN 1 ELSE NULL END) AS visitas,
+        SUM(CASE WHEN tipo_interaccion = 'Purchase' THEN cantidad ELSE 0 END) AS ventas,
+        SUM(CASE WHEN tipo_interaccion = 'Purchase' THEN cantidad * p.precio ELSE 0 END) AS ingresos
+      FROM interacciones i
+      LEFT JOIN productos p ON i.id_producto = p.id_producto
+      WHERE i.id_perfil = ?;
+    `;
 
-    const metrics = await new Promise((resolve, reject) => {
-      connection.query(query, [id_perfil], (error, results) => {
+    const resumen = await new Promise((resolve, reject) => {
+      connection.query(resumenQuery, [id_perfil], (error, results) => {
         if (error) return reject(error);
-        resolve(results);
+        resolve(results[0]);
       });
     });
 
-    const formattedMetrics = {
-      daily: { views: [], purchases: [] },
-      weekly: { views: [], purchases: [] },
-      monthly: { views: [], purchases: [] },
-    };
-
-    // Rellenar los días faltantes (si es daily)
-    if (period === "daily") {
-      const startDate = new Date();
-      startDate.setDate(startDate.getDate() - 6); // Últimos 7 días
-      const days = [];
-      for (let i = 0; i < 7; i++) {
-        const currentDate = new Date(startDate);
-        currentDate.setDate(startDate.getDate() + i);
-        const formattedDate = currentDate.toISOString().split("T")[0]; // Formato YYYY-MM-DD
-        days.push({
-          fecha: formattedDate,
-          day: currentDate.toLocaleDateString("es-ES", { weekday: "long" }),
-        });
+    return new Response(
+      JSON.stringify({
+        metrics: { [period]: formattedMetrics },
+        resumen,
+        totalPages: totalPages || null,
+      }),
+      {
+        status: 200,
+        headers: { "Content-Type": "application/json" },
       }
-
-      days.forEach((day) => {
-        const viewData = metrics.find(
-          (m) =>
-            m.periodo === day.fecha && m.tipo_interaccion === "View"
-        );
-        const purchaseData = metrics.find(
-          (m) =>
-            m.periodo === day.fecha && m.tipo_interaccion === "Purchase"
-        );
-
-        formattedMetrics.daily.views.push({
-          fecha: day.day,
-          total: viewData ? viewData.total : 0,
-        });
-        formattedMetrics.daily.purchases.push({
-          fecha: day.day,
-          total: purchaseData ? purchaseData.total : 0,
-        });
-      });
-    } else {
-      metrics.forEach((row) => {
-        const { periodo, tipo_interaccion, total } = row;
-        if (tipo_interaccion === "View") {
-          formattedMetrics[period].views.push({ fecha: periodo, total });
-        } else if (tipo_interaccion === "Purchase") {
-          formattedMetrics[period].purchases.push({ fecha: periodo, total });
-        }
-      });
-    }
-
-    return new Response(JSON.stringify({ metrics: formattedMetrics }), {
-      status: 200,
-      headers: { "Content-Type": "application/json" },
-    });
+    );
   } catch (error) {
-    console.error("Error al obtener métricas:", error);
+    console.error("Error en la API de métricas:", error);
     return new Response(
       JSON.stringify({ message: "Error al obtener métricas" }),
       { status: 500 }

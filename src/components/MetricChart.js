@@ -6,17 +6,12 @@ import Chart from "chart.js/auto";
 import jwt from "jsonwebtoken";
 
 export default function MetricChart() {
-  const [metrics, setMetrics] = useState({
-    daily: { views: [], purchases: [] },
-    weekly: { views: [], purchases: [] },
-    monthly: { views: [], purchases: [] },
-  });
+  const [metrics, setMetrics] = useState([]);
   const [period, setPeriod] = useState("daily");
   const [idPerfil, setIdPerfil] = useState(null);
   const [currentPage, setCurrentPage] = useState(1);
-  const daysPerPage = 7; // Límite de días por página
+  const [totalPages, setTotalPages] = useState(1);
 
-  // Obtener el token JWT y extraer el `id_perfil`
   useEffect(() => {
     const token = localStorage.getItem("token");
     if (token) {
@@ -35,20 +30,22 @@ export default function MetricChart() {
     }
   }, []);
 
-  // Fetch metrics desde el backend
   useEffect(() => {
     const fetchMetrics = async () => {
-      const token = localStorage.getItem("token");
       if (!idPerfil) return;
-
+  
       const url = `/api/metrics?period=${period}&id_perfil=${idPerfil}&page=${currentPage}`;
       try {
-        const response = await fetch(url, {
-          headers: { Authorization: `Bearer ${token}` },
-        });
+        const response = await fetch(url);
         if (response.ok) {
           const data = await response.json();
-          setMetrics(data.metrics);
+          console.log("Datos obtenidos:", data); // Añade este console.log
+          if (period === "daily") {
+            setMetrics(data.metrics.daily);
+            setTotalPages(data.totalPages);
+          } else {
+            setMetrics(data.metrics[period]); // Semanal y mensual
+          }
         } else {
           console.error("Error al obtener métricas");
         }
@@ -56,39 +53,27 @@ export default function MetricChart() {
         console.error("Error en la solicitud de métricas:", error);
       }
     };
-
+  
     fetchMetrics();
   }, [period, idPerfil, currentPage]);
-
-  // Configuración de etiquetas de los gráficos
-  const formatLabels = {
-    daily: () =>
-      metrics.daily.views.map((data) => data.fecha),
-    weekly: () =>
-      metrics.weekly.views.map((data) => data.fecha),
-    monthly: () =>
-      metrics.monthly.views.map((data) => data.fecha),
-  };
+  
 
   const chartData = {
-    labels: formatLabels[period](),
+    labels: metrics.map((data) => data.fecha),
     datasets: [
       {
         label: "Visitas al Perfil",
-        data: metrics[period]?.views.map((item) => item.total) || [],
+        data: metrics.map((item) => item.views),
         backgroundColor: "rgba(75, 192, 192, 0.6)",
-        borderColor: "rgba(75, 192, 192, 1)",
-        borderWidth: 1,
       },
       {
         label: "Compras de Productos",
-        data: metrics[period]?.purchases.map((item) => item.total) || [],
+        data: metrics.map((item) => item.purchases),
         backgroundColor: "rgba(255, 99, 132, 0.6)",
-        borderColor: "rgba(255, 99, 132, 1)",
-        borderWidth: 1,
       },
     ],
   };
+  
 
   const chartOptions = {
     responsive: true,
@@ -97,25 +82,13 @@ export default function MetricChart() {
     },
     scales: {
       x: {
-        title: {
-          display: true,
-          text: period === "daily"
-            ? "Días"
-            : period === "weekly"
-            ? "Semanas"
-            : "Meses",
-        },
+        title: { display: true, text: period === "daily" ? "Días" : period === "weekly" ? "Semanas" : "Meses" },
       },
       y: {
         title: { display: true, text: "Cantidad" },
       },
     },
   };
-
-  const totalPages =
-    period === "daily"
-      ? Math.ceil(metrics.daily.views.length / daysPerPage)
-      : 1;
 
   return (
     <div className="p-6 bg-white rounded-lg shadow-lg">
@@ -143,7 +116,7 @@ export default function MetricChart() {
         ))}
       </div>
 
-      {/* Paginación para gráficos diarios */}
+      {/* Paginación solo para diarios */}
       {period === "daily" && (
         <div className="flex justify-between items-center mb-4">
           <button

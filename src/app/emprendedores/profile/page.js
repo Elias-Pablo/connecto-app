@@ -48,21 +48,23 @@ export default function EmprendedorProfile() {
   });
   const [isEditingProfile, setIsEditingProfile] = useState(false);
   const [user, setUser] = useState(null);
+  const [id_perfil, setIdPerfil] = useState(null);
 
   useEffect(() => {
     const token = localStorage.getItem("token");
-    console.log("Token recuperado:", token);
-
+  
     if (token) {
       try {
         const decoded = jwtDecode(token);
-        setUser(decoded);
+        setUser(decoded); // Configuramos el usuario
+        setIdPerfil(decoded.id_perfil); // Configuramos el id_perfil
       } catch (error) {
         console.error("Token inválido:", error);
         localStorage.removeItem("token");
       }
     }
   }, []);
+  
 
   useEffect(() => {
     // Obtén la ubicación actual del usuario
@@ -426,6 +428,29 @@ export default function EmprendedorProfile() {
     return stars;
   };
 
+  const [resumen, setResumen] = useState({ visitas: 0, ventas: 0, ingresos: 0 });
+
+  useEffect(() => {
+    if (!id_perfil) return; // Asegúrate de no hacer fetch si id_perfil es null
+  
+    const fetchMetrics = async () => {
+      try {
+        const response = await fetch(`/api/metrics?period=daily&id_perfil=${id_perfil}`);
+        if (response.ok) {
+          const data = await response.json();
+          setResumen(data.resumen);
+        } else {
+          console.error("Error al obtener métricas");
+        }
+      } catch (error) {
+        console.error("Error en la solicitud:", error);
+      }
+    };
+  
+    fetchMetrics();
+  }, [id_perfil]);
+  
+
   return (
     <>
       <Header />
@@ -677,33 +702,30 @@ export default function EmprendedorProfile() {
       {/*Mapa de ubicación*/}
 
       {/* Métricas y Estadísticas */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-10 ">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-10 p-6">
         <div className="bg-white p-6 rounded-lg shadow-lg">
           <h2 className="text-2xl font-bold mb-4">Métricas</h2>
-          <div className="flex items-center mb-2">
-            <FaEye className="text-indigo-500 mr-2" />
-            <p>
-              <strong>Visitas al Perfil:</strong> {}
-            </p>
-          </div>
-          <div className="flex items-center mb-2">
-            <FaShoppingCart className="text-green-500 mr-2" />
-            <p>
-              <strong>Ventas Totales:</strong> {}
-            </p>
-          </div>
-          <div className="flex items-center mb-2">
-            <FaDollarSign className="text-yellow-500 mr-2" />
-            <p>
-              <strong>Ingresos Totales:</strong> ${}
-            </p>
-          </div>
-          <div className="flex items-center mb-2">
-            <FaChartLine className="text-blue-500 mr-2" />
-            <p>
-              <strong>Tasa de Conversión:</strong> {}%
-            </p>
-          </div>
+            <div className="flex items-center mb-2">
+              <FaEye className="text-indigo-500 mr-2" />
+              <p><strong>Visitas al Perfil:</strong> {resumen.visitas || 0}</p>
+            </div>
+            <div className="flex items-center mb-2">
+              <FaShoppingCart className="text-green-500 mr-2" />
+              <p><strong>Ventas Totales:</strong> {resumen.ventas || 0}</p>
+            </div>
+            <div className="flex items-center mb-2">
+              <FaDollarSign className="text-yellow-500 mr-2" />
+              <p><strong>Ingresos Totales:</strong> ${parseFloat(resumen?.ingresos || 0).toFixed(2)}</p>
+            </div>
+            <div className="flex items-center mb-2">
+              <FaChartLine className="text-blue-500 mr-2" />
+              <p>
+                <strong>Tasa de Conversión:</strong>{" "}
+                {resumen.visitas > 0
+                  ? ((resumen.ventas / resumen.visitas) * 100).toFixed(2)
+                  : "0.00"}%
+              </p>
+            </div>
         </div>
         <MetricChart />
       </div>
