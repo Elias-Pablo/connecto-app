@@ -314,9 +314,9 @@ export default function Home() {
                       className="bg-red-500 text-white px-4 py-2 rounded-lg hover:bg-red-600 flex items-center justify-center"
                     >
                       {favorites.some((fav) => fav.id === product.id) ? (
-                        <GoHeart className="text-white w-8 h-8 " />
-                      ) : (
                         <GoHeartFill className="text-white w-8 h-8 " />
+                      ) : (
+                        <GoHeart className="text-white w-8 h-8 " />
                       )}
                     </button>
                   </div>

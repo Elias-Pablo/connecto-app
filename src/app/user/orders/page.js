@@ -6,6 +6,29 @@ export default function UserOrders() {
   const [orders, setOrders] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
 
+  const handleDownloadPDF = async (orderId) => {
+    try {
+      const response = await fetch(`/api/orders/${orderId}/pdf`, {
+        method: "GET",
+      });
+      if (response.ok) {
+        const blob = await response.blob();
+        const url = window.URL.createObjectURL(blob);
+        const a = document.createElement("a");
+        a.style.display = "none";
+        a.href = url;
+        a.download = `pedido_${orderId}.pdf`;
+        document.body.appendChild(a);
+        a.click();
+        window.URL.revokeObjectURL(url);
+      } else {
+        console.error("Error al generar el PDF");
+      }
+    } catch (err) {
+      console.error("Error al descargar el PDF:", err);
+    }
+  };
+
   useEffect(() => {
     const fetchOrders = async () => {
       setIsLoading(true);
@@ -37,11 +60,11 @@ export default function UserOrders() {
         ) : orders.length === 0 ? (
           <p>No tienes pedidos registrados.</p>
         ) : (
-          <ul className="space-y-6">
+          <ul className="space-y-6 grid grid-cols-1 md:grid-cols-3 gap-4">
             {orders.map((order) => (
               <li
                 key={order.id_compra}
-                className="border p-6 rounded-lg shadow-md bg-white"
+                className="border p-6 rounded-lg shadow-md bg-white "
               >
                 <p className="font-bold text-lg mb-2">
                   Pedido ID: {order.id_compra}
@@ -56,7 +79,6 @@ export default function UserOrders() {
                     year: "numeric",
                     month: "long",
                     day: "numeric",
-
                     hour12: false,
                   })}
                 </p>
@@ -78,6 +100,12 @@ export default function UserOrders() {
                     ))}
                   </ul>
                 </div>
+                <button
+                  onClick={() => handleDownloadPDF(order.id_compra)}
+                  className="mt-4 bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
+                >
+                  Descargar PDF
+                </button>
               </li>
             ))}
           </ul>

@@ -191,7 +191,7 @@ export async function DELETE(req) {
     }
 
     const query =
-      "DELETE FROM favemprendedor WHERE id_negocio = ? AND id_usuario = ?";
+      "DELETE FROM favemprendedor WHERE id_favorito = ? AND id_usuario = ?";
 
     const [results] = await connection
       .promise()
