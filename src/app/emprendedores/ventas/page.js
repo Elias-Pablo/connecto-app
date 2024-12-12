@@ -90,14 +90,16 @@ export default function VentasPage() {
     <div className="relative z-10">
       <Header />
       <div className="p-6 bg-gray-100 min-h-screen">
-      <nav className="text-sm text-gray-600 mb-4">
+        <nav className="text-sm text-gray-600 mb-4">
           {" "}
           <a href="/emprendedores/profile" className="hover:underline">
             Emprendedor
           </a>{" "}
           &gt; Ventas
         </nav>
-        <h1 className="text-3xl font-bold mb-6 text-center">Registro de Ventas</h1>
+        <h1 className="text-3xl font-bold mb-6 text-center">
+          Registro de Ventas
+        </h1>
 
         {sales.length === 0 ? (
           <p className="text-center text-gray-500">
@@ -113,7 +115,7 @@ export default function VentasPage() {
                 )}`}
               >
                 <div className="flex items-center space-x-4 mb-4">
-                <AiOutlineFileText className="text-gray-600 w-8 h-8" />
+                  <AiOutlineFileText className="text-gray-600 w-8 h-8" />
                   <h3 className="text-xl font-semibold text-gray-800">
                     {sale.producto}
                   </h3>
@@ -125,8 +127,7 @@ export default function VentasPage() {
                   </span>
                 </p>
                 <p className="text-sm text-gray-500">
-                  Cantidad:{" "}
-                  <span className="font-medium">{sale.cantidad}</span>
+                  Cantidad: <span className="font-medium">{sale.cantidad}</span>
                 </p>
                 <p className="text-sm text-gray-500">
                   Total:{" "}

@@ -93,7 +93,7 @@ export default function Header() {
         </Link>
         <Link
           className="px-4 py-2 text-xs md:text-base rounded-xl font-semibold text-yellow-300 hover:text-sky-400 transition-colors duration-300 ease-in-out"
-          href="/emprendedores/subscripcion"
+          href="/emprendedores/suscripcion"
         >
           Suscríbete
         </Link>

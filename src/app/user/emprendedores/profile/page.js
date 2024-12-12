@@ -8,6 +8,8 @@ import Slider from "react-slick"; // Importación del carrusel de react-slick
 import "slick-carousel/slick/slick.css"; // Importar estilos de slick-carousel
 import "slick-carousel/slick/slick-theme.css";
 import { FaStar } from "react-icons/fa";
+import { toast } from "react-toastify";
+import { GoHeart, GoHeartFill } from "react-icons/go";
 
 export default function EmprendedorProfile() {
   const searchParams = useSearchParams();
@@ -31,6 +33,10 @@ export default function EmprendedorProfile() {
   const [idRemitente, setIdRemitente] = useState(null);
   const [profilePicture, setProfilePicture] = useState(null);
   const lastMessageRef = useRef(null);
+
+  const isFavorite = favorites.some(
+    (fav) => fav.id_perfil === parseInt(idPerfil, 10)
+  );
 
   const formatPrice = (price) => {
     return new Intl.NumberFormat("es-CL", {
@@ -122,6 +128,7 @@ export default function EmprendedorProfile() {
           { id_favorito: data.id, id_perfil: parseInt(idPerfil, 10) },
         ]);
         console.log("Emprendedor agregado a favoritos");
+        toast.success("Emprendedor agregado a favoritos");
       } else {
         console.error("Error al agregar emprendedor a favoritos");
       }
@@ -152,6 +159,7 @@ export default function EmprendedorProfile() {
           )
         );
         console.log("Emprendedor eliminado de favoritos");
+        toast.info("Emprendedor eliminado de favoritos");
       } else {
         console.error("Error al eliminar emprendedor de favoritos");
       }
@@ -356,10 +364,16 @@ export default function EmprendedorProfile() {
                 <p className="text-sm text-gray-500">Sitio web no disponible</p>
               )}
               <button
-                className="py-2 px-4 my-4 text-white bg-red-400 rounded-lg hover:bg-red-600"
-                onClick={handleAddToFavorites}
+                className="py-2 px-4 my-4 text-white rounded-lg bg-red-500 hover:bg-red-600"
+                onClick={
+                  isFavorite ? handleRemoveFromFavorites : handleAddToFavorites
+                }
               >
-                Agregar a Favoritos
+                {isFavorite ? (
+                  <GoHeartFill className="text-white w-8 h-8 " />
+                ) : (
+                  <GoHeart className="text-white w-8 h-8 " />
+                )}
               </button>
             </div>
             <div className="flex justify-end mt-6">
@@ -451,7 +465,7 @@ export default function EmprendedorProfile() {
                 {productos.length > 0 ? (
                   productos.map((producto) => (
                     <div
-                      key={producto.id_producto}
+                      key={producto.id}
                       className="text-center p-5 bg-gray-200 w-auto rounded-lg shadow-lg"
                     >
                       {producto.images && producto.images.length > 0 ? (
@@ -545,9 +559,12 @@ export default function EmprendedorProfile() {
             )}
           </section>
         ) : (
-          <p className="text-center text-gray-500">
-            No se encontró información del emprendedor.
-          </p>
+          <div className="flex flex-col justify-center items-center h-screen">
+            <div className="w-12 h-12 border-4 border-blue-500 border-t-transparent rounded-full animate-spin mb-4"></div>
+            <p className="text-lg text-gray-500 font-medium">
+              Cargando Perfil...
+            </p>
+          </div>
         )}
       </Suspense>
     </CartProvider>
