@@ -148,9 +148,10 @@ export default function FavoritesPage() {
       if (response.ok) {
         // Actualiza el estado eliminando solo el elemento correspondiente
         setFavoriteEntrepreneurs((prevFavorites) =>
-          prevFavorites.filter((item) => item.id !== idFavorito)
+          prevFavorites.filter((item) => item.id_favorito !== idFavorito)
         );
         console.log("Emprendedor eliminado de favoritos");
+        toast.info("Emprendedor eliminado de favoritos");
       } else {
         console.error(
           "Error al eliminar el emprendedor de favoritos en la base de datos"
@@ -178,9 +179,12 @@ export default function FavoritesPage() {
         <h1 className="text-2xl font-bold mb-4 text-black">Mis Favoritos</h1>
 
         {favorites.length === 0 && favoriteEntrepreneurs.length === 0 ? (
-          <p className="text-gray-600">
-            No tienes productos o emprendedores en tu lista de favoritos.
-          </p>
+          <div className="flex flex-col justify-center items-center h-screen">
+            <div className="w-12 h-12 border-4 border-blue-500 border-t-transparent rounded-full animate-spin mb-4"></div>
+            <p className="text-lg text-gray-500 font-medium">
+              Cargando tus favoritos...
+            </p>
+          </div>
         ) : (
           <div className="space-y-12">
             {/* Productos favoritos */}

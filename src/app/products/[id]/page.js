@@ -92,7 +92,14 @@ export default function ProductDetail() {
   const images = [product?.mainImage, ...(product?.additionalImages || [])];
 
   if (!product) {
-    return <div>Cargando producto...</div>;
+    return (
+      <div className="flex flex-col justify-center items-center h-screen">
+        <div className="w-12 h-12 border-4 border-blue-500 border-t-transparent rounded-full animate-spin mb-4"></div>
+        <p className="text-lg text-gray-500 font-medium">
+          Cargando Producto...
+        </p>
+      </div>
+    );
   }
 
   // Función para renderizar las estrellas

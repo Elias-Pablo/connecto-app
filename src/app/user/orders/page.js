@@ -56,7 +56,12 @@ export default function UserOrders() {
       <div className="p-10">
         <h1 className="text-2xl font-bold mb-5">Mis Pedidos</h1>
         {isLoading ? (
-          <p>Cargando pedidos...</p>
+          <div className="flex flex-col justify-center items-center h-screen">
+            <div className="w-12 h-12 border-4 border-blue-500 border-t-transparent rounded-full animate-spin mb-4"></div>
+            <p className="text-lg text-gray-500 font-medium">
+              Cargando tus registros de pedidos...
+            </p>
+          </div>
         ) : orders.length === 0 ? (
           <p>No tienes pedidos registrados.</p>
         ) : (
