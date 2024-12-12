@@ -21,11 +21,13 @@ const ModalCrearPublicacion = ({ onClose, categorias, onSubmit }) => {
       toast.error("Por favor, completa todos los campos obligatorios.");
       return;
     }
-    onSubmit(nuevoForo); // Enviar datos al padre
+  
+    onSubmit(nuevoForo); // Añadir la publicación al estado global
     toast.success("Publicación creada exitosamente.");
     setNuevoForo({ titulo: "", descripcion: "", id_foro: "", url_imagen: "" });
-    onClose(); // Cerrar modal
+    onClose();
   };
+  
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50 transition-opacity duration-300">

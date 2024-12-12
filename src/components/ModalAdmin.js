@@ -25,7 +25,7 @@ const ModalAdmin = ({ misPublicaciones, onClose, onEdit, onDelete }) => {
       return;
     }
 
-    // Verificar si realmente hay cambios
+    // Verificar si hay cambios
     if (
       titulo === publicacionSeleccionada.titulo &&
       descripcion === publicacionSeleccionada.descripcion

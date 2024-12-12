@@ -5,7 +5,7 @@ import { HandThumbUpIcon, LightBulbIcon } from "@heroicons/react/24/outline";
 import Image from "next/image";
 import ModalAdmin from "@/components/ModalAdmin";
 import ModalPublicacion from "@/components/ModalPublicacion";
-import { ToastContainer, toast } from "react-toastify";
+import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
 export default function Foro() {
@@ -44,27 +44,6 @@ export default function Foro() {
       }
     };
 
-    const fetchForosDestacados = async () => {
-      try {
-        setIsLoading(true);
-        const queryParams = new URLSearchParams({
-          page: pagina,
-          ...(filtroCategoria && { categoria: filtroCategoria }),
-        }).toString();
-        const response = await fetch(
-          `/api/auth/foro?type=publicaciones&${queryParams}`
-        );
-        if (!response.ok) throw new Error("Error al cargar publicaciones");
-        const data = await response.json();
-        setForosDestacados(data.publicaciones || []);
-        setTotalPaginas(data.totalPaginas || 1);
-        setIsLoading(false);
-      } catch (error) {
-        console.error("Error al obtener publicaciones destacadas:", error);
-        setForosDestacados([]);
-      }
-    };
-
     fetchCategorias();
     fetchForosDestacados();
   }, [pagina, filtroCategoria]);
@@ -77,34 +56,60 @@ export default function Foro() {
     });
   };
 
-  // Crear nueva publicación
-  const handleCrearForo = async (nuevoForo) => {
+  const fetchForosDestacados = async () => {
     try {
       setIsLoading(true);
-      const token = localStorage.getItem("token");
-      if (!token)
-        throw new Error("Usuario no autorizado. Faltan credenciales.");
-
-      const response = await fetch("/api/auth/foro", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
-        body: JSON.stringify(nuevoForo),
-      });
-
-      if (response.ok) {
-        const data = await response.json();
-        setForosDestacados([...forosDestacados, { ...nuevoForo, id: data.id }]);
-        setIsLoading(false);
-      } else {
-        console.error("Error al crear la publicación");
-      }
+      const queryParams = new URLSearchParams({
+        page: pagina,
+        ...(filtroCategoria && { categoria: filtroCategoria }),
+      }).toString();
+      const response = await fetch(
+        `/api/auth/foro?type=publicaciones&${queryParams}`
+      );
+      if (!response.ok) throw new Error("Error al cargar publicaciones");
+      const data = await response.json();
+      setForosDestacados(data.publicaciones || []);
+      setTotalPaginas(data.totalPaginas || 1);
+      setIsLoading(false);
     } catch (error) {
-      console.error("Error en la solicitud de creación:", error);
+      console.error("Error al obtener publicaciones destacadas:", error);
+      setForosDestacados([]);
+      setIsLoading(false);
     }
   };
+  
+  // Crear nueva publicación
+const handleCrearForo = async (nuevoForo) => {
+  try {
+    setIsLoading(true); // Indicar que está cargando
+    const token = localStorage.getItem("token");
+    
+    const response = await fetch("/api/auth/foro", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+      body: JSON.stringify(nuevoForo),
+    });
+
+    if (response.ok) {
+      const data = await response.json();
+      setForosDestacados((prev) => [
+        { ...nuevoForo, id_publicaciones: data.id },
+        ...prev,
+      ]);
+    } else {
+      const errorData = await response.json();
+      toast.error(errorData.message || "Error al crear la publicación."); // Mostrar mensaje de error
+    }
+  } catch (error) {
+    console.error("Error al crear publicación:", error);
+    toast.error("Ocurrió un error al crear la publicación."); // Mostrar mensaje de error
+  } finally {
+    setIsLoading(false); // Finalizar la indicación de carga
+  }
+};
 
   // Obtener respuestas
   const fetchRespuestas = async (id_publicaciones) => {
@@ -253,43 +258,54 @@ export default function Foro() {
   const handleEditar = async (publicacion) => {
     try {
       const token = localStorage.getItem("token");
-      if (!token) throw new Error("Usuario no autorizado.");
-
-      await fetch("/api/auth/foro/publicaciones", {
+      const response = await fetch("/api/auth/foro/publicaciones", {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",
           Authorization: `Bearer ${token}`,
         },
-        body: JSON.stringify({
-          id_publicaciones: publicacion.id_publicaciones,
-          titulo: publicacion.titulo,
-          descripcion: publicacion.descripcion,
-        }),
+        body: JSON.stringify(publicacion),
       });
-
-      fetchMisPublicaciones(); // Refresca las publicaciones
+  
+      if (response.ok) {
+        setForosDestacados((prev) =>
+          prev.map((foro) =>
+            foro.id_publicaciones === publicacion.id_publicaciones
+              ? { ...foro, ...publicacion }
+              : foro
+          )
+        );
+        toast.success("Publicación actualizada exitosamente.");
+      }
     } catch (error) {
       console.error("Error al editar publicación:", error);
     }
   };
-
+  
+  
   const handleEliminar = async (id_publicaciones) => {
     try {
       const token = localStorage.getItem("token");
-      await fetch(
+      const response = await fetch(
         `/api/auth/foro/publicaciones?id_publicaciones=${id_publicaciones}`,
         {
           method: "DELETE",
           headers: { Authorization: `Bearer ${token}` },
         }
       );
-
-      fetchMisPublicaciones(); // Refresca las publicaciones
+  
+      if (response.ok) {
+        setForosDestacados((prev) =>
+          prev.filter((foro) => foro.id_publicaciones !== id_publicaciones)
+        );
+        toast.success("Publicación eliminada exitosamente.");
+      }
     } catch (error) {
       console.error("Error al eliminar publicación:", error);
     }
   };
+  
+  
 
   const fetchMisPublicaciones = async () => {
     try {
@@ -318,7 +334,6 @@ export default function Foro() {
   return (
     <>
       <Header />
-      <ToastContainer />
       <div className="bg-sky-700 flex flex-col items-center justify-center w-full">
         <h1 className="text-4xl font-bold text-white mt-4">
           Foro de Emprendedores
