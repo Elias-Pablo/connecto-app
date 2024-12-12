@@ -7,28 +7,62 @@ import Header from "@/components/Header-us";
 export default function Checkout() {
   const {
     cartItems,
+    setCartItems, // <-- Importamos setCartItems
     calculateTotal,
     removeFromCart,
     decreaseQuantity,
     addToCart,
   } = useCart();
-  const [isReady, setIsReady] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
   const router = useRouter();
 
-  // Asegurarse de que el cliente y contexto están listos
+  // Sincronizar el carrito desde localStorage al cargar la página
   useEffect(() => {
-    setIsReady(true);
-  }, []);
+    const storedCart = localStorage.getItem("cart");
+    if (storedCart) {
+      const parsedCart = JSON.parse(storedCart);
+      setCartItems(parsedCart); // Sincronizamos el carrito con los datos del storage
+      setIsLoading(false);
+    } else {
+      setIsLoading(false); // No hay carrito almacenado
+    }
+  }, [setCartItems]);
 
   // Redirigir si el carrito está vacío
   useEffect(() => {
-    if (isReady && cartItems.length === 0) {
+    if (!isLoading && cartItems.length === 0) {
       alert("Tu carrito está vacío. Redirigiendo a la tienda...");
       router.push("/");
     }
-  }, [cartItems, isReady, router]);
+  }, [cartItems, isLoading, router]);
 
-  // Manejo de la confirmación de compra
+  if (isLoading) {
+    return (
+      <div className="flex items-center justify-center h-screen">
+        <div className="loader"></div>
+        <style jsx>{`
+          .loader {
+            border: 8px solid #f3f3f3;
+            border-radius: 50%;
+            border-top: 8px solid #3498db;
+            width: 50px;
+            height: 50px;
+            animation: spin 1s linear infinite;
+          }
+
+          @keyframes spin {
+            0% {
+              transform: rotate(0deg);
+            }
+            100% {
+              transform: rotate(360deg);
+            }
+          }
+        `}</style>
+      </div>
+    );
+  }
+
   const handleConfirmPurchase = async () => {
     try {
       router.push("/user/secure/payment");
@@ -37,7 +71,6 @@ export default function Checkout() {
     }
   };
 
-  // Confirmación antes de eliminar
   const handleRemoveItem = (productId) => {
     if (
       typeof window !== "undefined" &&
@@ -46,10 +79,6 @@ export default function Checkout() {
       removeFromCart(productId);
     }
   };
-
-  if (!isReady) {
-    return <p>Cargando...</p>;
-  }
 
   const formatPrice = (price) => {
     return new Intl.NumberFormat("es-CL", {
@@ -66,8 +95,7 @@ export default function Checkout() {
         <h1 className="text-3xl font-bold text-center mb-8">
           Carrito de Compras
         </h1>
-        <div className="flex  lg:flex-row gap-8">
-          {/* Lista de productos */}
+        <div className="flex lg:flex-row gap-8">
           <div className="flex-1">
             {cartItems.map((item) => (
               <div
@@ -75,28 +103,19 @@ export default function Checkout() {
                 className="flex items-center justify-between bg-white p-4 rounded shadow mb-4"
               >
                 <div className="flex items-center gap-4">
-                  {/* Nombre y precio del producto */}
+                  <img
+                    src={item.images[0] || "/placeholder.webp"}
+                    alt={item.name}
+                    className="w-24 h-24 object-cover rounded-lg"
+                  />
                   <div>
-                    <div className="flex items-center gap-4">
-                      <img
-                        src={item.images[0] || "/placeholder.webp"}
-                        alt={item.name}
-                        className="w-24 h-24 object-cover rounded-lg"
-                      />
-                    </div>
-
                     <h2 className="text-lg font-semibold">{item.name}</h2>
                     <p className="text-sm text-gray-500">
                       {formatPrice(item.price)}
                     </p>
-                    <p className="text-xs text-green-600 flex items-center">
-                      <span className="material-icons text-lg text-green-500 mr-1"></span>
-                      En stock
-                    </p>
                   </div>
                 </div>
                 <div className="flex items-center gap-2">
-                  {/* Botones de cantidad */}
                   <button
                     onClick={() => decreaseQuantity(item.id)}
                     className="bg-red-500 text-white p-2 rounded-full hover:bg-red-600"
@@ -110,7 +129,6 @@ export default function Checkout() {
                   >
                     +
                   </button>
-                  {/* Botón de eliminar */}
                   <button
                     onClick={() => handleRemoveItem(item.id)}
                     className="text-red-500 hover:underline ml-4"
@@ -121,8 +139,6 @@ export default function Checkout() {
               </div>
             ))}
           </div>
-
-          {/* Resumen del pedido */}
           <div className="w-full lg:w-1/3 bg-gray-100 p-6 rounded shadow">
             <h2 className="text-xl font-bold mb-4">Resumen del pedido</h2>
             <div className="flex justify-between mb-2">
