@@ -1,7 +1,6 @@
 "use client";
 import { useState, useEffect, Suspense } from "react";
 import { useRouter } from "next/navigation";
-import Image from "next/image";
 import SearchBar from "@/components/Searchbar";
 import Header from "@/components/Header-us";
 import SearchedProducts from "@/components/Searched-Products";
@@ -21,7 +20,7 @@ export default function Home() {
   const [favorites, setFavorites] = useState([]);
   const [user, setUser] = useState(null);
   const [products, setProducts] = useState([]);
-  const [profileData, setProfileData] = useState([]);
+  const [profiles, setProfiles] = useState([]);
 
   useEffect(() => {
     const token = localStorage.getItem("token");
@@ -58,22 +57,55 @@ export default function Home() {
   }, [userId]);
 
   useEffect(() => {
-    const fetchProfiles = async () => {
+    const fetchProfilesWithImages = async () => {
       try {
-        const response = await fetch(`/api/user/emprendedores`);
+        // Fetch perfiles
+        const response = await fetch("/api/user/emprendedores");
         if (response.ok) {
           const data = await response.json();
-          console.log("Datos de los perfiles recibidos:", data);
-          setProfileData(data.perfiles);
+          const perfiles = data.perfiles;
+
+          // Fetch imágenes para cada perfil
+          const updatedProfiles = await Promise.all(
+            perfiles.map(async (perfil) => {
+              try {
+                const avatarResponse = await fetch(
+                  `/api/empAvatar?id_perfil=${perfil.id}`
+                );
+                if (avatarResponse.ok) {
+                  const avatarData = await avatarResponse.json();
+                  return {
+                    ...perfil,
+                    avatar: avatarData.usuario_imagen || "/placeholder.webp",
+                  };
+                } else {
+                  console.error(
+                    `Error al cargar la imagen para perfil ${perfil.id}`
+                  );
+                  return { ...perfil, avatar: "/placeholder.webp" };
+                }
+              } catch (error) {
+                console.error(
+                  `Error en la solicitud de imagen para perfil ${perfil.id}:`,
+                  error
+                );
+                return { ...perfil, avatar: "/placeholder.webp" };
+              }
+            })
+          );
+
+          setProfiles(updatedProfiles);
         } else {
-          console.error("Error al cargar los perfiles de emprendedores");
+          console.error("Error al cargar perfiles");
         }
       } catch (error) {
-        console.error("Error en la solicitud de los perfiles:", error);
+        console.error("Error en la solicitud de perfiles:", error);
+      } finally {
+        console.log("Fetch de perfiles completado");
       }
     };
 
-    fetchProfiles();
+    fetchProfilesWithImages();
   }, []);
 
   useEffect(() => {
@@ -337,24 +369,29 @@ export default function Home() {
             Perfiles de Emprendedores
           </h2>
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-            {profileData.map((profile) => (
+            {profiles.map((profiles) => (
               <div
-                key={profile.id}
+                key={profiles.id}
                 className="text-center p-5 bg-gray-100 rounded-lg shadow-md"
               >
                 <div className="cursor-pointer hover:opacity-80 transition-opacity duration-300 inline-block">
-                  <div className="w-32 h-32 mx-auto rounded-full shadow-lg overflow-hidden hover:scale-105 duration-300">
-                    <img
-                      src={profile.idImagen || "/placeholder.webp"}
-                      width={128}
-                      height={128}
-                      alt={profile.nombreNegocio}
-                    />
-                  </div>
-                  <h3 className="text-lg font-semibold text-black mt-2">
-                    {profile.nombreNegocio}
-                  </h3>
-                  <p className="text-sm text-black">{profile.descripcion}</p>
+                  <Link
+                    href={`/user/emprendedores/profile?id_perfil=${profiles.id}`}
+                  >
+                    <div className="w-32 h-32 mx-auto rounded-full shadow-lg overflow-hidden hover:scale-105 duration-300">
+                      <img
+                        src={profiles.avatar || "/placeholder.webp"}
+                        width={128}
+                        height={128}
+                        alt={profiles.nombreNegocio}
+                      />
+                    </div>
+                    <h3 className="text-lg font-semibold text-black mt-2">
+                      {profiles.nombreNegocio}
+                    </h3>
+                  </Link>
+
+                  <p className="text-sm text-black">{profiles.descripcion}</p>
                 </div>
               </div>
             ))}
