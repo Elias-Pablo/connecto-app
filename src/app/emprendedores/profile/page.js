@@ -52,7 +52,7 @@ export default function EmprendedorProfile() {
 
   useEffect(() => {
     const token = localStorage.getItem("token");
-  
+
     if (token) {
       try {
         const decoded = jwtDecode(token);
@@ -64,7 +64,6 @@ export default function EmprendedorProfile() {
       }
     }
   }, []);
-  
 
   useEffect(() => {
     // Obtén la ubicación actual del usuario
@@ -328,15 +327,21 @@ export default function EmprendedorProfile() {
       if (response.ok) {
         const data = await response.json();
         if (method === "PUT") {
-          setProducts(
-            products.map((product) =>
-              product.id === currentProduct.id ? { ...currentProduct } : product
+          // Actualizamos el producto en el estado local
+          setProducts((prevProducts) =>
+            prevProducts.map((product) =>
+              product.id === currentProduct.id
+                ? { ...product, ...currentProduct }
+                : product
             )
           );
         } else {
-          setProducts([...products, { ...currentProduct, id: data.id }]);
+          // Agregamos el nuevo producto al estado local
+          setProducts((prevProducts) => [
+            ...prevProducts,
+            { ...currentProduct, id: data.id },
+          ]);
         }
-        console.log("Producto guardado exitosamente");
         toast.success("Producto guardado correctamente");
       } else {
         console.error("Error al guardar el producto");
@@ -428,14 +433,20 @@ export default function EmprendedorProfile() {
     return stars;
   };
 
-  const [resumen, setResumen] = useState({ visitas: 0, ventas: 0, ingresos: 0 });
+  const [resumen, setResumen] = useState({
+    visitas: 0,
+    ventas: 0,
+    ingresos: 0,
+  });
 
   useEffect(() => {
     if (!id_perfil) return; // Asegúrate de no hacer fetch si id_perfil es null
-  
+
     const fetchMetrics = async () => {
       try {
-        const response = await fetch(`/api/metrics?period=daily&id_perfil=${id_perfil}`);
+        const response = await fetch(
+          `/api/metrics?period=daily&id_perfil=${id_perfil}`
+        );
         if (response.ok) {
           const data = await response.json();
           setResumen(data.resumen);
@@ -446,10 +457,9 @@ export default function EmprendedorProfile() {
         console.error("Error en la solicitud:", error);
       }
     };
-  
+
     fetchMetrics();
   }, [id_perfil]);
-  
 
   return (
     <>
@@ -584,7 +594,7 @@ export default function EmprendedorProfile() {
             {products.map((product) => (
               <div
                 key={product.id}
-                className="text-center p-5 bg-gray-200 w-auto rounded-lg shadow-lg"
+                className="text-center p-5 bg-gray-100 w-auto rounded-lg shadow-lg"
               >
                 {product.images && product.images.length > 0 ? (
                   <Slider {...sliderSettings}>
@@ -611,6 +621,9 @@ export default function EmprendedorProfile() {
                 <p className="text-gray-600 text-sm">{product.description}</p>
                 <p className="text-blue-500 font-semibold mt-2">
                   {formatPrice(product.price)}
+                </p>
+                <p className="text-gray-600 text-xs mt-2">
+                  Stock Disponible: {product.stock}
                 </p>
                 <div className="mt-3">
                   <button
@@ -705,27 +718,35 @@ export default function EmprendedorProfile() {
       <div className="grid grid-cols-1 md:grid-cols-2 gap-10 p-6">
         <div className="bg-white p-6 rounded-lg shadow-lg">
           <h2 className="text-2xl font-bold mb-4">Métricas</h2>
-            <div className="flex items-center mb-2">
-              <FaEye className="text-indigo-500 mr-2" />
-              <p><strong>Visitas al Perfil:</strong> {resumen.visitas || 0}</p>
-            </div>
-            <div className="flex items-center mb-2">
-              <FaShoppingCart className="text-green-500 mr-2" />
-              <p><strong>Ventas Totales:</strong> {resumen.ventas || 0}</p>
-            </div>
-            <div className="flex items-center mb-2">
-              <FaDollarSign className="text-yellow-500 mr-2" />
-              <p><strong>Ingresos Totales:</strong> ${parseFloat(resumen?.ingresos || 0).toFixed(2)}</p>
-            </div>
-            <div className="flex items-center mb-2">
-              <FaChartLine className="text-blue-500 mr-2" />
-              <p>
-                <strong>Tasa de Conversión:</strong>{" "}
-                {resumen.visitas > 0
-                  ? ((resumen.ventas / resumen.visitas) * 100).toFixed(2)
-                  : "0.00"}%
-              </p>
-            </div>
+          <div className="flex items-center mb-2">
+            <FaEye className="text-indigo-500 mr-2" />
+            <p>
+              <strong>Visitas al Perfil:</strong> {resumen.visitas || 0}
+            </p>
+          </div>
+          <div className="flex items-center mb-2">
+            <FaShoppingCart className="text-green-500 mr-2" />
+            <p>
+              <strong>Ventas Totales:</strong> {resumen.ventas || 0}
+            </p>
+          </div>
+          <div className="flex items-center mb-2">
+            <FaDollarSign className="text-yellow-500 mr-2" />
+            <p>
+              <strong>Ingresos Totales:</strong> $
+              {parseFloat(resumen?.ingresos || 0).toFixed(2)}
+            </p>
+          </div>
+          <div className="flex items-center mb-2">
+            <FaChartLine className="text-blue-500 mr-2" />
+            <p>
+              <strong>Tasa de Conversión:</strong>{" "}
+              {resumen.visitas > 0
+                ? ((resumen.ventas / resumen.visitas) * 100).toFixed(2)
+                : "0.00"}
+              %
+            </p>
+          </div>
         </div>
         <MetricChart />
       </div>
