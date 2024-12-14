@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Servidor: 127.0.0.1
--- Tiempo de generación: 06-12-2024 a las 21:53:17
+-- Tiempo de generación: 14-12-2024 a las 15:32:05
 -- Versión del servidor: 10.4.32-MariaDB
 -- Versión de PHP: 8.2.12
 
@@ -77,7 +77,9 @@ INSERT INTO `compra` (`id_compra`, `id_documento`, `id_envio`, `id_usuario`, `de
 (12, 16, 16, 7, 'Compra de productos', 1, 1, 2000, '2024-12-03 18:15:35'),
 (13, 17, 17, 11, 'Compra de productos', 1, 1, 6000, '2024-12-05 19:05:57'),
 (14, 18, 18, 11, 'Compra de productos', 3, 1, 111980, '2024-12-05 19:07:15'),
-(15, 19, 19, 12, 'Compra de productos', 1, 1, 6990, '2024-12-05 22:54:33');
+(15, 19, 19, 12, 'Compra de productos', 1, 1, 6990, '2024-12-05 22:54:33'),
+(16, 20, 20, 12, 'Compra de productos', 3, 1, 33970, '2024-12-11 20:44:34'),
+(17, 21, 21, 12, 'Compra de productos', 5, 1, 465910, '2024-12-12 04:34:45');
 
 -- --------------------------------------------------------
 
@@ -105,7 +107,8 @@ INSERT INTO `conversaciones` (`id_conversacion`, `nombre_conversacion`, `id_usua
 (5, 'Chat entre 11 y 9', 11, 9, '2024-11-29 22:41:29'),
 (6, 'Chat entre 11 y 11', 11, 11, '2024-11-30 00:05:12'),
 (7, 'Chat entre 12 y 9', 12, 9, '2024-12-03 01:31:05'),
-(8, 'Chat entre 12 y 11', 12, 11, '2024-12-05 22:40:29');
+(8, 'Chat entre 12 y 11', 12, 11, '2024-12-05 22:40:29'),
+(9, 'Chat entre 9 y 13', 9, 13, '2024-12-12 04:33:48');
 
 -- --------------------------------------------------------
 
@@ -145,7 +148,15 @@ INSERT INTO `detalle_compra` (`id_detalle`, `id_compra`, `cantidad`, `precio_uni
 (14, 14, 3, 2000.00, 6000.00, 6000.00, 1140.00, 7140.00),
 (15, 14, 1, 99990.00, 99990.00, 99990.00, 18998.10, 118988.10),
 (16, 14, 1, 5990.00, 5990.00, 5990.00, 1138.10, 7128.10),
-(17, 15, 1, 6990.00, 6990.00, 6990.00, 1328.10, 8318.10);
+(17, 15, 1, 6990.00, 6990.00, 6990.00, 1328.10, 8318.10),
+(18, 16, 2, 12990.00, 25980.00, 25980.00, 4936.20, 30916.20),
+(19, 16, 1, 5990.00, 5990.00, 5990.00, 1138.10, 7128.10),
+(20, 16, 1, 2000.00, 2000.00, 2000.00, 380.00, 2380.00),
+(21, 17, 1, 20000.00, 20000.00, 20000.00, 3800.00, 23800.00),
+(22, 17, 2, 12990.00, 25980.00, 25980.00, 4936.20, 30916.20),
+(23, 17, 4, 99990.00, 399960.00, 399960.00, 75992.40, 475952.40),
+(24, 17, 1, 5990.00, 5990.00, 5990.00, 1138.10, 7128.10),
+(25, 17, 2, 6990.00, 13980.00, 13980.00, 2656.20, 16636.20);
 
 -- --------------------------------------------------------
 
@@ -182,7 +193,9 @@ INSERT INTO `documento` (`id_documento`, `tipo_documento`, `tipo_pago`) VALUES
 (16, NULL, NULL),
 (17, NULL, NULL),
 (18, NULL, NULL),
-(19, NULL, NULL);
+(19, NULL, NULL),
+(20, NULL, NULL),
+(21, NULL, NULL);
 
 -- --------------------------------------------------------
 
@@ -239,7 +252,9 @@ INSERT INTO `envio` (`id_envio`, `direccion`, `destinatario`, `remitente`, `tiem
 (16, NULL, NULL, NULL, '2024-12-03 18:15:35', NULL, NULL, NULL),
 (17, NULL, NULL, NULL, '2024-12-05 19:05:57', NULL, NULL, NULL),
 (18, NULL, NULL, NULL, '2024-12-05 19:07:15', NULL, NULL, NULL),
-(19, NULL, NULL, NULL, '2024-12-05 22:54:33', NULL, NULL, NULL);
+(19, NULL, NULL, NULL, '2024-12-05 22:54:33', NULL, NULL, NULL),
+(20, NULL, NULL, NULL, '2024-12-11 20:44:34', NULL, NULL, NULL),
+(21, NULL, NULL, NULL, '2024-12-12 04:34:45', NULL, NULL, NULL);
 
 -- --------------------------------------------------------
 
@@ -281,7 +296,8 @@ CREATE TABLE `favoritos` (
 
 INSERT INTO `favoritos` (`id_favorito`, `id_usuario`, `id_producto`, `fecha_creacion`) VALUES
 (24, 11, 35, '2024-11-30 00:22:53'),
-(25, 11, 35, '2024-11-30 01:11:18');
+(25, 11, 35, '2024-11-30 01:11:18'),
+(26, 9, 36, '2024-12-12 04:30:29');
 
 -- --------------------------------------------------------
 
@@ -309,21 +325,6 @@ INSERT INTO `foro` (`id_foro`, `id_admin`, `nombre`, `tiempo_creacion`) VALUES
 (6, 1, 'Ventas', '2024-11-07 21:50:00'),
 (7, 1, 'Logística', '2024-11-07 22:00:00'),
 (8, 1, 'Atención al Cliente', '2024-11-07 22:10:00');
-
--- --------------------------------------------------------
-
---
--- Estructura de tabla para la tabla `gestion_redes_sociales`
---
-
-CREATE TABLE `gestion_redes_sociales` (
-  `id_gestion` int(11) NOT NULL,
-  `id_perfil` int(11) NOT NULL,
-  `plataforma` enum('Facebook','Twitter','Instagram') NOT NULL,
-  `contenido_publicacion` text DEFAULT NULL,
-  `fecha_publicacion` timestamp NOT NULL DEFAULT current_timestamp(),
-  `generado_ia` tinyint(1) DEFAULT 0
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- --------------------------------------------------------
 
@@ -440,7 +441,59 @@ INSERT INTO `interacciones` (`id_interaccion`, `id_perfil`, `id_producto`, `tipo
 (69, 2, 37, 'Click', '2024-12-06 01:30:17', NULL),
 (70, 2, 37, 'Click', '2024-12-06 01:30:18', NULL),
 (71, 2, 36, 'Click', '2024-12-06 01:30:20', NULL),
-(72, 2, 37, 'Click', '2024-12-06 01:31:01', NULL);
+(72, 2, 37, 'Click', '2024-12-06 01:31:01', NULL),
+(73, 1, 42, 'Purchase', '2024-12-11 20:44:34', 2),
+(74, 2, 36, 'Purchase', '2024-12-11 20:44:34', 1),
+(75, 3, 35, 'Purchase', '2024-12-11 20:44:34', 1),
+(76, 2, 38, 'Click', '2024-12-12 03:39:51', NULL),
+(77, 2, 37, 'Click', '2024-12-12 03:39:53', NULL),
+(78, 2, 37, 'Click', '2024-12-12 03:41:39', NULL),
+(79, 2, 36, 'Click', '2024-12-12 03:41:39', NULL),
+(80, 2, 36, 'Click', '2024-12-12 03:41:57', NULL),
+(81, 3, 35, 'Click', '2024-12-12 03:42:04', NULL),
+(82, 1, 42, 'Click', '2024-12-12 03:42:20', NULL),
+(83, 1, 43, 'Click', '2024-12-12 03:44:43', NULL),
+(84, 3, 47, 'Click', '2024-12-12 03:45:05', NULL),
+(85, 2, 37, 'Click', '2024-12-12 03:53:25', NULL),
+(86, 2, 36, 'Click', '2024-12-12 03:53:25', NULL),
+(87, 3, 35, 'Click', '2024-12-12 03:55:00', NULL),
+(88, 2, 36, 'Click', '2024-12-12 03:55:00', NULL),
+(89, 2, 37, 'Click', '2024-12-12 03:55:01', NULL),
+(90, 3, 35, 'Click', '2024-12-12 03:55:33', NULL),
+(91, 2, 36, 'Click', '2024-12-12 03:55:33', NULL),
+(92, 1, 42, 'Click', '2024-12-12 03:55:36', NULL),
+(93, 2, 38, 'Click', '2024-12-12 03:56:35', NULL),
+(94, 2, 37, 'Click', '2024-12-12 03:56:35', NULL),
+(95, 2, 37, 'Click', '2024-12-12 03:57:12', NULL),
+(96, 2, 36, 'Click', '2024-12-12 03:57:13', NULL),
+(97, 3, 35, 'Click', '2024-12-12 03:58:31', NULL),
+(98, 2, 37, 'Click', '2024-12-12 03:59:54', NULL),
+(99, 2, 36, 'Click', '2024-12-12 03:59:54', NULL),
+(100, 3, 35, 'Click', '2024-12-12 04:02:37', NULL),
+(101, 2, 36, 'Click', '2024-12-12 04:05:56', NULL),
+(102, 1, 43, 'Click', '2024-12-12 04:05:58', NULL),
+(103, 1, 44, 'Click', '2024-12-12 04:08:42', NULL),
+(104, 3, 47, 'Click', '2024-12-12 04:09:32', NULL),
+(105, 4, 46, 'Click', '2024-12-12 04:10:47', NULL),
+(106, 4, 45, 'Click', '2024-12-12 04:11:10', NULL),
+(107, 1, 42, 'Click', '2024-12-12 04:21:54', NULL),
+(108, 3, 35, 'Click', '2024-12-12 04:22:13', NULL),
+(109, 1, 44, 'Click', '2024-12-12 04:27:29', NULL),
+(110, 2, 37, 'Click', '2024-12-12 04:30:04', NULL),
+(111, 1, 43, 'Click', '2024-12-12 04:30:20', NULL),
+(112, 2, 37, 'Click', '2024-12-12 04:30:38', NULL),
+(113, 2, 37, 'Click', '2024-12-12 04:30:39', NULL),
+(114, 2, 37, 'Click', '2024-12-12 04:30:39', NULL),
+(115, 2, 37, 'Click', '2024-12-12 04:30:40', NULL),
+(116, 2, 37, 'Click', '2024-12-12 04:30:40', NULL),
+(117, 2, 36, 'Click', '2024-12-12 04:33:53', NULL),
+(118, 4, 45, 'Click', '2024-12-12 04:33:58', NULL),
+(119, 3, 47, 'Purchase', '2024-12-12 04:34:45', 2),
+(120, 1, 42, 'Purchase', '2024-12-12 04:34:45', 2),
+(121, 2, 37, 'Purchase', '2024-12-12 04:34:45', 4),
+(122, 2, 36, 'Purchase', '2024-12-12 04:34:45', 1),
+(123, 4, 45, 'Purchase', '2024-12-12 04:34:45', 1),
+(124, 2, 36, 'Click', '2024-12-13 21:39:04', NULL);
 
 -- --------------------------------------------------------
 
@@ -472,34 +525,6 @@ INSERT INTO `mensajes` (`id_mensaje`, `id_conversacion`, `id_remitente`, `id_des
 (7, 1, 9, 9, 'hola', 0, '2024-11-26 02:27:13'),
 (8, 1, 7, 9, 'xd', 0, '2024-11-26 19:21:19'),
 (9, 1, 7, 9, 'buenas', 0, '2024-11-26 19:24:11');
-
--- --------------------------------------------------------
-
---
--- Estructura de tabla para la tabla `metricas`
---
-
-CREATE TABLE `metricas` (
-  `id_metricas` int(11) NOT NULL,
-  `id_perfil` int(11) NOT NULL,
-  `tipo_metrica` enum('visitas','ventas') NOT NULL,
-  `intervalo` enum('diarias','semanales','mensuales') NOT NULL,
-  `cantidad` int(11) NOT NULL DEFAULT 0,
-  `producto_mas_vendido` varchar(255) NOT NULL,
-  `fecha_creacion` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp()
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
-
---
--- Volcado de datos para la tabla `metricas`
---
-
-INSERT INTO `metricas` (`id_metricas`, `id_perfil`, `tipo_metrica`, `intervalo`, `cantidad`, `producto_mas_vendido`, `fecha_creacion`) VALUES
-(2, 4, 'visitas', 'diarias', 150, 'Producto XYZ', '2024-11-14 12:47:10'),
-(3, 4, 'visitas', 'semanales', 950, 'Producto XYZ', '2024-11-14 12:47:10'),
-(4, 4, 'visitas', 'mensuales', 3500, 'Producto XYZ', '2024-11-14 12:47:10'),
-(5, 4, 'ventas', 'diarias', 20, 'Producto XYZ', '2024-11-14 12:47:10'),
-(6, 4, 'ventas', 'semanales', 120, 'Producto XYZ', '2024-11-14 12:47:10'),
-(7, 4, 'ventas', 'mensuales', 450, 'Producto XYZ', '2024-11-14 12:47:10');
 
 -- --------------------------------------------------------
 
@@ -570,16 +595,16 @@ CREATE TABLE `productos` (
 --
 
 INSERT INTO `productos` (`id_producto`, `id_perfil`, `nombre`, `descripcion`, `precio`, `stock`, `tiempo_creacion`) VALUES
-(35, 3, 'claveles', 'mejore claveles', 2000.00, 21, '2024-11-29 22:59:03'),
-(36, 2, 'cera para pelo', 'cera para cabello liso ', 5990.00, 14, '2024-12-03 18:21:35'),
-(37, 2, 'wahl', 'maquina para cortar el pelo profesional ...con set de peines..', 99990.00, 4, '2024-12-04 00:51:07'),
+(35, 3, 'claveles', 'mejore claveles', 2000.00, 20, '2024-11-29 22:59:03'),
+(36, 2, 'cera para pelo', 'cera para cabello liso ', 5990.00, 12, '2024-12-03 18:21:35'),
+(37, 2, 'wahl', 'maquina para cortar el pelo profesional ...con set de peines..', 99990.00, 0, '2024-12-04 00:51:07'),
 (38, 2, 'Insumos de barberia', 'KIT COMBO COMPLETO INICIO INSUMOS BARBERÍA', 29990.00, 20, '2024-12-04 00:57:35'),
-(42, 1, 'Tortitas de amorshh', 'Las mejores tortas de la región a pedido.', 12990.00, 5, '2024-12-04 01:23:46'),
+(42, 1, 'Tortitas de amorshh', 'Las mejores tortas de la región a pedido.', 12990.00, 1, '2024-12-04 01:23:46'),
 (43, 1, 'Pastelitos', 'pastelitos a pedido , baratitos ', 10000.00, 5, '2024-12-04 01:26:51'),
 (44, 1, 'wafles', 'wafles para el regal@n ', 5990.00, 11, '2024-12-04 01:31:24'),
-(45, 4, 'productos de aseo ', 'Productos de limpieza imprescindibles en el hogar ', 20000.00, 20, '2024-12-04 01:39:17'),
+(45, 4, 'productos de aseo ', 'Productos de limpieza imprescindibles en el hogar ', 20000.00, 19, '2024-12-04 01:39:17'),
 (46, 4, 'Limpieza de auto', 'Productos de limpieza para tu auto, que necesitas.', 10000.00, 8, '2024-12-04 01:45:54'),
-(47, 3, 'Rosas', 'Las rosas mas hermosas de la región ', 6990.00, 9, '2024-12-04 01:54:40');
+(47, 3, 'Rosas', 'Las rosas mas hermosas de la región ', 6990.00, 7, '2024-12-04 01:54:40');
 
 -- --------------------------------------------------------
 
@@ -692,7 +717,8 @@ INSERT INTO `publicaciones_foro` (`id_publicaciones`, `id_perfil`, `id_imagen`, 
 (36, 3, NULL, 2, 'Publicidad en redes sociales', 'Cómo aprovechar Facebook Ads y Google Ads', '2024-12-06 19:47:25'),
 (37, 4, 13, 3, 'Gestión del tiempo', 'Consejos para gestionar tu tiempo como emprendedor', '2024-12-06 19:47:25'),
 (38, 5, NULL, 4, 'Casos de éxito', 'Historias de emprendedores que marcaron la diferencia', '2024-12-06 19:47:25'),
-(39, 3, NULL, 1, 'Buenas tardes', 'Busco ayuda en un documento de empresa', '2024-12-06 20:51:11');
+(39, 3, NULL, 1, 'Buenas tardes', 'Busco ayuda en un documento de empresa', '2024-12-06 20:51:11'),
+(59, 3, NULL, 2, 'hghg', 'ghg', '2024-12-13 21:38:07');
 
 -- --------------------------------------------------------
 
@@ -875,13 +901,6 @@ ALTER TABLE `foro`
   ADD KEY `id_admin` (`id_admin`);
 
 --
--- Indices de la tabla `gestion_redes_sociales`
---
-ALTER TABLE `gestion_redes_sociales`
-  ADD PRIMARY KEY (`id_gestion`),
-  ADD KEY `profile_id` (`id_perfil`);
-
---
 -- Indices de la tabla `hilos_foro`
 --
 ALTER TABLE `hilos_foro`
@@ -912,13 +931,6 @@ ALTER TABLE `mensajes`
   ADD KEY `id_conversacion` (`id_conversacion`),
   ADD KEY `id_remitente` (`id_remitente`),
   ADD KEY `id_destinatario` (`id_destinatario`);
-
---
--- Indices de la tabla `metricas`
---
-ALTER TABLE `metricas`
-  ADD PRIMARY KEY (`id_metricas`),
-  ADD KEY `fk_perfil_negocio` (`id_perfil`);
 
 --
 -- Indices de la tabla `notificaciones`
@@ -1017,25 +1029,25 @@ ALTER TABLE `admin`
 -- AUTO_INCREMENT de la tabla `compra`
 --
 ALTER TABLE `compra`
-  MODIFY `id_compra` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=16;
+  MODIFY `id_compra` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=18;
 
 --
 -- AUTO_INCREMENT de la tabla `conversaciones`
 --
 ALTER TABLE `conversaciones`
-  MODIFY `id_conversacion` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
+  MODIFY `id_conversacion` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=10;
 
 --
 -- AUTO_INCREMENT de la tabla `detalle_compra`
 --
 ALTER TABLE `detalle_compra`
-  MODIFY `id_detalle` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=18;
+  MODIFY `id_detalle` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=26;
 
 --
 -- AUTO_INCREMENT de la tabla `documento`
 --
 ALTER TABLE `documento`
-  MODIFY `id_documento` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=20;
+  MODIFY `id_documento` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=22;
 
 --
 -- AUTO_INCREMENT de la tabla `entrepreneur_reviews`
@@ -1047,7 +1059,7 @@ ALTER TABLE `entrepreneur_reviews`
 -- AUTO_INCREMENT de la tabla `envio`
 --
 ALTER TABLE `envio`
-  MODIFY `id_envio` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=20;
+  MODIFY `id_envio` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=22;
 
 --
 -- AUTO_INCREMENT de la tabla `favemprendedor`
@@ -1059,19 +1071,13 @@ ALTER TABLE `favemprendedor`
 -- AUTO_INCREMENT de la tabla `favoritos`
 --
 ALTER TABLE `favoritos`
-  MODIFY `id_favorito` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=26;
+  MODIFY `id_favorito` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=27;
 
 --
 -- AUTO_INCREMENT de la tabla `foro`
 --
 ALTER TABLE `foro`
   MODIFY `id_foro` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
-
---
--- AUTO_INCREMENT de la tabla `gestion_redes_sociales`
---
-ALTER TABLE `gestion_redes_sociales`
-  MODIFY `id_gestion` int(11) NOT NULL AUTO_INCREMENT;
 
 --
 -- AUTO_INCREMENT de la tabla `hilos_foro`
@@ -1089,19 +1095,13 @@ ALTER TABLE `imagen_publicacion`
 -- AUTO_INCREMENT de la tabla `interacciones`
 --
 ALTER TABLE `interacciones`
-  MODIFY `id_interaccion` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=73;
+  MODIFY `id_interaccion` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=125;
 
 --
 -- AUTO_INCREMENT de la tabla `mensajes`
 --
 ALTER TABLE `mensajes`
   MODIFY `id_mensaje` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=10;
-
---
--- AUTO_INCREMENT de la tabla `metricas`
---
-ALTER TABLE `metricas`
-  MODIFY `id_metricas` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
 
 --
 -- AUTO_INCREMENT de la tabla `notificaciones`
@@ -1143,7 +1143,7 @@ ALTER TABLE `promociones`
 -- AUTO_INCREMENT de la tabla `publicaciones_foro`
 --
 ALTER TABLE `publicaciones_foro`
-  MODIFY `id_publicaciones` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=40;
+  MODIFY `id_publicaciones` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=60;
 
 --
 -- AUTO_INCREMENT de la tabla `reacciones_foro`
@@ -1222,12 +1222,6 @@ ALTER TABLE `foro`
   ADD CONSTRAINT `foro_ibfk_1` FOREIGN KEY (`id_admin`) REFERENCES `admin` (`id_admin`);
 
 --
--- Filtros para la tabla `gestion_redes_sociales`
---
-ALTER TABLE `gestion_redes_sociales`
-  ADD CONSTRAINT `gestion_redes_sociales_ibfk_1` FOREIGN KEY (`id_perfil`) REFERENCES `perfil_negocio` (`id_perfil`);
-
---
 -- Filtros para la tabla `hilos_foro`
 --
 ALTER TABLE `hilos_foro`
@@ -1256,12 +1250,6 @@ ALTER TABLE `mensajes`
   ADD CONSTRAINT `mensajes_ibfk_1` FOREIGN KEY (`id_conversacion`) REFERENCES `conversaciones` (`id_conversacion`),
   ADD CONSTRAINT `mensajes_ibfk_2` FOREIGN KEY (`id_remitente`) REFERENCES `usuarios` (`id_usuario`),
   ADD CONSTRAINT `mensajes_ibfk_3` FOREIGN KEY (`id_destinatario`) REFERENCES `usuarios` (`id_usuario`);
-
---
--- Filtros para la tabla `metricas`
---
-ALTER TABLE `metricas`
-  ADD CONSTRAINT `fk_perfil_negocio` FOREIGN KEY (`id_perfil`) REFERENCES `perfil_negocio` (`id_perfil`);
 
 --
 -- Filtros para la tabla `notificaciones`
