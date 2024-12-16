@@ -27,11 +27,11 @@ export default function SearchedProducts({ products }) {
   };
 
   return (
-    <div className="mt-4 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 bg-fuchsia-400 gap-5 w-full p-8 mb-4 rounded-lg">
+    <div className="mt-4 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 bg-accent-cream shadow-lg border border-gray-200 gap-5 w-full p-8 mb-4 rounded-lg">
       {products.map((product) => (
         <div
           key={product.id}
-          className="text-center p-5 bg-gray-200 w-auto rounded-lg shadow-lg"
+          className="text-center p-5 bg-neutral-light w-auto rounded-lg shadow-lg"
         >
           <Link href={`/products/${product.id}`}>
             <div className="cursor-pointer w-full">
@@ -66,7 +66,7 @@ export default function SearchedProducts({ products }) {
               {product.name}
             </h3>
             <p className="text-sm text-gray-500 mt-2">{product.description}</p>
-            <p className="text-lg font-bold text-gray-800 mt-2">
+            <p className="text-lg font-bold text-green-600 mt-2">
               Precio: {formatPrice(product.price)}
             </p>
             <p className="text-xs text-gray-500 my-2">
@@ -83,7 +83,7 @@ export default function SearchedProducts({ products }) {
                 e.stopPropagation(); // Prevenir que el click en el botón navegue al link del producto
                 addToCart(product);
               }}
-              className="mt-2 bg-green-400 text-white px-4 py-2 rounded-lg hover:bg-green-700"
+              className="mt-2 bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-700"
             >
               Agregar al Carro
             </button>

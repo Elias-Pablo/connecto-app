@@ -32,7 +32,7 @@ export default function RootLayout({ children }) {
             draggable
             pauseOnHover
           />
-        <footer className="bg-neutral-800 p-4 text-white text-center flex  justify-center items-center w-full h-auto">
+        <footer className="bg-primary text-accent-cream text-center flex  justify-center items-center w-full h-auto">
           <Link href="/">
             <Image
               src="/ConnecTo-logo-horizontal2.png"

@@ -270,7 +270,7 @@ export default function Home() {
               {products.map((product) => (
                 <div
                   key={product.id}
-                  className="text-center p-5 bg-gray-200 w-auto rounded-lg shadow-lg"
+                  className=" bg-neutral-light text-center p-5 text-black w-auto rounded-lg shadow-lg"
                 >
                   <Link href={`/products/${product.id}`}>
                     {product.images && product.images.length > 0 ? (
@@ -306,7 +306,7 @@ export default function Home() {
                       {product.name}
                     </h3>
 
-                    <p className="text-sm text-gray-600">
+                    <p className="text-lg font-bold text-green-600">
                       {formatPrice(product.price)}
                     </p>
                     <p className="text-sm text-black">{product.description}</p>
@@ -372,7 +372,7 @@ export default function Home() {
             {profiles.map((profiles) => (
               <div
                 key={profiles.id}
-                className="text-center p-5 bg-gray-100 rounded-lg shadow-md"
+                className="text-center p-5 bg-neutral-light rounded-lg shadow-md"
               >
                 <div className="cursor-pointer hover:opacity-80 transition-opacity duration-300 inline-block">
                   <Link
@@ -435,7 +435,7 @@ export default function Home() {
   return (
     <CartProvider>
       <Header />
-      <section className="w-full h-full flex flex-col items-center justify-center p-5 bg-sky-400">
+      <section className="w-full h-full flex flex-col items-center justify-center p-5 bg-primary text-accent-cream">
         <h1 className="p-5 text-2xl font-semibold text-white text-center">
           Busca lo que quieres de nuestros emprendedores...
         </h1>

@@ -19,7 +19,7 @@ export default function SearchBar({ onSearch }) {
         onChange={(event) => setSearchTerm(event.target.value)}
         type="text"
         placeholder="Buscar productos..."
-        className="bg-white border-2 border-sky-400 shadow-xl text-black p-2 pr-10 rounded-lg w-1/2"
+        className="w-1/2 p-2 rounded-lg border border-accent-gold focus:outline-none focus:ring-2 focus:ring-gold text-black"
         value={searchTerm}
       />
     </div>
