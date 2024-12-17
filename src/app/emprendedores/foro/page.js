@@ -268,6 +268,7 @@ const handleCrearForo = async (nuevoForo) => {
       });
   
       if (response.ok) {
+        // Actualizar en forosDestacados
         setForosDestacados((prev) =>
           prev.map((foro) =>
             foro.id_publicaciones === publicacion.id_publicaciones
@@ -275,13 +276,20 @@ const handleCrearForo = async (nuevoForo) => {
               : foro
           )
         );
-        toast.success("Publicación actualizada exitosamente.");
+  
+        // Actualizar en misPublicaciones
+        setMisPublicaciones((prev) =>
+          prev.map((pub) =>
+            pub.id_publicaciones === publicacion.id_publicaciones
+              ? { ...pub, ...publicacion }
+              : pub
+          )
+        );
       }
     } catch (error) {
       console.error("Error al editar publicación:", error);
     }
-  };
-  
+  };  
   
   const handleEliminar = async (id_publicaciones) => {
     try {
@@ -295,18 +303,21 @@ const handleCrearForo = async (nuevoForo) => {
       );
   
       if (response.ok) {
+        // Actualizar en forosDestacados
         setForosDestacados((prev) =>
           prev.filter((foro) => foro.id_publicaciones !== id_publicaciones)
         );
-        toast.success("Publicación eliminada exitosamente.");
+  
+        // Actualizar en misPublicaciones
+        setMisPublicaciones((prev) =>
+          prev.filter((pub) => pub.id_publicaciones !== id_publicaciones)
+        );
       }
     } catch (error) {
       console.error("Error al eliminar publicación:", error);
     }
-  };
+  };  
   
-  
-
   const fetchMisPublicaciones = async () => {
     try {
       setIsLoading(true);

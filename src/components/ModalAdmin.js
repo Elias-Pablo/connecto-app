@@ -19,12 +19,20 @@ const ModalAdmin = ({ misPublicaciones, onClose, onEdit, onDelete }) => {
     setDescripcion("");
   };
 
+  const handleConfirmDelete = () => {
+    if (confirmDelete) {
+      onDelete(confirmDelete); // Llamar a la función de eliminación desde el padre
+      setConfirmDelete(null); // Cerrar el modal de confirmación
+      toast.success("Publicación eliminada exitosamente.");
+    }
+  };
+  
   const handleGuardarCambios = () => {
     if (!titulo || !descripcion) {
       toast.error("Por favor, completa todos los campos.");
       return;
     }
-
+  
     // Verificar si hay cambios
     if (
       titulo === publicacionSeleccionada.titulo &&
@@ -34,24 +42,18 @@ const ModalAdmin = ({ misPublicaciones, onClose, onEdit, onDelete }) => {
       cerrarModalEditar();
       return;
     }
-
+  
     onEdit({
       id_publicaciones: publicacionSeleccionada.id_publicaciones,
       titulo,
       descripcion,
     });
-
+  
     toast.success("Publicación actualizada exitosamente.");
-    cerrarModalEditar(); // Cierra el modal después de guardar
+    cerrarModalEditar();
   };
-
-  const handleConfirmDelete = () => {
-    if (confirmDelete) {
-      onDelete(confirmDelete); // Llamar a la función de eliminación
-      toast.success("Publicación eliminada exitosamente.");
-      setConfirmDelete(null); // Cerrar el modal de confirmación
-    }
-  };
+  
+  
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">

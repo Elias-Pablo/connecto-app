@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Servidor: 127.0.0.1
--- Tiempo de generación: 14-12-2024 a las 15:32:05
+-- Tiempo de generación: 17-12-2024 a las 01:59:34
 -- Versión del servidor: 10.4.32-MariaDB
 -- Versión de PHP: 8.2.12
 
@@ -79,7 +79,9 @@ INSERT INTO `compra` (`id_compra`, `id_documento`, `id_envio`, `id_usuario`, `de
 (14, 18, 18, 11, 'Compra de productos', 3, 1, 111980, '2024-12-05 19:07:15'),
 (15, 19, 19, 12, 'Compra de productos', 1, 1, 6990, '2024-12-05 22:54:33'),
 (16, 20, 20, 12, 'Compra de productos', 3, 1, 33970, '2024-12-11 20:44:34'),
-(17, 21, 21, 12, 'Compra de productos', 5, 1, 465910, '2024-12-12 04:34:45');
+(17, 21, 21, 12, 'Compra de productos', 5, 1, 465910, '2024-12-12 04:34:45'),
+(18, 22, 22, 12, 'Compra de productos', 3, 1, 38980, '2024-12-16 01:06:58'),
+(19, 23, 23, 12, 'Compra de productos', 4, 1, 40980, '2024-12-16 02:06:53');
 
 -- --------------------------------------------------------
 
@@ -108,7 +110,9 @@ INSERT INTO `conversaciones` (`id_conversacion`, `nombre_conversacion`, `id_usua
 (6, 'Chat entre 11 y 11', 11, 11, '2024-11-30 00:05:12'),
 (7, 'Chat entre 12 y 9', 12, 9, '2024-12-03 01:31:05'),
 (8, 'Chat entre 12 y 11', 12, 11, '2024-12-05 22:40:29'),
-(9, 'Chat entre 9 y 13', 9, 13, '2024-12-12 04:33:48');
+(9, 'Chat entre 9 y 13', 9, 13, '2024-12-12 04:33:48'),
+(10, 'Chat entre 11 y 10', 11, 10, '2024-12-16 01:08:53'),
+(11, 'Chat entre 12 y 10', 12, 10, '2024-12-16 02:05:35');
 
 -- --------------------------------------------------------
 
@@ -156,7 +160,14 @@ INSERT INTO `detalle_compra` (`id_detalle`, `id_compra`, `cantidad`, `precio_uni
 (22, 17, 2, 12990.00, 25980.00, 25980.00, 4936.20, 30916.20),
 (23, 17, 4, 99990.00, 399960.00, 399960.00, 75992.40, 475952.40),
 (24, 17, 1, 5990.00, 5990.00, 5990.00, 1138.10, 7128.10),
-(25, 17, 2, 6990.00, 13980.00, 13980.00, 2656.20, 16636.20);
+(25, 17, 2, 6990.00, 13980.00, 13980.00, 2656.20, 16636.20),
+(26, 18, 1, 20000.00, 20000.00, 20000.00, 3800.00, 23800.00),
+(27, 18, 1, 5990.00, 5990.00, 5990.00, 1138.10, 7128.10),
+(28, 18, 1, 12990.00, 12990.00, 12990.00, 2468.10, 15458.10),
+(29, 19, 1, 20000.00, 20000.00, 20000.00, 3800.00, 23800.00),
+(30, 19, 1, 5990.00, 5990.00, 5990.00, 1138.10, 7128.10),
+(31, 19, 1, 12990.00, 12990.00, 12990.00, 2468.10, 15458.10),
+(32, 19, 1, 2000.00, 2000.00, 2000.00, 380.00, 2380.00);
 
 -- --------------------------------------------------------
 
@@ -195,7 +206,9 @@ INSERT INTO `documento` (`id_documento`, `tipo_documento`, `tipo_pago`) VALUES
 (18, NULL, NULL),
 (19, NULL, NULL),
 (20, NULL, NULL),
-(21, NULL, NULL);
+(21, NULL, NULL),
+(22, NULL, NULL),
+(23, NULL, NULL);
 
 -- --------------------------------------------------------
 
@@ -211,6 +224,13 @@ CREATE TABLE `entrepreneur_reviews` (
   `calificacion` int(11) NOT NULL CHECK (`calificacion` between 1 and 5),
   `fecha_creacion` timestamp NOT NULL DEFAULT current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Volcado de datos para la tabla `entrepreneur_reviews`
+--
+
+INSERT INTO `entrepreneur_reviews` (`id_review`, `id_usuario`, `id_emprendedor`, `comentario`, `calificacion`, `fecha_creacion`) VALUES
+(1, 12, 2, 'lol', 2, '2024-12-16 02:05:43');
 
 -- --------------------------------------------------------
 
@@ -254,7 +274,9 @@ INSERT INTO `envio` (`id_envio`, `direccion`, `destinatario`, `remitente`, `tiem
 (18, NULL, NULL, NULL, '2024-12-05 19:07:15', NULL, NULL, NULL),
 (19, NULL, NULL, NULL, '2024-12-05 22:54:33', NULL, NULL, NULL),
 (20, NULL, NULL, NULL, '2024-12-11 20:44:34', NULL, NULL, NULL),
-(21, NULL, NULL, NULL, '2024-12-12 04:34:45', NULL, NULL, NULL);
+(21, NULL, NULL, NULL, '2024-12-12 04:34:45', NULL, NULL, NULL),
+(22, NULL, NULL, NULL, '2024-12-16 01:06:58', NULL, NULL, NULL),
+(23, NULL, NULL, NULL, '2024-12-16 02:06:53', NULL, NULL, NULL);
 
 -- --------------------------------------------------------
 
@@ -275,7 +297,8 @@ CREATE TABLE `favemprendedor` (
 
 INSERT INTO `favemprendedor` (`id_favorito`, `id_usuario`, `id_negocio`, `fecha_creacion`) VALUES
 (1, 7, 1, '2024-11-27 22:31:44'),
-(3, 7, 2, '2024-11-27 23:02:04');
+(3, 7, 2, '2024-11-27 23:02:04'),
+(4, 12, 2, '2024-12-16 02:05:47');
 
 -- --------------------------------------------------------
 
@@ -297,7 +320,8 @@ CREATE TABLE `favoritos` (
 INSERT INTO `favoritos` (`id_favorito`, `id_usuario`, `id_producto`, `fecha_creacion`) VALUES
 (24, 11, 35, '2024-11-30 00:22:53'),
 (25, 11, 35, '2024-11-30 01:11:18'),
-(26, 9, 36, '2024-12-12 04:30:29');
+(26, 9, 36, '2024-12-12 04:30:29'),
+(27, 12, 36, '2024-12-16 02:04:45');
 
 -- --------------------------------------------------------
 
@@ -493,7 +517,16 @@ INSERT INTO `interacciones` (`id_interaccion`, `id_perfil`, `id_producto`, `tipo
 (121, 2, 37, 'Purchase', '2024-12-12 04:34:45', 4),
 (122, 2, 36, 'Purchase', '2024-12-12 04:34:45', 1),
 (123, 4, 45, 'Purchase', '2024-12-12 04:34:45', 1),
-(124, 2, 36, 'Click', '2024-12-13 21:39:04', NULL);
+(124, 2, 36, 'Click', '2024-12-13 21:39:04', NULL),
+(125, 1, 42, 'Click', '2024-12-16 01:06:48', NULL),
+(126, 4, 45, 'Purchase', '2024-12-16 01:06:58', 1),
+(127, 2, 36, 'Purchase', '2024-12-16 01:06:58', 1),
+(128, 1, 42, 'Purchase', '2024-12-16 01:06:58', 1),
+(129, 3, 35, 'Click', '2024-12-16 02:06:26', NULL),
+(130, 4, 45, 'Purchase', '2024-12-16 02:06:53', 1),
+(131, 2, 36, 'Purchase', '2024-12-16 02:06:53', 1),
+(132, 1, 42, 'Purchase', '2024-12-16 02:06:53', 1),
+(133, 3, 35, 'Purchase', '2024-12-16 02:06:53', 1);
 
 -- --------------------------------------------------------
 
@@ -524,7 +557,8 @@ INSERT INTO `mensajes` (`id_mensaje`, `id_conversacion`, `id_remitente`, `id_des
 (6, 1, 7, 9, 'xd', 0, '2024-11-26 01:49:26'),
 (7, 1, 9, 9, 'hola', 0, '2024-11-26 02:27:13'),
 (8, 1, 7, 9, 'xd', 0, '2024-11-26 19:21:19'),
-(9, 1, 7, 9, 'buenas', 0, '2024-11-26 19:24:11');
+(9, 1, 7, 9, 'buenas', 0, '2024-11-26 19:24:11'),
+(10, 11, 12, 10, 'hola necesito ayuda', 0, '2024-12-16 02:05:58');
 
 -- --------------------------------------------------------
 
@@ -570,7 +604,7 @@ CREATE TABLE `perfil_negocio` (
 INSERT INTO `perfil_negocio` (`id_perfil`, `id_usuario`, `id_imagen`, `nombre_negocio`, `descripcion`, `direccion`, `telefono`, `sitioweb_url`, `tipo_perfil`, `id_foro`, `tiempo_creacion`) VALUES
 (1, 9, NULL, 'malumabeiby', 'el mejor', 'Chuchuncocity 339', '975122121', 'gentecomunicaciones.cl', 'Free', NULL, '2024-10-31 20:07:09'),
 (2, 10, NULL, 'barbershopking', NULL, NULL, NULL, NULL, 'Free', NULL, '2024-10-31 20:30:09'),
-(3, 11, NULL, 'flower', NULL, NULL, NULL, NULL, 'Free', NULL, '2024-11-01 22:09:47'),
+(3, 11, NULL, 'flower', 'tienda de flores', NULL, NULL, NULL, 'Free', NULL, '2024-11-01 22:09:47'),
 (4, 13, NULL, 'Productos de Aseo', 'Somos un emprendimiento que empezó hace poco a entrar en este mundo, queremos hacer un cambio', 'Calle Falsa 123', '+56988888888', NULL, 'Free', NULL, '2024-11-14 12:17:02'),
 (5, 15, NULL, 'xddd', NULL, NULL, NULL, NULL, 'Free', NULL, '2024-11-19 23:40:56');
 
@@ -595,14 +629,14 @@ CREATE TABLE `productos` (
 --
 
 INSERT INTO `productos` (`id_producto`, `id_perfil`, `nombre`, `descripcion`, `precio`, `stock`, `tiempo_creacion`) VALUES
-(35, 3, 'claveles', 'mejore claveles', 2000.00, 20, '2024-11-29 22:59:03'),
-(36, 2, 'cera para pelo', 'cera para cabello liso ', 5990.00, 12, '2024-12-03 18:21:35'),
+(35, 3, 'claveles', 'mejore claveles', 2000.00, 19, '2024-11-29 22:59:03'),
+(36, 2, 'cera para pelo', 'cera para cabello liso ', 5990.00, 10, '2024-12-03 18:21:35'),
 (37, 2, 'wahl', 'maquina para cortar el pelo profesional ...con set de peines..', 99990.00, 0, '2024-12-04 00:51:07'),
 (38, 2, 'Insumos de barberia', 'KIT COMBO COMPLETO INICIO INSUMOS BARBERÍA', 29990.00, 20, '2024-12-04 00:57:35'),
-(42, 1, 'Tortitas de amorshh', 'Las mejores tortas de la región a pedido.', 12990.00, 1, '2024-12-04 01:23:46'),
+(42, 1, 'Tortitas de amorshh', 'Las mejores tortas de la región a pedido.', 12990.00, -1, '2024-12-04 01:23:46'),
 (43, 1, 'Pastelitos', 'pastelitos a pedido , baratitos ', 10000.00, 5, '2024-12-04 01:26:51'),
 (44, 1, 'wafles', 'wafles para el regal@n ', 5990.00, 11, '2024-12-04 01:31:24'),
-(45, 4, 'productos de aseo ', 'Productos de limpieza imprescindibles en el hogar ', 20000.00, 19, '2024-12-04 01:39:17'),
+(45, 4, 'productos de aseo ', 'Productos de limpieza imprescindibles en el hogar ', 20000.00, 17, '2024-12-04 01:39:17'),
 (46, 4, 'Limpieza de auto', 'Productos de limpieza para tu auto, que necesitas.', 10000.00, 8, '2024-12-04 01:45:54'),
 (47, 3, 'Rosas', 'Las rosas mas hermosas de la región ', 6990.00, 7, '2024-12-04 01:54:40');
 
@@ -670,6 +704,13 @@ CREATE TABLE `product_reviews` (
   `fecha_creacion` timestamp NOT NULL DEFAULT current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
+--
+-- Volcado de datos para la tabla `product_reviews`
+--
+
+INSERT INTO `product_reviews` (`id_review`, `id_usuario`, `id_producto`, `comentario`, `calificacion`, `fecha_creacion`) VALUES
+(1, 12, 36, 'hola', 1, '2024-12-16 02:05:27');
+
 -- --------------------------------------------------------
 
 --
@@ -717,8 +758,7 @@ INSERT INTO `publicaciones_foro` (`id_publicaciones`, `id_perfil`, `id_imagen`, 
 (36, 3, NULL, 2, 'Publicidad en redes sociales', 'Cómo aprovechar Facebook Ads y Google Ads', '2024-12-06 19:47:25'),
 (37, 4, 13, 3, 'Gestión del tiempo', 'Consejos para gestionar tu tiempo como emprendedor', '2024-12-06 19:47:25'),
 (38, 5, NULL, 4, 'Casos de éxito', 'Historias de emprendedores que marcaron la diferencia', '2024-12-06 19:47:25'),
-(39, 3, NULL, 1, 'Buenas tardes', 'Busco ayuda en un documento de empresa', '2024-12-06 20:51:11'),
-(59, 3, NULL, 2, 'hghg', 'ghg', '2024-12-13 21:38:07');
+(39, 3, NULL, 1, 'Buenas tardes', 'Busco ayuda en un documento de empresa', '2024-12-06 20:51:11');
 
 -- --------------------------------------------------------
 
@@ -744,7 +784,14 @@ INSERT INTO `reacciones_foro` (`id_reaccion`, `id_publicaciones`, `id_perfil`, `
 (8, 35, 3, 'me gusta', '2024-12-06 20:03:11'),
 (9, 35, 3, 'útil', '2024-12-06 20:19:50'),
 (10, 38, 3, 'me gusta', '2024-12-06 20:24:18'),
-(11, 38, 3, 'útil', '2024-12-06 20:26:52');
+(11, 38, 3, 'útil', '2024-12-06 20:26:52'),
+(12, 39, 3, 'me gusta', '2024-12-17 00:10:20'),
+(13, 39, 3, 'útil', '2024-12-17 00:10:21'),
+(18, 31, 3, 'me gusta', '2024-12-17 00:10:42'),
+(19, 31, 3, 'útil', '2024-12-17 00:10:43'),
+(20, 32, 3, 'útil', '2024-12-17 00:10:53'),
+(21, 32, 3, 'me gusta', '2024-12-17 00:10:54'),
+(23, 33, 3, 'me gusta', '2024-12-17 00:58:16');
 
 -- --------------------------------------------------------
 
@@ -806,7 +853,7 @@ INSERT INTO `usuarios` (`id_usuario`, `nombre_usuario`, `tipo_usuario`, `email`,
 (9, 'malumabeiby', 'emprendedor', 'm1@gmail.com', '12345', 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcStQgMbIeIJkjUDL6cAuNnzat8IwwFTdKl2ig&s', '2024-10-31 23:07:09'),
 (10, 'barbershopking', 'emprendedor', 'barber@xd.cl', '54321', NULL, '2024-10-31 23:30:09'),
 (11, 'flower', 'emprendedor', 'flower@xd.com', '12345', 'https://img.freepik.com/vector-premium/dibujo-flores-coloridas-colores-arco-iris_761413-3871.jpg', '2024-11-02 01:09:47'),
-(12, 'holaaa', 'user', 'wenas@gmail.com', 'wenas', NULL, '2024-11-02 22:16:23'),
+(12, 'holaaa', 'user', 'wenas@gmail.com', 'wenas', '/avatar.jpg', '2024-11-02 22:16:23'),
 (13, 'Productos de Aseo', 'emprendedor', 'emp@gmailcom', '1234', 'https://images.app.goo.gl/exYe2AVrc3PpwKtZ7', '2024-11-14 15:17:02'),
 (15, 'xddd', 'emprendedor', 'xddd@gmail.com', '123', NULL, '2024-11-20 02:40:56'),
 (16, 'duque', 'user', 'duque@gmail.com', '123', NULL, '2024-11-20 02:56:45');
@@ -1029,49 +1076,49 @@ ALTER TABLE `admin`
 -- AUTO_INCREMENT de la tabla `compra`
 --
 ALTER TABLE `compra`
-  MODIFY `id_compra` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=18;
+  MODIFY `id_compra` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=20;
 
 --
 -- AUTO_INCREMENT de la tabla `conversaciones`
 --
 ALTER TABLE `conversaciones`
-  MODIFY `id_conversacion` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=10;
+  MODIFY `id_conversacion` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=12;
 
 --
 -- AUTO_INCREMENT de la tabla `detalle_compra`
 --
 ALTER TABLE `detalle_compra`
-  MODIFY `id_detalle` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=26;
+  MODIFY `id_detalle` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=33;
 
 --
 -- AUTO_INCREMENT de la tabla `documento`
 --
 ALTER TABLE `documento`
-  MODIFY `id_documento` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=22;
+  MODIFY `id_documento` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=24;
 
 --
 -- AUTO_INCREMENT de la tabla `entrepreneur_reviews`
 --
 ALTER TABLE `entrepreneur_reviews`
-  MODIFY `id_review` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `id_review` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
 
 --
 -- AUTO_INCREMENT de la tabla `envio`
 --
 ALTER TABLE `envio`
-  MODIFY `id_envio` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=22;
+  MODIFY `id_envio` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=24;
 
 --
 -- AUTO_INCREMENT de la tabla `favemprendedor`
 --
 ALTER TABLE `favemprendedor`
-  MODIFY `id_favorito` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+  MODIFY `id_favorito` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
 
 --
 -- AUTO_INCREMENT de la tabla `favoritos`
 --
 ALTER TABLE `favoritos`
-  MODIFY `id_favorito` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=27;
+  MODIFY `id_favorito` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=28;
 
 --
 -- AUTO_INCREMENT de la tabla `foro`
@@ -1095,13 +1142,13 @@ ALTER TABLE `imagen_publicacion`
 -- AUTO_INCREMENT de la tabla `interacciones`
 --
 ALTER TABLE `interacciones`
-  MODIFY `id_interaccion` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=125;
+  MODIFY `id_interaccion` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=134;
 
 --
 -- AUTO_INCREMENT de la tabla `mensajes`
 --
 ALTER TABLE `mensajes`
-  MODIFY `id_mensaje` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=10;
+  MODIFY `id_mensaje` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=11;
 
 --
 -- AUTO_INCREMENT de la tabla `notificaciones`
@@ -1131,7 +1178,7 @@ ALTER TABLE `producto_imagenes`
 -- AUTO_INCREMENT de la tabla `product_reviews`
 --
 ALTER TABLE `product_reviews`
-  MODIFY `id_review` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `id_review` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
 
 --
 -- AUTO_INCREMENT de la tabla `promociones`
@@ -1143,13 +1190,13 @@ ALTER TABLE `promociones`
 -- AUTO_INCREMENT de la tabla `publicaciones_foro`
 --
 ALTER TABLE `publicaciones_foro`
-  MODIFY `id_publicaciones` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=60;
+  MODIFY `id_publicaciones` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=64;
 
 --
 -- AUTO_INCREMENT de la tabla `reacciones_foro`
 --
 ALTER TABLE `reacciones_foro`
-  MODIFY `id_reaccion` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=12;
+  MODIFY `id_reaccion` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=24;
 
 --
 -- AUTO_INCREMENT de la tabla `respuestas_foro`
@@ -1302,7 +1349,7 @@ ALTER TABLE `publicaciones_foro`
 -- Filtros para la tabla `reacciones_foro`
 --
 ALTER TABLE `reacciones_foro`
-  ADD CONSTRAINT `reacciones_foro_ibfk_1` FOREIGN KEY (`id_publicaciones`) REFERENCES `publicaciones_foro` (`id_publicaciones`),
+  ADD CONSTRAINT `reacciones_foro_ibfk_1` FOREIGN KEY (`id_publicaciones`) REFERENCES `publicaciones_foro` (`id_publicaciones`) ON DELETE CASCADE,
   ADD CONSTRAINT `reacciones_foro_ibfk_2` FOREIGN KEY (`id_perfil`) REFERENCES `perfil_negocio` (`id_perfil`);
 
 --
