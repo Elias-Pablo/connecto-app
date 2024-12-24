@@ -1,8 +1,8 @@
 'use client'
 import { useState, useEffect, Suspense, useRef } from 'react'
-import { useRouter, useSearchParams } from 'next/navigation' // Agregado useSearchParams
+import { useSearchParams } from 'next/navigation' // Agregado useSearchParams
 import Header from '@/components/Header-us'
-import { useCart, CartProvider } from '../../../context/CartContext'
+import { CartProvider } from '../../../context/CartContext'
 import { jwtDecode } from 'jwt-decode'
 import Slider from 'react-slick' // Importación del carrusel de react-slick
 import 'slick-carousel/slick/slick.css' // Importar estilos de slick-carousel
@@ -28,7 +28,6 @@ export default function EmprendedorProfile() {
     calificacion: 0,
   })
   const [username, setUsername] = useState('')
-  const router = useRouter()
   const [idDestinatario, setIdDestinatario] = useState(null)
   const [idRemitente, setIdRemitente] = useState(null)
   const [profilePicture, setProfilePicture] = useState(null)
