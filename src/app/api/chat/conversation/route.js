@@ -1,17 +1,17 @@
-import connectionpromise from "@/lib/db2";
+import connectionpromise from '@/lib/db2'
 
 // Ruta para obtener o crear una conversación
 export async function POST(req) {
   try {
-    const { id_remitente, id_destinatario } = await req.json();
+    const { id_remitente, id_destinatario } = await req.json()
 
     if (!id_remitente || !id_destinatario) {
       return new Response(
         JSON.stringify({
-          message: "id_remitente e id_destinatario son requeridos",
+          message: 'id_remitente e id_destinatario son requeridos',
         }),
-        { status: 400, headers: { "Content-Type": "application/json" } }
-      );
+        { status: 400, headers: { 'Content-Type': 'application/json' } }
+      )
     }
 
     // Verificar si ya existe una conversación
@@ -20,15 +20,15 @@ export async function POST(req) {
        WHERE (id_usuario1 = ? AND id_usuario2 = ?)
        OR (id_usuario1 = ? AND id_usuario2 = ?)`,
       [id_remitente, id_destinatario, id_destinatario, id_remitente]
-    );
+    )
 
     if (existingConversation.length > 0) {
       return new Response(
         JSON.stringify({
           id_conversacion: existingConversation[0].id_conversacion,
         }),
-        { status: 200, headers: { "Content-Type": "application/json" } }
-      );
+        { status: 200, headers: { 'Content-Type': 'application/json' } }
+      )
     }
 
     // Crear una nueva conversación si no existe
@@ -40,17 +40,17 @@ export async function POST(req) {
         id_destinatario,
         `Chat entre ${id_remitente} y ${id_destinatario}`,
       ]
-    );
+    )
 
     return new Response(
       JSON.stringify({ id_conversacion: newConversation.insertId }),
-      { status: 201, headers: { "Content-Type": "application/json" } }
-    );
+      { status: 201, headers: { 'Content-Type': 'application/json' } }
+    )
   } catch (error) {
-    console.error("Error al manejar la conversación:", error);
+    console.error('Error al manejar la conversación:', error)
     return new Response(
-      JSON.stringify({ message: "Error interno del servidor" }),
-      { status: 500, headers: { "Content-Type": "application/json" } }
-    );
+      JSON.stringify({ message: 'Error interno del servidor' }),
+      { status: 500, headers: { 'Content-Type': 'application/json' } }
+    )
   }
 }

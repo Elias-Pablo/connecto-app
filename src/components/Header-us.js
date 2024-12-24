@@ -1,149 +1,148 @@
-import { useState, useEffect } from "react";
-import Link from "next/link";
-import Image from "next/image";
-import { jwtDecode } from "jwt-decode"; // Cambiado a jwt_decode para evitar errores de importación
-import { useRouter } from "next/navigation";
-import { useCart, CartProvider } from "../../src/app/context/CartContext";
-import { document } from "postcss";
-import { toast } from "react-toastify";
-import "react-toastify/dist/ReactToastify.css";
+import { useState, useEffect } from 'react'
+import Link from 'next/link'
+import Image from 'next/image'
+import { jwtDecode } from 'jwt-decode' // Cambiado a jwt_decode para evitar errores de importación
+import { useRouter } from 'next/navigation'
+import { useCart, CartProvider } from '../../src/app/context/CartContext'
+import { document } from 'postcss'
+import { toast } from 'react-toastify'
+import 'react-toastify/dist/ReactToastify.css'
 
 export default function Header() {
-  const [user, setUser] = useState(null);
-  const [menuOpen, setMenuOpen] = useState(false);
-  const router = useRouter();
-  const [profilePicture, setProfilePicture] = useState("/avatar.jpg");
+  const [user, setUser] = useState(null)
+  const [menuOpen, setMenuOpen] = useState(false)
+  const router = useRouter()
+  const [profilePicture, setProfilePicture] = useState('/avatar.jpg')
 
-  const [notificationsOpen, setNotificationsOpen] = useState(false);
-  const [unreadCount, setUnreadCount] = useState(0);
-  const [notifications, setNotifications] = useState([]);
+  const [notificationsOpen, setNotificationsOpen] = useState(false)
+  const [unreadCount, setUnreadCount] = useState(0)
+  const [notifications, setNotifications] = useState([])
 
-  const [unreadMessages, setUnreadMessages] = useState(0); // Mensajes no leídos
-  const [chats, setChats] = useState([]); // Chats con clientes
+  const [unreadMessages, setUnreadMessages] = useState(0) // Mensajes no leídos
+  const [setChats] = useState([]) // Chats con clientes
 
   // Fetch inicial para obtener chats y mensajes no leídos
   useEffect(() => {
     const fetchUnreadMessages = async () => {
       try {
-        const token = localStorage.getItem("token"); // Obtener el token desde localStorage
-        const response = await fetch("/api/chat/unread", {
-          method: "GET",
+        const token = localStorage.getItem('token') // Obtener el token desde localStorage
+        const response = await fetch('/api/chat/unread', {
+          method: 'GET',
           headers: {
             Authorization: `Bearer ${token}`, // Enviar el token correctamente en el encabezado Authorization
           },
-        });
+        })
 
         if (response.ok) {
-          const data = await response.json();
-          setUnreadMessages(data.totalUnread || 0);
-          setChats(data.chats || []);
+          const data = await response.json()
+          setUnreadMessages(data.totalUnread || 0)
+          setChats(data.chats || [])
         } else {
-          console.error("Error al obtener mensajes no leídos");
+          console.error('Error al obtener mensajes no leídos')
         }
       } catch (error) {
-        console.error("Error al fetchear mensajes no leídos:", error);
+        console.error('Error al fetchear mensajes no leídos:', error)
       }
-    };
+    }
 
-    fetchUnreadMessages();
-  }, []);
+    fetchUnreadMessages()
+  }, [])
 
   const toggleNotifications = () => {
-    setNotificationsOpen(!notificationsOpen);
-  };
+    setNotificationsOpen(!notificationsOpen)
+  }
   const handleCheckout = () => {
-    router.push("/user/checkout");
-  };
+    router.push('/user/checkout')
+  }
 
   const markAsRead = (id) => {
     setNotifications((prevNotifications) =>
       prevNotifications.map((notification) =>
         notification.id === id ? { ...notification, read: true } : notification
       )
-    );
-    setUnreadCount(unreadCount - 1);
-  };
+    )
+    setUnreadCount(unreadCount - 1)
+  }
 
   const deleteNotification = (id) => {
     setNotifications((prevNotifications) =>
       prevNotifications.filter((notification) => notification.id !== id)
-    );
-  };
+    )
+  }
   const formatPrice = (price) => {
-    return new Intl.NumberFormat("es-CL", {
-      style: "currency",
-      currency: "CLP",
+    return new Intl.NumberFormat('es-CL', {
+      style: 'currency',
+      currency: 'CLP',
       minimumFractionDigits: 0,
-    }).format(price);
-  };
+    }).format(price)
+  }
 
-  const [cartVisible, setCartVisible] = useState(false);
+  const [cartVisible, setCartVisible] = useState(false)
   const {
     cartItems,
     addToCart,
     decreaseQuantity,
     calculateSubtotal,
-    calculateTax,
     calculateTotal,
     updateQuantity,
-  } = useCart();
-  const toggleCart = () => setCartVisible(!cartVisible);
+  } = useCart()
+  const toggleCart = () => setCartVisible(!cartVisible)
 
   // Efecto para recuperar y decodificar el token desde localStorage
   useEffect(() => {
-    const token = localStorage.getItem("token");
-    console.log("Token recuperado:", token);
+    const token = localStorage.getItem('token')
+    console.log('Token recuperado:', token)
 
     if (token) {
       try {
-        const decoded = jwtDecode(token);
-        setUser(decoded);
-        console.log("Usuario decodificado:", user);
+        const decoded = jwtDecode(token)
+        setUser(decoded)
+        console.log('Usuario decodificado:', user)
       } catch (error) {
-        console.error("Token inválido:", error);
-        localStorage.removeItem("token");
+        console.error('Token inválido:', error)
+        localStorage.removeItem('token')
       }
     }
-  }, []);
+  }, [])
   const handleViewMessages = () => {
-    router.push("/user/mensajes"); // Página que muestra los chats
-  };
+    router.push('/user/mensajes') // Página que muestra los chats
+  }
   const handleClickonAvatar = () => {
-    if (user.tipo_usuario === "emprendedor") {
-      router.push("/emprendedores/profile");
+    if (user.tipo_usuario === 'emprendedor') {
+      router.push('/emprendedores/profile')
     } else {
-      router.push("/user/profile");
+      router.push('/user/profile')
     }
-  };
+  }
 
   const handleLogout = () => {
-    localStorage.removeItem("token");
-    document.cookie = "token=; Max-Age=0; Path=/;";
-    setUser(null);
-    router.push("/");
-  };
+    localStorage.removeItem('token')
+    document.cookie = 'token=; Max-Age=0; Path=/;'
+    setUser(null)
+    router.push('/')
+  }
 
-  const toggleMenu = () => setMenuOpen(!menuOpen);
+  const toggleMenu = () => setMenuOpen(!menuOpen)
 
   useEffect(() => {
     if (user) {
       const fetchUserAvatar = async () => {
         try {
-          const response = await fetch("/api/userAvatar");
+          const response = await fetch('/api/userAvatar')
           if (response.ok) {
-            const data = await response.json();
-            console.log("Imagen de perfil:", data.usuario_imagen);
-            setProfilePicture(data.usuario_imagen);
+            const data = await response.json()
+            console.log('Imagen de perfil:', data.usuario_imagen)
+            setProfilePicture(data.usuario_imagen)
           } else {
-            console.error("Error al obtener la imagen de perfil");
+            console.error('Error al obtener la imagen de perfil')
           }
         } catch (error) {
-          console.error("Error en la solicitud de imagen de perfil:", error);
+          console.error('Error en la solicitud de imagen de perfil:', error)
         }
-      };
-      fetchUserAvatar();
+      }
+      fetchUserAvatar()
     }
-  }, [user]);
+  }, [user])
 
   return (
     <>
@@ -167,7 +166,7 @@ export default function Header() {
                     className="flex justify-center items-center gap-2"
                   >
                     <img
-                      src={profilePicture || "/avatar.jpg"}
+                      src={profilePicture || '/avatar.jpg'}
                       alt="User Avatar"
                       width={40}
                       height={40}
@@ -338,7 +337,7 @@ export default function Header() {
                     <div
                       key={notification.id}
                       className={`p-2 border-b ${
-                        notification.read ? "bg-gray-100" : "bg-gray-50"
+                        notification.read ? 'bg-gray-100' : 'bg-gray-50'
                       }`}
                     >
                       <p className="text-black">{notification.message}</p>
@@ -384,7 +383,7 @@ export default function Header() {
                         src={
                           item.images && item.images.length > 0
                             ? item.images[0]
-                            : "/placeholder.jpg"
+                            : '/placeholder.jpg'
                         }
                         alt={item.name}
                         width={50}
@@ -410,19 +409,19 @@ export default function Header() {
                             max={item.stock}
                             value={item.quantity}
                             onChange={(e) => {
-                              const newQuantity = Number(e.target.value);
+                              const newQuantity = Number(e.target.value)
                               if (
                                 newQuantity > 0 &&
                                 newQuantity <= item.stock
                               ) {
-                                updateQuantity(item.id, newQuantity);
+                                updateQuantity(item.id, newQuantity)
                               } else if (newQuantity > item.stock) {
                                 toast.error(
-                                  "No puedes superar el stock disponible.",
+                                  'No puedes superar el stock disponible.',
                                   {
-                                    position: "top-center",
+                                    position: 'top-center',
                                   }
-                                );
+                                )
                               }
                             }}
                             className="border rounded w-12 text-center"
@@ -475,5 +474,5 @@ export default function Header() {
         )}
       </CartProvider>
     </>
-  );
+  )
 }

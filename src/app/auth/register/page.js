@@ -1,54 +1,52 @@
-"use client";
-import Image from "next/image";
-import Link from "next/link";
-import { useForm } from "react-hook-form";
-import { useState } from "react";
+'use client'
+import Image from 'next/image'
+import Link from 'next/link'
+import { useForm } from 'react-hook-form'
+import { useState } from 'react'
 
 export default function RegisterPage() {
-  const [showPassword, setShowPassword] = useState(false);
-  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  const [showPassword, setShowPassword] = useState(false)
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false)
   const {
     register,
     handleSubmit,
     formState: { errors },
-  } = useForm();
+  } = useForm()
 
-  const [apiError, setApiError] = useState(null);
-  const [apiSuccess, setApiSuccess] = useState(null);
+  const [apiError, setApiError] = useState(null)
+  const [apiSuccess, setApiSuccess] = useState(null)
 
   const onSubmit = handleSubmit(async (data) => {
     if (data.password !== data.confirmpassword) {
-      return alert("Las contraseñas no coinciden");
+      return alert('Las contraseñas no coinciden')
     }
 
     try {
-      const res = await fetch("/api/auth/register", {
-        method: "POST",
+      const res = await fetch('/api/auth/register', {
+        method: 'POST',
         body: JSON.stringify({
           username: data.username,
           email: data.email,
           password: data.password,
         }),
         headers: {
-          "Content-Type": "application/json",
+          'Content-Type': 'application/json',
         },
-      });
+      })
 
       if (!res.ok) {
-        const errorData = await res.json();
-        setApiError(errorData.message || "Error al registrar usuario");
-        return;
+        const errorData = await res.json()
+        setApiError(errorData.message || 'Error al registrar usuario')
+        return
       }
 
-      setApiError(null);
-      setApiSuccess("¡Registro exitoso! Ahora puedes iniciar sesión.");
+      setApiError(null)
+      setApiSuccess('¡Registro exitoso! Ahora puedes iniciar sesión.')
     } catch (error) {
-      console.error("Error en la solicitud:", error);
-      setApiError(
-        "Ocurrió un error inesperado. Por favor, inténtalo de nuevo."
-      );
+      console.error('Error en la solicitud:', error)
+      setApiError('Ocurrió un error inesperado. Por favor, inténtalo de nuevo.')
     }
-  });
+  })
 
   return (
     <>
@@ -86,8 +84,8 @@ export default function RegisterPage() {
               id="name"
               placeholder="tuNombredeUsuario123"
               className="border border-gray-300 rounded-md p-2 mb-2 text-black placeholder:text-xs placeholder:italic placeholder:font-thin"
-              {...register("username", {
-                required: "Este campo es obligatorio",
+              {...register('username', {
+                required: 'Este campo es obligatorio',
               })}
             />
             {errors.username && (
@@ -104,8 +102,8 @@ export default function RegisterPage() {
               id="email"
               placeholder="tucorreo@email.com"
               className="border border-gray-300 rounded-md p-2 mb-2 text-black placeholder:text-xs placeholder:italic placeholder:font-thin"
-              {...register("email", {
-                required: "Este campo es obligatorio",
+              {...register('email', {
+                required: 'Este campo es obligatorio',
               })}
             />
             {errors.email && (
@@ -119,12 +117,12 @@ export default function RegisterPage() {
             </label>
             <div className="relative">
               <input
-                type={showPassword ? "text" : "password"}
+                type={showPassword ? 'text' : 'password'}
                 id="password"
                 placeholder="********"
                 className="border border-gray-300 rounded-md p-2 mb-2 text-black placeholder:text-xs placeholder:italic placeholder:font-thin w-full"
-                {...register("password", {
-                  required: "Este campo es obligatorio",
+                {...register('password', {
+                  required: 'Este campo es obligatorio',
                 })}
               />
               <button
@@ -181,12 +179,12 @@ export default function RegisterPage() {
             </label>
             <div className="relative">
               <input
-                type={showConfirmPassword ? "text" : "password"}
+                type={showConfirmPassword ? 'text' : 'password'}
                 placeholder="********"
                 id="passwordrevaliduser"
                 className="border border-gray-300 rounded-md p-2 mb-2 text-black placeholder:text-xs placeholder:italic placeholder:font-thin w-full"
-                {...register("confirmpassword", {
-                  required: "Este campo es obligatorio",
+                {...register('confirmpassword', {
+                  required: 'Este campo es obligatorio',
                 })}
               />
               <button
@@ -254,5 +252,5 @@ export default function RegisterPage() {
         </div>
       </div>
     </>
-  );
+  )
 }

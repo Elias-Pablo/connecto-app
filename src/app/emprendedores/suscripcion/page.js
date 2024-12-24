@@ -1,41 +1,40 @@
-"use client";
-import { useRouter } from "next/navigation";
-import Image from "next/image";
-import Header from "@/components/Header-em";
+'use client'
+import { useRouter } from 'next/navigation'
+import Header from '@/components/Header-em'
 
 export default function SubscriptionPage() {
-  const router = useRouter();
+  const router = useRouter()
 
   const handleSubscribeClick = () => {
-    router.push("/auth/emregister");
-  };
+    router.push('/auth/emregister')
+  }
 
   const plans = [
     {
-      name: "Plan Free",
-      price: "Gratis",
-      color: "bg-zinc-800",
+      name: 'Plan Free',
+      price: 'Gratis',
+      color: 'bg-zinc-800',
       items: [
-        "Perfil básico de negocio",
-        "Catálogo de productos limitado",
-        "Redirección a la página del negocio",
-        "Acceso a la red de Emprendedores",
-        "Visibilidad básica en buscadores internos",
+        'Perfil básico de negocio',
+        'Catálogo de productos limitado',
+        'Redirección a la página del negocio',
+        'Acceso a la red de Emprendedores',
+        'Visibilidad básica en buscadores internos',
       ],
     },
     {
-      name: "💎 Plan Premium 💎",
-      price: "$9.990/mes",
-      color: "bg-fuchsia-700",
+      name: '💎 Plan Premium 💎',
+      price: '$9.990/mes',
+      color: 'bg-fuchsia-700',
       items: [
-        "Perfil avanzado de negocio",
-        "Catálogo de productos ilimitado",
-        "Analíticas de interacciones",
-        "Promociones destacadas",
-        "Visibilidad mejorada en buscadores internos",
+        'Perfil avanzado de negocio',
+        'Catálogo de productos ilimitado',
+        'Analíticas de interacciones',
+        'Promociones destacadas',
+        'Visibilidad mejorada en buscadores internos',
       ],
     },
-  ];
+  ]
 
   return (
     <>
@@ -74,9 +73,9 @@ export default function SubscriptionPage() {
         </p>
         <div className="flex flex-wrap justify-around w-full px-5 text-zinc-800">
           {[
-            "Mayor visibilidad para tu negocio",
-            "Herramientas avanzadas de análisis",
-            "Promociones destacadas para tu catálogo",
+            'Mayor visibilidad para tu negocio',
+            'Herramientas avanzadas de análisis',
+            'Promociones destacadas para tu catálogo',
           ].map((benefit, index) => (
             <div
               key={index}
@@ -106,5 +105,5 @@ export default function SubscriptionPage() {
         </div>
       </section>
     </>
-  );
+  )
 }

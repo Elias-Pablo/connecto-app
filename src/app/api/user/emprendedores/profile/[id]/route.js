@@ -1,30 +1,30 @@
-import connection from "@/lib/db";
-export const dynamic = "force-dynamic"; // Forzar la generación dinámica para esta ruta
+import connection from '@/lib/db'
+export const dynamic = 'force-dynamic' // Forzar la generación dinámica para esta ruta
 
 // Obtener datos completos del emprendedor por ID de perfil
 export async function GET(req, { params }) {
   try {
-    const profileId = params.id;
+    const profileId = params.id
 
     if (!profileId) {
       return new Response(
-        JSON.stringify({ message: "ID de perfil es requerido" }),
-        { status: 400, headers: { "Content-Type": "application/json" } }
-      );
+        JSON.stringify({ message: 'ID de perfil es requerido' }),
+        { status: 400, headers: { 'Content-Type': 'application/json' } }
+      )
     }
 
     // Obtener datos del emprendedor
-    const emprendedorData = await obtenerDatosEmprendedor(profileId);
+    const emprendedorData = await obtenerDatosEmprendedor(profileId)
 
     if (!emprendedorData) {
       return new Response(
-        JSON.stringify({ message: "Emprendedor no encontrado" }),
-        { status: 404, headers: { "Content-Type": "application/json" } }
-      );
+        JSON.stringify({ message: 'Emprendedor no encontrado' }),
+        { status: 404, headers: { 'Content-Type': 'application/json' } }
+      )
     }
 
     // Obtener productos del emprendedor
-    const productos = await obtenerProductos(profileId);
+    const productos = await obtenerProductos(profileId)
 
     return new Response(
       JSON.stringify({
@@ -33,15 +33,15 @@ export async function GET(req, { params }) {
       }),
       {
         status: 200,
-        headers: { "Content-Type": "application/json" },
+        headers: { 'Content-Type': 'application/json' },
       }
-    );
+    )
   } catch (error) {
-    console.error("Error al obtener datos del emprendedor:", error);
+    console.error('Error al obtener datos del emprendedor:', error)
     return new Response(
-      JSON.stringify({ message: "Error interno del servidor" }),
-      { status: 500, headers: { "Content-Type": "application/json" } }
-    );
+      JSON.stringify({ message: 'Error interno del servidor' }),
+      { status: 500, headers: { 'Content-Type': 'application/json' } }
+    )
   }
 }
 
@@ -56,25 +56,25 @@ async function obtenerDatosEmprendedor(profileId) {
       [profileId],
       (error, results) => {
         if (error) {
-          console.error("Error al obtener datos del emprendedor:", error);
-          reject(new Error("Error al obtener datos del emprendedor"));
+          console.error('Error al obtener datos del emprendedor:', error)
+          reject(new Error('Error al obtener datos del emprendedor'))
         } else {
-          resolve(results[0] || null);
+          resolve(results[0] || null)
         }
       }
-    );
-  });
+    )
+  })
 }
 
 // Función para obtener los productos del emprendedor
 async function obtenerProductos(profileId) {
   return new Promise((resolve, reject) => {
     connection.query(
-      `SELECT 
-        p.id_producto, 
-        p.nombre AS producto_nombre, 
-        p.descripcion, 
-        p.precio, 
+      `SELECT
+        p.id_producto,
+        p.nombre AS producto_nombre,
+        p.descripcion,
+        p.precio,
         pi.url_imagen
        FROM productos p
        LEFT JOIN producto_imagenes pi ON p.id_producto = pi.id_producto
@@ -82,11 +82,11 @@ async function obtenerProductos(profileId) {
       [profileId],
       (error, results) => {
         if (error) {
-          console.error("Error al obtener productos:", error);
-          reject(new Error("Error al obtener productos"));
+          console.error('Error al obtener productos:', error)
+          reject(new Error('Error al obtener productos'))
         } else {
           // Agrupar los productos por su ID para consolidar las imágenes en un array
-          const productMap = {};
+          const productMap = {}
           results.forEach((product) => {
             if (!productMap[product.id_producto]) {
               // Si el producto no está en el mapa, añadirlo
@@ -96,21 +96,21 @@ async function obtenerProductos(profileId) {
                 description: product.descripcion,
                 price: product.precio,
                 images: product.url_imagen ? [product.url_imagen] : [],
-              };
+              }
             } else {
               // Si el producto ya está en el mapa, añadir la imagen al array
               if (product.url_imagen) {
-                productMap[product.id_producto].images.push(product.url_imagen);
+                productMap[product.id_producto].images.push(product.url_imagen)
               }
             }
-          });
+          })
 
           // Convertir el objeto productMap en un array
-          const formattedProducts = Object.values(productMap);
+          const formattedProducts = Object.values(productMap)
 
-          resolve(formattedProducts);
+          resolve(formattedProducts)
         }
       }
-    );
-  });
+    )
+  })
 }

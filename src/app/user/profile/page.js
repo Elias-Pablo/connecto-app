@@ -1,67 +1,66 @@
-"use client";
-import { useState, useEffect } from "react";
-import Image from "next/image";
-import Header from "@/components/Header-us";
-import { CartProvider } from "@/app/context/CartContext";
+'use client'
+import { useState, useEffect } from 'react'
+import Header from '@/components/Header-us'
+import { CartProvider } from '@/app/context/CartContext'
 
 export default function HeaderUser() {
-  const [isEditing, setIsEditing] = useState(false);
+  const [isEditing, setIsEditing] = useState(false)
   const [userInfo, setUserInfo] = useState({
-    name: "",
-    email: "",
-    profilePicture: "/avatar.jpg", // Ruta predeterminada para la foto de perfil
-  });
+    name: '',
+    email: '',
+    profilePicture: '/avatar.jpg', // Ruta predeterminada para la foto de perfil
+  })
 
   useEffect(() => {
     const fetchUserData = async () => {
       try {
-        const response = await fetch("/api/user/profile");
+        const response = await fetch('/api/user/profile')
         if (response.ok) {
-          const data = await response.json();
+          const data = await response.json()
           setUserInfo({
             name: data?.name,
             email: data?.email,
-            profilePicture: data?.profilePicture || "/avatar.jpg",
-          });
+            profilePicture: data?.profilePicture || '/avatar.jpg',
+          })
         } else {
-          console.error("Error al cargar los datos del usuario");
+          console.error('Error al cargar los datos del usuario')
         }
       } catch (error) {
-        console.error("Error en la solicitud:", error);
+        console.error('Error en la solicitud:', error)
       }
-    };
+    }
 
-    fetchUserData();
-  }, []);
+    fetchUserData()
+  }, [])
 
   const handleEditToggle = () => {
-    setIsEditing(!isEditing);
-  };
+    setIsEditing(!isEditing)
+  }
 
   const handleInputChange = (e) => {
-    const { name, value } = e.target;
-    setUserInfo({ ...userInfo, [name]: value });
-  };
+    const { name, value } = e.target
+    setUserInfo({ ...userInfo, [name]: value })
+  }
 
   const handleSave = async () => {
     try {
-      const response = await fetch("/api/user/profile", {
-        method: "PUT",
+      const response = await fetch('/api/user/profile', {
+        method: 'PUT',
         headers: {
-          "Content-Type": "application/json",
+          'Content-Type': 'application/json',
         },
         body: JSON.stringify(userInfo),
-      });
+      })
 
       if (response.ok) {
-        setIsEditing(false);
+        setIsEditing(false)
       } else {
-        console.error("Error al actualizar los datos del usuario");
+        console.error('Error al actualizar los datos del usuario')
       }
     } catch (error) {
-      console.error("Error en la solicitud:", error);
+      console.error('Error en la solicitud:', error)
     }
-  };
+  }
   if (!userInfo) {
     return (
       <div className="flex flex-col justify-center items-center h-screen">
@@ -70,7 +69,7 @@ export default function HeaderUser() {
           Cargando tu perfil...
         </p>
       </div>
-    );
+    )
   }
 
   return (
@@ -115,12 +114,12 @@ export default function HeaderUser() {
               <>
                 <h1 className="text-2xl font-bold mb-2 gap-2">
                   <span className="font-semibold text-zinc-600 text-base">
-                    Nombre de usuario:{" "}
+                    Nombre de usuario:{' '}
                   </span>
                   {userInfo.name}
                 </h1>
                 <p className="text-sm gap-2">
-                  <span className="text-zinc-600 text-base ">Correo:{""}</span>
+                  <span className="text-zinc-600 text-base ">Correo:{''}</span>
                   {userInfo.email}
                 </p>
               </>
@@ -131,11 +130,11 @@ export default function HeaderUser() {
               onClick={isEditing ? handleSave : handleEditToggle}
               className="bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600 transition-transform transform hover:scale-105"
             >
-              {isEditing ? "Guardar" : "Editar"}
+              {isEditing ? 'Guardar' : 'Editar'}
             </button>
           </div>
         </div>
       </section>
     </CartProvider>
-  );
+  )
 }

@@ -1,4 +1,4 @@
-"use client";
+'use client'
 
 export default function FAQ() {
   return (
@@ -21,5 +21,5 @@ export default function FAQ() {
         {/* Añade más secciones según sea necesario */}
       </div>
     </div>
-  );
+  )
 }

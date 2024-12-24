@@ -1,60 +1,60 @@
-"use client";
-import { useState, useEffect, Suspense, useRef } from "react";
-import { useRouter, useSearchParams } from "next/navigation"; // Agregado useSearchParams
-import Header from "@/components/Header-us";
-import { useCart, CartProvider } from "../../../context/CartContext";
-import { jwtDecode } from "jwt-decode";
-import Slider from "react-slick"; // Importación del carrusel de react-slick
-import "slick-carousel/slick/slick.css"; // Importar estilos de slick-carousel
-import "slick-carousel/slick/slick-theme.css";
-import { FaStar } from "react-icons/fa";
-import { toast } from "react-toastify";
-import { GoHeart, GoHeartFill } from "react-icons/go";
+'use client'
+import { useState, useEffect, Suspense, useRef } from 'react'
+import { useRouter, useSearchParams } from 'next/navigation' // Agregado useSearchParams
+import Header from '@/components/Header-us'
+import { useCart, CartProvider } from '../../../context/CartContext'
+import { jwtDecode } from 'jwt-decode'
+import Slider from 'react-slick' // Importación del carrusel de react-slick
+import 'slick-carousel/slick/slick.css' // Importar estilos de slick-carousel
+import 'slick-carousel/slick/slick-theme.css'
+import { FaStar } from 'react-icons/fa'
+import { toast } from 'react-toastify'
+import { GoHeart, GoHeartFill } from 'react-icons/go'
 
 export default function EmprendedorProfile() {
-  const searchParams = useSearchParams();
-  const idPerfil = searchParams ? searchParams.get("id_perfil") : null;
+  const searchParams = useSearchParams()
+  const idPerfil = searchParams ? searchParams.get('id_perfil') : null
 
-  const [emprendedorData, setEmprendedorData] = useState(null);
-  const [productos, setProductos] = useState([]);
-  const [favorites, setFavorites] = useState([]); // Para manejar los favoritos
-  const [showChat, setShowChat] = useState(false);
-  const [message, setMessage] = useState("");
-  const [messages, setMessages] = useState([]);
-  const [idConversacion, setIdConversacion] = useState(null); // Nuevo estado para id_conversacion
-  const [reviews, setReviews] = useState([]); // Nuevo estado para las reseñas
+  const [emprendedorData, setEmprendedorData] = useState(null)
+  const [productos, setProductos] = useState([])
+  const [favorites, setFavorites] = useState([]) // Para manejar los favoritos
+  const [showChat, setShowChat] = useState(false)
+  const [message, setMessage] = useState('')
+  const [messages, setMessages] = useState([])
+  const [idConversacion, setIdConversacion] = useState(null) // Nuevo estado para id_conversacion
+  const [reviews, setReviews] = useState([]) // Nuevo estado para las reseñas
   const [newReview, setNewReview] = useState({
-    comentario: "",
+    comentario: '',
     calificacion: 0,
-  });
-  const [username, setUsername] = useState("");
-  const router = useRouter();
-  const [idDestinatario, setIdDestinatario] = useState(null);
-  const [idRemitente, setIdRemitente] = useState(null);
-  const [profilePicture, setProfilePicture] = useState(null);
-  const lastMessageRef = useRef(null);
+  })
+  const [username, setUsername] = useState('')
+  const router = useRouter()
+  const [idDestinatario, setIdDestinatario] = useState(null)
+  const [idRemitente, setIdRemitente] = useState(null)
+  const [profilePicture, setProfilePicture] = useState(null)
+  const lastMessageRef = useRef(null)
 
   const isFavorite = favorites.some(
     (fav) => fav.id_perfil === parseInt(idPerfil, 10)
-  );
+  )
 
   const formatPrice = (price) => {
-    return new Intl.NumberFormat("es-CL", {
-      style: "currency",
-      currency: "CLP",
+    return new Intl.NumberFormat('es-CL', {
+      style: 'currency',
+      currency: 'CLP',
       minimumFractionDigits: 0,
-    }).format(price);
-  };
+    }).format(price)
+  }
 
   // Obtener `id_usuario` del cliente desde el token JWT
   useEffect(() => {
-    const token = localStorage.getItem("token");
+    const token = localStorage.getItem('token')
     if (token) {
-      const decoded = jwtDecode(token);
-      setIdRemitente(decoded.userId);
-      setUsername(decoded.username);
+      const decoded = jwtDecode(token)
+      setIdRemitente(decoded.userId)
+      setUsername(decoded.username)
     }
-  }, []);
+  }, [])
 
   const sliderSettings = {
     dots: true,
@@ -63,268 +63,266 @@ export default function EmprendedorProfile() {
     slidesToShow: 1,
     slidesToScroll: 1,
     arrows: true,
-  };
+  }
 
   // Obtener los datos del emprendedor y su `id_usuario` a partir de `id_perfil`
   useEffect(() => {
     const fetchProfileData = async () => {
       if (!idPerfil) {
-        console.error("ID de perfil no proporcionado");
-        return;
+        console.error('ID de perfil no proporcionado')
+        return
       }
       try {
         const response = await fetch(
           `/api/user/emprendedores/profile/${idPerfil}`
-        );
+        )
         if (response.ok) {
-          const data = await response.json();
-          setEmprendedorData(data.emprendedorData || {});
-          setProductos(data.productos || []);
-          setIdDestinatario(data.emprendedorData.id_usuario);
+          const data = await response.json()
+          setEmprendedorData(data.emprendedorData || {})
+          setProductos(data.productos || [])
+          setIdDestinatario(data.emprendedorData.id_usuario)
         } else {
-          console.error("Error al cargar los datos del emprendedor");
+          console.error('Error al cargar los datos del emprendedor')
         }
       } catch (error) {
-        console.error("Error en la solicitud:", error);
+        console.error('Error en la solicitud:', error)
       }
-    };
+    }
 
-    fetchProfileData();
-  }, [idPerfil]);
+    fetchProfileData()
+  }, [idPerfil])
 
   // Obtener las reseñas del emprendedor
   useEffect(() => {
     const fetchReviews = async () => {
-      if (!idPerfil) return;
+      if (!idPerfil) return
       try {
-        const response = await fetch(`/api/reviews/emprendedor/${idPerfil}`);
+        const response = await fetch(`/api/reviews/emprendedor/${idPerfil}`)
         if (response.ok) {
-          const data = await response.json();
-          setReviews(data.reviews || []);
+          const data = await response.json()
+          setReviews(data.reviews || [])
         } else {
-          console.error("Error al obtener las reseñas");
+          console.error('Error al obtener las reseñas')
         }
       } catch (error) {
-        console.error("Error en la solicitud:", error);
+        console.error('Error en la solicitud:', error)
       }
-    };
+    }
 
-    fetchReviews();
-  }, [idPerfil]);
+    fetchReviews()
+  }, [idPerfil])
 
   // Manejar agregar a favoritos
   const handleAddToFavorites = async () => {
     try {
       const response = await fetch(`/api/user/emfavorito`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ id_perfil: idPerfil }),
-      });
+      })
 
       if (response.ok) {
-        const data = await response.json();
+        const data = await response.json()
         setFavorites((prevFavorites) => [
           ...prevFavorites,
           { id_favorito: data.id, id_perfil: parseInt(idPerfil, 10) },
-        ]);
-        console.log("Emprendedor agregado a favoritos");
-        toast.success("Emprendedor agregado a favoritos");
+        ])
+        console.log('Emprendedor agregado a favoritos')
+        toast.success('Emprendedor agregado a favoritos')
       } else {
-        console.error("Error al agregar emprendedor a favoritos");
+        console.error('Error al agregar emprendedor a favoritos')
       }
     } catch (error) {
-      console.error("Error al intentar agregar a favoritos:", error);
+      console.error('Error al intentar agregar a favoritos:', error)
     }
-  };
+  }
 
   const handleRemoveFromFavorites = async () => {
     const favorite = favorites.find(
       (fav) => fav.id_perfil === parseInt(idPerfil, 10)
-    );
+    )
 
-    if (!favorite) return;
+    if (!favorite) return
 
     try {
       const response = await fetch(
         `/api/user/emfavorito?id_favorito=${favorite.id_favorito}`,
         {
-          method: "DELETE",
+          method: 'DELETE',
         }
-      );
+      )
 
       if (response.ok) {
         setFavorites((prevFavorites) =>
           prevFavorites.filter(
             (fav) => fav.id_favorito !== favorite.id_favorito
           )
-        );
-        console.log("Emprendedor eliminado de favoritos");
-        toast.info("Emprendedor eliminado de favoritos");
+        )
+        console.log('Emprendedor eliminado de favoritos')
+        toast.info('Emprendedor eliminado de favoritos')
       } else {
-        console.error("Error al eliminar emprendedor de favoritos");
+        console.error('Error al eliminar emprendedor de favoritos')
       }
     } catch (error) {
-      console.error("Error al intentar eliminar de favoritos:", error);
+      console.error('Error al intentar eliminar de favoritos:', error)
     }
-  };
+  }
 
   // Cargar favoritos al iniciar
   useEffect(() => {
     const fetchFavorites = async () => {
       try {
-        const response = await fetch(`/api/user/emfavorito`);
+        const response = await fetch(`/api/user/emfavorito`)
         if (response.ok) {
-          const data = await response.json();
-          setFavorites(data.favorites || []);
+          const data = await response.json()
+          setFavorites(data.favorites || [])
         } else {
-          console.error("Error al cargar favoritos");
+          console.error('Error al cargar favoritos')
         }
       } catch (error) {
-        console.error("Error en la solicitud de favoritos:", error);
+        console.error('Error en la solicitud de favoritos:', error)
       }
-    };
+    }
 
-    fetchFavorites();
-  }, []);
+    fetchFavorites()
+  }, [])
 
   useEffect(() => {
     const fetchProfilePicture = async () => {
       try {
-        const response = await fetch(`/api/empAvatar?id_perfil=${idPerfil}`);
+        const response = await fetch(`/api/empAvatar?id_perfil=${idPerfil}`)
         if (response.ok) {
-          const picProfile = await response.json();
-          setProfilePicture(picProfile.usuario_imagen || "/placeholder.webp");
+          const picProfile = await response.json()
+          setProfilePicture(picProfile.usuario_imagen || '/placeholder.webp')
         } else {
-          console.error("Error al cargar la imagen de perfil");
+          console.error('Error al cargar la imagen de perfil')
         }
       } catch (error) {
-        console.error("Error en la solicitud:", error);
+        console.error('Error en la solicitud:', error)
       }
-    };
+    }
 
     if (idPerfil) {
-      fetchProfilePicture();
+      fetchProfilePicture()
     }
-  }, [idPerfil]); // Dependencia correcta para llamar cuando idPerfil cambie
+  }, [idPerfil]) // Dependencia correcta para llamar cuando idPerfil cambie
 
   // Obtener o crear la conversación y cargar mensajes
   useEffect(() => {
     const fetchOrCreateConversation = async () => {
       if (idRemitente && idDestinatario) {
         try {
-          const response = await fetch("/api/chat/conversation", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
+          const response = await fetch('/api/chat/conversation', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
               id_remitente: idRemitente,
               id_destinatario: idDestinatario,
             }),
-          });
+          })
 
           if (response.ok) {
-            const data = await response.json();
-            setIdConversacion(data.id_conversacion);
+            const data = await response.json()
+            setIdConversacion(data.id_conversacion)
 
             // Cargar mensajes de la conversación
             const messagesResponse = await fetch(
               `/api/chat/get?id_conversacion=${data.id_conversacion}`
-            );
+            )
 
             if (messagesResponse.ok) {
-              const messagesData = await messagesResponse.json();
-              setMessages(messagesData.mensajes || []);
+              const messagesData = await messagesResponse.json()
+              setMessages(messagesData.mensajes || [])
               setTimeout(() => {
-                lastMessageRef.current?.scrollIntoView({ behavior: "smooth" });
-              }, 0);
+                lastMessageRef.current?.scrollIntoView({ behavior: 'smooth' })
+              }, 0)
             } else {
-              console.error("Error al cargar los mensajes");
+              console.error('Error al cargar los mensajes')
             }
           } else {
-            console.error("Error al obtener o crear la conversación");
+            console.error('Error al obtener o crear la conversación')
           }
         } catch (error) {
-          console.error("Error al obtener o crear la conversación:", error);
+          console.error('Error al obtener o crear la conversación:', error)
         }
       }
-    };
+    }
 
-    fetchOrCreateConversation();
-  }, [idRemitente, idDestinatario]);
+    fetchOrCreateConversation()
+  }, [idRemitente, idDestinatario])
 
   const handleSendMessage = async () => {
     if (!idConversacion) {
-      console.error(
-        "No se puede enviar el mensaje sin una conversación activa"
-      );
-      return;
+      console.error('No se puede enviar el mensaje sin una conversación activa')
+      return
     }
 
     try {
-      const response = await fetch("/api/chat/send", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
+      const response = await fetch('/api/chat/send', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           id_remitente: idRemitente,
           id_destinatario: idDestinatario,
           id_conversacion: idConversacion,
           contenido: message,
         }),
-      });
+      })
 
       if (response.ok) {
         const newMessage = {
           contenido: message,
           remitente: username,
           fecha_envio: new Date().toISOString(),
-        };
+        }
 
-        setMessages((prevMessages) => [...prevMessages, newMessage]);
-        setMessage("");
+        setMessages((prevMessages) => [...prevMessages, newMessage])
+        setMessage('')
         setTimeout(() => {
-          lastMessageRef.current?.scrollIntoView({ behavior: "smooth" });
-        }, 0);
+          lastMessageRef.current?.scrollIntoView({ behavior: 'smooth' })
+        }, 0)
       } else {
-        console.error("Error al enviar el mensaje al servidor");
+        console.error('Error al enviar el mensaje al servidor')
       }
     } catch (error) {
-      console.error("Error al intentar enviar el mensaje:", error);
+      console.error('Error al intentar enviar el mensaje:', error)
     }
-  };
+  }
   const renderStars = (rating) => {
-    const stars = [];
+    const stars = []
     for (let i = 1; i <= 5; i++) {
       stars.push(
         <FaStar
           key={i}
           className={`h-5 w-5 ${
-            i <= rating ? "text-yellow-400" : "text-gray-300"
+            i <= rating ? 'text-yellow-400' : 'text-gray-300'
           }`}
         />
-      );
+      )
     }
-    return stars;
-  };
+    return stars
+  }
 
   const handleReviewSubmit = async (e) => {
-    e.preventDefault();
+    e.preventDefault()
 
     try {
       const response = await fetch(`/api/reviews/emprendedor/${idPerfil}`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(newReview),
-      });
+      })
 
       if (response.ok) {
-        setReviews([...reviews, { ...newReview, fecha_creacion: new Date() }]);
-        setNewReview({ comentario: "", calificacion: 0 }); // Limpiar el formulario
+        setReviews([...reviews, { ...newReview, fecha_creacion: new Date() }])
+        setNewReview({ comentario: '', calificacion: 0 }) // Limpiar el formulario
       } else {
-        console.error("Error al agregar reseña");
+        console.error('Error al agregar reseña')
       }
     } catch (error) {
-      console.error("Error en la solicitud:", error);
+      console.error('Error en la solicitud:', error)
     }
-  };
+  }
 
   return (
     <CartProvider>
@@ -336,8 +334,8 @@ export default function EmprendedorProfile() {
           <section className="p-10">
             <div className="bg-white p-6 rounded-lg shadow-lg text-center">
               <img
-                src={profilePicture || "/placeholder.webp"}
-                alt={emprendedorData.nombre_negocio || "Emprendedor"}
+                src={profilePicture || '/placeholder.webp'}
+                alt={emprendedorData.nombre_negocio || 'Emprendedor'}
                 width={150}
                 height={150}
                 className="mx-auto rounded-full mb-4"
@@ -346,10 +344,10 @@ export default function EmprendedorProfile() {
                 {emprendedorData.nombre_negocio}
               </h1>
               <p className="text-sm mb-2 text-black">
-                Dirección: {emprendedorData.direccion || "No disponible"}
+                Dirección: {emprendedorData.direccion || 'No disponible'}
               </p>
               <p className="text-sm mb-2 text-black">
-                Teléfono: {emprendedorData.telefono || "No disponible"}
+                Teléfono: {emprendedorData.telefono || 'No disponible'}
               </p>
               {emprendedorData.sitio_web ? (
                 <a
@@ -392,7 +390,7 @@ export default function EmprendedorProfile() {
                 reviews.map((review, index) => (
                   <div key={index} className="border-b py-4">
                     <p className="flex">
-                      <strong>{review.nombre_usuario}</strong> -{" "}
+                      <strong>{review.nombre_usuario}</strong> -{' '}
                       {renderStars(review.calificacion)}
                     </p>
                     <p>{review.comentario}</p>
@@ -473,7 +471,7 @@ export default function EmprendedorProfile() {
                           {producto.images.map((img, index) => (
                             <div key={index}>
                               <img
-                                src={img || "/placeholder.webp"}
+                                src={img || '/placeholder.webp'}
                                 alt={`Producto ${index + 1}`}
                                 width={200}
                                 height={150}
@@ -530,8 +528,8 @@ export default function EmprendedorProfile() {
                       } // Referencia al último mensaje
                       className={`mb-4 ${
                         msg.remitente === username
-                          ? "text-right"
-                          : "text-left text-gray-700"
+                          ? 'text-right'
+                          : 'text-left text-gray-700'
                       }`}
                     >
                       <p className="inline-block px-4 py-2 rounded-lg bg-gray-200 text-black">
@@ -568,5 +566,5 @@ export default function EmprendedorProfile() {
         )}
       </Suspense>
     </CartProvider>
-  );
+  )
 }

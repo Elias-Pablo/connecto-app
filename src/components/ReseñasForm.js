@@ -1,17 +1,17 @@
-import { useState } from "react";
+import { useState } from 'react'
 
 export default function ReseñasForm({ id, type }) {
-  const [calificacion, setCalificacion] = useState(5);
-  const [comentario, setComentario] = useState("");
+  const [calificacion, setCalificacion] = useState(5)
+  const [comentario, setComentario] = useState('')
 
   const handleSubmit = async (e) => {
-    e.preventDefault();
+    e.preventDefault()
     try {
-      const token = localStorage.getItem("token");
+      const token = localStorage.getItem('token')
       const response = await fetch(`/api/reviews/${type}`, {
-        method: "POST",
+        method: 'POST',
         headers: {
-          "Content-Type": "application/json",
+          'Content-Type': 'application/json',
           Authorization: `Bearer ${token}`,
         },
         body: JSON.stringify({
@@ -19,18 +19,18 @@ export default function ReseñasForm({ id, type }) {
           comentario,
           calificacion,
         }),
-      });
+      })
       if (response.ok) {
-        alert("Reseña enviada exitosamente");
-        setCalificacion(5);
-        setComentario("");
+        alert('Reseña enviada exitosamente')
+        setCalificacion(5)
+        setComentario('')
       } else {
-        alert("Error al enviar reseña");
+        alert('Error al enviar reseña')
       }
     } catch (error) {
-      console.error("Error:", error);
+      console.error('Error:', error)
     }
-  };
+  }
 
   return (
     <form
@@ -73,5 +73,5 @@ export default function ReseñasForm({ id, type }) {
         Enviar Reseña
       </button>
     </form>
-  );
+  )
 }

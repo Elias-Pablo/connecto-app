@@ -1,45 +1,45 @@
-"use client";
-import { useState } from "react";
-import { useRouter } from "next/navigation";
-import Image from "next/image";
-import Link from "next/link";
+'use client'
+import { useState } from 'react'
+import { useRouter } from 'next/navigation'
+import Image from 'next/image'
+import Link from 'next/link'
 
 export default function Home() {
-  const router = useRouter();
+  const router = useRouter()
 
   const handleLoginClick = () => {
-    router.push("/auth/login");
-  };
+    router.push('/auth/login')
+  }
 
   const handleRegisterClick = () => {
-    router.push("/auth/emregister");
-  };
+    router.push('/auth/emregister')
+  }
 
-  const [expandedIndex, setExpandedIndex] = useState(null);
+  const [expandedIndex, setExpandedIndex] = useState(null)
 
   const services = [
     {
-      title: "Networking Efectivo",
-      description: "Descripción detallada de Networking Efectivo.",
+      title: 'Networking Efectivo',
+      description: 'Descripción detallada de Networking Efectivo.',
     },
     {
-      title: "Recomendaciones Personalizadas",
-      description: "Descripción detallada de Recomendaciones Personalizadas.",
+      title: 'Recomendaciones Personalizadas',
+      description: 'Descripción detallada de Recomendaciones Personalizadas.',
     },
     {
-      title: "Gestión de Proyectos y Publicaciones",
+      title: 'Gestión de Proyectos y Publicaciones',
       description:
-        "Descripción detallada de Gestión de Proyectos y Publicaciones.",
+        'Descripción detallada de Gestión de Proyectos y Publicaciones.',
     },
     {
-      title: "Comunicación Directa",
-      description: "Descripción detallada de Comunicación Directa.",
+      title: 'Comunicación Directa',
+      description: 'Descripción detallada de Comunicación Directa.',
     },
-  ];
+  ]
 
   const handleToggle = (index) => {
-    setExpandedIndex(expandedIndex === index ? null : index);
-  };
+    setExpandedIndex(expandedIndex === index ? null : index)
+  }
 
   return (
     <>
@@ -122,7 +122,7 @@ export default function Home() {
                   className="mt-2 bg-white p-2 w-full rounded-xl shadow-lg font-bold text-sm text-fuchsia-700 hover:bg-fuchsia-700 hover:text-white transition-colors duration-300 ease-in-out"
                   onClick={() => handleToggle(index)}
                 >
-                  {expandedIndex === index ? "Mostrar menos" : "Saber más"}
+                  {expandedIndex === index ? 'Mostrar menos' : 'Saber más'}
                 </button>
               </div>
             ))}
@@ -136,27 +136,27 @@ export default function Home() {
           <div className="flex flex-wrap justify-around w-full px-5">
             {[
               {
-                name: "Free",
-                color: "bg-zinc-800",
+                name: 'Free',
+                color: 'bg-zinc-800',
                 items: [
-                  "Perfil básico de negocio",
-                  "Catálogo de productos limitado",
-                  "Redirección a la página del negocio",
-                  "Acceso a la red de Emprendedores",
-                  "Gestor de redes sociales básico",
-                  "Visibilidad Básica en buscadores internos",
+                  'Perfil básico de negocio',
+                  'Catálogo de productos limitado',
+                  'Redirección a la página del negocio',
+                  'Acceso a la red de Emprendedores',
+                  'Gestor de redes sociales básico',
+                  'Visibilidad Básica en buscadores internos',
                 ],
               },
               {
-                name: "💎 Premium 💎",
-                color: "bg-fuchsia-700",
+                name: '💎 Premium 💎',
+                color: 'bg-fuchsia-700',
                 items: [
-                  "Perfil avanzado de negocio",
-                  "Catálogo de productos ilimitado",
-                  "Analíticas de interacciones",
-                  "Gestor de redes sociales con IA",
-                  "Promociones destacadas",
-                  "Visibilidad Mejorada en buscadores internos",
+                  'Perfil avanzado de negocio',
+                  'Catálogo de productos ilimitado',
+                  'Analíticas de interacciones',
+                  'Gestor de redes sociales con IA',
+                  'Promociones destacadas',
+                  'Visibilidad Mejorada en buscadores internos',
                 ],
               },
             ].map((plan, index) => (
@@ -181,10 +181,10 @@ export default function Home() {
           </p>
           <div className="flex flex-wrap justify-around w-full px-5 text-sky-400">
             {[
-              "Herramientas Avanzadas para Negocios",
-              "Conexión con Emprendedores",
-              "Gestión Eficiente de Redes Sociales",
-              "Análisis y Estadísticas Precisas",
+              'Herramientas Avanzadas para Negocios',
+              'Conexión con Emprendedores',
+              'Gestión Eficiente de Redes Sociales',
+              'Análisis y Estadísticas Precisas',
             ].map((reason, index) => (
               <div
                 key={index}
@@ -221,5 +221,5 @@ export default function Home() {
         </section>
       </div>
     </>
-  );
+  )
 }

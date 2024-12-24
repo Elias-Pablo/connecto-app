@@ -1,54 +1,54 @@
-"use client";
-import Header from "@/components/Header-us";
-import { useEffect, useState } from "react";
+'use client'
+import Header from '@/components/Header-us'
+import { useEffect, useState } from 'react'
 
 export default function UserOrders() {
-  const [orders, setOrders] = useState([]);
-  const [isLoading, setIsLoading] = useState(true);
+  const [orders, setOrders] = useState([])
+  const [isLoading, setIsLoading] = useState(true)
 
   const handleDownloadPDF = async (orderId) => {
     try {
       const response = await fetch(`/api/orders/${orderId}/pdf`, {
-        method: "GET",
-      });
+        method: 'GET',
+      })
       if (response.ok) {
-        const blob = await response.blob();
-        const url = window.URL.createObjectURL(blob);
-        const a = document.createElement("a");
-        a.style.display = "none";
-        a.href = url;
-        a.download = `pedido_${orderId}.pdf`;
-        document.body.appendChild(a);
-        a.click();
-        window.URL.revokeObjectURL(url);
+        const blob = await response.blob()
+        const url = window.URL.createObjectURL(blob)
+        const a = document.createElement('a')
+        a.style.display = 'none'
+        a.href = url
+        a.download = `pedido_${orderId}.pdf`
+        document.body.appendChild(a)
+        a.click()
+        window.URL.revokeObjectURL(url)
       } else {
-        console.error("Error al generar el PDF");
+        console.error('Error al generar el PDF')
       }
     } catch (err) {
-      console.error("Error al descargar el PDF:", err);
+      console.error('Error al descargar el PDF:', err)
     }
-  };
+  }
 
   useEffect(() => {
     const fetchOrders = async () => {
-      setIsLoading(true);
+      setIsLoading(true)
       try {
-        const response = await fetch("/api/orders");
+        const response = await fetch('/api/orders')
         if (response.ok) {
-          const data = await response.json();
-          setOrders(data.orders);
+          const data = await response.json()
+          setOrders(data.orders)
         } else {
-          console.error("Error al cargar los pedidos");
+          console.error('Error al cargar los pedidos')
         }
       } catch (err) {
-        console.error("Error en la solicitud:", err);
+        console.error('Error en la solicitud:', err)
       } finally {
-        setIsLoading(false);
+        setIsLoading(false)
       }
-    };
+    }
 
-    fetchOrders();
-  }, []);
+    fetchOrders()
+  }, [])
 
   return (
     <>
@@ -75,15 +75,15 @@ export default function UserOrders() {
                   Pedido ID: {order.id_compra}
                 </p>
                 <p className="mb-2">
-                  <strong>Fecha:</strong>{" "}
+                  <strong>Fecha:</strong>{' '}
                   {new Date(
-                    order.fecha_creacion.replace(" ", "T")
-                  ).toLocaleDateString("es-CL", {
-                    hour: "numeric",
-                    minute: "numeric",
-                    year: "numeric",
-                    month: "long",
-                    day: "numeric",
+                    order.fecha_creacion.replace(' ', 'T')
+                  ).toLocaleDateString('es-CL', {
+                    hour: 'numeric',
+                    minute: 'numeric',
+                    year: 'numeric',
+                    month: 'long',
+                    day: 'numeric',
                     hour12: false,
                   })}
                 </p>
@@ -97,7 +97,7 @@ export default function UserOrders() {
                     {order.items.map((item) => (
                       <li key={item.id_detalle}>
                         {item.nombre_producto} x {item.cantidad}
-                        {" - "}
+                        {' - '}
                         <span className="text-gray-600">
                           ${item.precio_unitario}
                         </span>
@@ -117,5 +117,5 @@ export default function UserOrders() {
         )}
       </div>
     </>
-  );
+  )
 }

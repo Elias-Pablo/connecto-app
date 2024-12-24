@@ -1,82 +1,81 @@
-"use client";
-import { useState, useEffect } from "react";
-import { useParams } from "next/navigation"; // Cambio de useRouter a useParams
-import { useCart } from "@/app/context/CartContext";
-import Header from "@/components/Header-us";
-import Slider from "react-slick"; // Importación del carrusel de react-slick
-import "slick-carousel/slick/slick.css"; // Importar estilos de slick-carousel
-import "slick-carousel/slick/slick-theme.css";
-import jwtDecode from "jwt-decode";
-import Link from "next/link";
-import { FaStar } from "react-icons/fa";
+'use client'
+import { useState, useEffect } from 'react'
+import { useParams } from 'next/navigation' // Cambio de useRouter a useParams
+import { useCart } from '@/app/context/CartContext'
+import Header from '@/components/Header-us'
+import Slider from 'react-slick' // Importación del carrusel de react-slick
+import 'slick-carousel/slick/slick.css' // Importar estilos de slick-carousel
+import 'slick-carousel/slick/slick-theme.css'
+import Link from 'next/link'
+import { FaStar } from 'react-icons/fa'
 
 export default function ProductDetail() {
-  const { id } = useParams(); // Obtiene el ID del producto desde la URL usando useParams()
-  const [product, setProduct] = useState(null);
-  const [reviews, setReviews] = useState([]);
+  const { id } = useParams() // Obtiene el ID del producto desde la URL usando useParams()
+  const [product, setProduct] = useState(null)
+  const [reviews, setReviews] = useState([])
   const [newReview, setNewReview] = useState({
-    comentario: "",
+    comentario: '',
     calificacion: 0,
-  });
-  const { addToCart } = useCart();
+  })
+  const { addToCart } = useCart()
 
   useEffect(() => {
-    if (!id) return;
+    if (!id) return
 
     // Fetch producto
     const fetchProductData = async () => {
       try {
-        const response = await fetch(`/api/products/${id}`);
+        const response = await fetch(`/api/products/${id}`)
         if (response.ok) {
-          const data = await response.json();
-          setProduct(data.product);
+          const data = await response.json()
+          setProduct(data.product)
         } else {
-          console.error("Error al obtener el producto");
+          console.error('Error al obtener el producto')
         }
       } catch (error) {
-        console.error("Error en la solicitud:", error);
+        console.error('Error en la solicitud:', error)
       }
-    };
+    }
 
     // Fetch reseñas
     const fetchReviews = async () => {
       try {
-        const response = await fetch(`/api/reviews/products/${id}`);
+        const response = await fetch(`/api/reviews/products/${id}`)
         if (response.ok) {
-          const data = await response.json();
-          setReviews(data.reviews);
+          const data = await response.json()
+          setReviews(data.reviews)
         } else {
-          console.error("Error al obtener las reseñas");
+          console.error('Error al obtener las reseñas')
         }
       } catch (error) {
-        console.error("Error en la solicitud:", error);
+        console.error('Error en la solicitud:', error)
       }
-    };
+    }
 
-    fetchProductData();
-    fetchReviews();
-  }, [id]);
+    fetchProductData()
+    fetchReviews()
+  }, [id])
 
   const handleReviewSubmit = async (e) => {
-    e.preventDefault();
+    e.preventDefault()
 
     try {
       const response = await fetch(`/api/reviews/products/${id}`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(newReview),
-      });
+      })
 
       if (response.ok) {
-        setReviews([...reviews, { ...newReview, fecha_creacion: new Date() }]);
-        setNewReview({ comentario: "", calificacion: 0 }); // Limpiar el formulario
+        setReviews([...reviews, { ...newReview, fecha_creacion: new Date() }])
+        setNewReview({ comentario: '', calificacion: 0 }) // Limpiar el formulario
       } else {
-        console.error("Error al agregar reseña");
+        console.error('Error al agregar reseña')
       }
     } catch (error) {
-      console.error("Error en la solicitud:", error);
+      console.error('Error en la solicitud:', error)
     }
-  };
+  }
 
   // Configuración para el carrusel
   const sliderSettings = {
@@ -86,10 +85,7 @@ export default function ProductDetail() {
     slidesToShow: 1,
     slidesToScroll: 1,
     arrows: true,
-  };
-
-  // Combinar la imagen principal con las adicionales
-  const images = [product?.mainImage, ...(product?.additionalImages || [])];
+  }
 
   if (!product) {
     return (
@@ -99,24 +95,24 @@ export default function ProductDetail() {
           Cargando Producto...
         </p>
       </div>
-    );
+    )
   }
 
   // Función para renderizar las estrellas
   const renderStars = (rating) => {
-    const stars = [];
+    const stars = []
     for (let i = 1; i <= 5; i++) {
       stars.push(
         <FaStar
           key={i}
           className={`h-5 w-5 ${
-            i <= rating ? "text-yellow-400" : "text-gray-300"
+            i <= rating ? 'text-yellow-400' : 'text-gray-300'
           }`}
         />
-      );
+      )
     }
-    return stars;
-  };
+    return stars
+  }
 
   return (
     <>
@@ -152,9 +148,9 @@ export default function ProductDetail() {
             <h1 className="text-3xl font-bold text-black">{product.name}</h1>
             <p className="text-gray-700 text-lg">{product.description}</p>
             <p className="text-2xl font-semibold text-green-600">
-              {new Intl.NumberFormat("es-CL", {
-                style: "currency",
-                currency: "CLP",
+              {new Intl.NumberFormat('es-CL', {
+                style: 'currency',
+                currency: 'CLP',
               }).format(product.price)}
             </p>
             <button
@@ -171,7 +167,7 @@ export default function ProductDetail() {
                   Información del Emprendedor
                 </h2>
                 <p className="text-gray-700">
-                  Vendedor:{" "}
+                  Vendedor:{' '}
                   <Link
                     href={`/user/emprendedores/profile?id_perfil=${product.business.id_perfil}`}
                     className="text-sky-500"
@@ -180,10 +176,10 @@ export default function ProductDetail() {
                   </Link>
                 </p>
                 <p className="text-gray-700">
-                  Dirección: {product.business.address || "No disponible"}
+                  Dirección: {product.business.address || 'No disponible'}
                 </p>
                 <p className="text-gray-700">
-                  Teléfono: {product.business.phone || "No disponible"}
+                  Teléfono: {product.business.phone || 'No disponible'}
                 </p>
                 {product.business.website && (
                   <a
@@ -207,7 +203,7 @@ export default function ProductDetail() {
             reviews.map((review, index) => (
               <div key={index} className="border-b py-4">
                 <p className="flex">
-                  <strong>{review.nombre_usuario}</strong> -{" "}
+                  <strong>{review.nombre_usuario}</strong> -{' '}
                   {renderStars(review.calificacion)}
                 </p>
                 <p>{review.comentario}</p>
@@ -274,5 +270,5 @@ export default function ProductDetail() {
         </div>
       </div>
     </>
-  );
+  )
 }

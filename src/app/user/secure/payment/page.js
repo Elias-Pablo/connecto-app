@@ -1,96 +1,94 @@
-"use client";
-import { useRouter } from "next/navigation";
-import { useCart } from "@/app/context/CartContext";
-import { useState } from "react";
-import Header from "@/components/Header-us";
+'use client'
+import { useRouter } from 'next/navigation'
+import { useCart } from '@/app/context/CartContext'
+import { useState } from 'react'
+import Header from '@/components/Header-us'
 
 export default function PaymentPage() {
-  const { cartItems, calculateTotal } = useCart();
-  const [paymentMethod, setPaymentMethod] = useState("credit"); // Método predeterminado
-  const [shippingMethod, setShippingMethod] = useState("standard"); // Método de envío predeterminado
-  const router = useRouter();
+  const { cartItems, calculateTotal } = useCart()
+  const [paymentMethod, setPaymentMethod] = useState('credit') // Método predeterminado
+  const [shippingMethod, setShippingMethod] = useState('standard') // Método de envío predeterminado
+  const router = useRouter()
 
   const handlePayment = async () => {
-    const total = calculateTotal();
-    const token = localStorage.getItem("token");
-  
+    const total = calculateTotal()
+    const token = localStorage.getItem('token')
+
     try {
-      console.log("Cart items:", cartItems);
-  
+      console.log('Cart items:', cartItems)
+
       if (!Array.isArray(cartItems) || cartItems.length === 0) {
-        throw new Error("El carrito está vacío o no tiene un formato válido.");
+        throw new Error('El carrito está vacío o no tiene un formato válido.')
       }
-  
+
       // Process payment
-      const response = await fetch("/api/checkout", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
+      const response = await fetch('/api/checkout', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           cartItems,
           paymentDetails: { method: paymentMethod, total },
           shippingDetails: { method: shippingMethod },
         }),
-      });
-  
+      })
+
       if (response.ok) {
-        console.log("Pago realizado con éxito");
-  
+        console.log('Pago realizado con éxito')
+
         // Register purchase interactions
         for (const item of cartItems) {
-          console.log("Procesando item:", item);
-  
+          console.log('Procesando item:', item)
+
           // Map item data to required fields
-          const id_perfil = item.id_perfil || item.sellerProfileId; // Use the correct field
-          const id_producto = item.id; // Product ID
-          const cantidad = item.quantity; // Quantity
-  
+          const id_perfil = item.id_perfil || item.sellerProfileId // Use the correct field
+          const id_producto = item.id // Product ID
+          const cantidad = item.quantity // Quantity
+
           if (!id_perfil || !id_producto || !cantidad) {
-            console.error("Faltan datos en el item:", item);
-            continue;
+            console.error('Faltan datos en el item:', item)
+            continue
           }
-  
-          const interactionResponse = await fetch("/api/interactions", {
-            method: "POST",
+
+          const interactionResponse = await fetch('/api/interactions', {
+            method: 'POST',
             headers: {
               Authorization: `Bearer ${token}`,
-              "Content-Type": "application/json",
+              'Content-Type': 'application/json',
             },
             body: JSON.stringify({
-              tipo_interaccion: "Purchase",
+              tipo_interaccion: 'Purchase',
               id_perfil,
               id_producto,
               cantidad,
             }),
-          });
-  
+          })
+
           if (!interactionResponse.ok) {
             console.error(
               `Error al registrar la compra del producto ${item.name}`
-            );
+            )
           }
         }
-  
-        alert("Pedido confirmado y compras registradas.");
-        router.push("/user/orders");
+
+        alert('Pedido confirmado y compras registradas.')
+        router.push('/user/orders')
       } else {
-        console.error("Error al procesar el pago");
-        alert("Error al procesar el pago.");
+        console.error('Error al procesar el pago')
+        alert('Error al procesar el pago.')
       }
     } catch (error) {
-      console.error("Error en la solicitud de pago o interacción:", error);
-      alert("Ocurrió un error al procesar el pedido.");
+      console.error('Error en la solicitud de pago o interacción:', error)
+      alert('Ocurrió un error al procesar el pedido.')
     }
-  };
-  
-  
-  
+  }
+
   const formatPrice = (price) => {
-    return new Intl.NumberFormat("es-CL", {
-      style: "currency",
-      currency: "CLP",
+    return new Intl.NumberFormat('es-CL', {
+      style: 'currency',
+      currency: 'CLP',
       minimumFractionDigits: 0,
-    }).format(price);
-  };
+    }).format(price)
+  }
 
   return (
     <div>
@@ -101,7 +99,9 @@ export default function PaymentPage() {
           {/* Información de contacto y envío */}
           <div className="lg:col-span-7 space-y-6">
             <div>
-              <h2 className="text-lg font-semibold mb-4">Información de contacto</h2>
+              <h2 className="text-lg font-semibold mb-4">
+                Información de contacto
+              </h2>
               <input
                 type="email"
                 placeholder="Correo electrónico"
@@ -109,7 +109,9 @@ export default function PaymentPage() {
               />
             </div>
             <div>
-              <h2 className="text-lg font-semibold mb-4">Información de envío</h2>
+              <h2 className="text-lg font-semibold mb-4">
+                Información de envío
+              </h2>
               <div className="grid grid-cols-2 gap-4">
                 <input
                   type="text"
@@ -152,17 +154,17 @@ export default function PaymentPage() {
               <div className="grid grid-cols-2 gap-4">
                 <button
                   className={`border p-3 rounded ${
-                    shippingMethod === "standard" ? "border-blue-500" : ""
+                    shippingMethod === 'standard' ? 'border-blue-500' : ''
                   }`}
-                  onClick={() => setShippingMethod("standard")}
+                  onClick={() => setShippingMethod('standard')}
                 >
                   Estándar (4-10 días) - {formatPrice(4000)}
                 </button>
                 <button
                   className={`border p-3 rounded ${
-                    shippingMethod === "express" ? "border-blue-500" : ""
+                    shippingMethod === 'express' ? 'border-blue-500' : ''
                   }`}
-                  onClick={() => setShippingMethod("express")}
+                  onClick={() => setShippingMethod('express')}
                 >
                   Exprés (2-5 días) - {formatPrice(6000)}
                 </button>
@@ -175,17 +177,21 @@ export default function PaymentPage() {
               <div className="grid grid-cols-2 gap-4">
                 <button
                   className={`border p-3 rounded ${
-                    paymentMethod === "debit" ? "border-blue-500 bg-blue-100" : ""
+                    paymentMethod === 'debit'
+                      ? 'border-blue-500 bg-blue-100'
+                      : ''
                   }`}
-                  onClick={() => setPaymentMethod("debit")}
+                  onClick={() => setPaymentMethod('debit')}
                 >
                   Débito
                 </button>
                 <button
                   className={`border p-3 rounded ${
-                    paymentMethod === "credit" ? "border-blue-500 bg-blue-100" : ""
+                    paymentMethod === 'credit'
+                      ? 'border-blue-500 bg-blue-100'
+                      : ''
                   }`}
-                  onClick={() => setPaymentMethod("credit")}
+                  onClick={() => setPaymentMethod('credit')}
                 >
                   Crédito
                 </button>
@@ -240,7 +246,7 @@ export default function PaymentPage() {
                 <div className="flex justify-between">
                   <p className="text-gray-600">Envío</p>
                   <p>
-                    {shippingMethod === "standard"
+                    {shippingMethod === 'standard'
                       ? formatPrice(4000)
                       : formatPrice(6000)}
                   </p>
@@ -250,7 +256,7 @@ export default function PaymentPage() {
                   <p>
                     {formatPrice(
                       calculateTotal() +
-                        (shippingMethod === "standard" ? 4000 : 6000)
+                        (shippingMethod === 'standard' ? 4000 : 6000)
                     )}
                   </p>
                 </div>
@@ -267,5 +273,5 @@ export default function PaymentPage() {
         </div>
       </div>
     </div>
-  );
+  )
 }

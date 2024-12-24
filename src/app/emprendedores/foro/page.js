@@ -1,115 +1,99 @@
-"use client";
-import { useState, useEffect } from "react";
-import Header from "@/components/Header-em";
-import { HandThumbUpIcon, LightBulbIcon } from "@heroicons/react/24/outline";
-import Image from "next/image";
-import ModalAdmin from "@/components/ModalAdmin";
-import ModalPublicacion from "@/components/ModalPublicacion";
-import { toast } from "react-toastify";
-import "react-toastify/dist/ReactToastify.css";
+'use client'
+import { useState, useEffect } from 'react'
+import Header from '@/components/Header-em'
+import { HandThumbUpIcon, LightBulbIcon } from '@heroicons/react/24/outline'
+import ModalAdmin from '@/components/ModalAdmin'
+import ModalPublicacion from '@/components/ModalPublicacion'
+import { toast } from 'react-toastify'
+import 'react-toastify/dist/ReactToastify.css'
 
 export default function Foro() {
-  const [categorias, setCategorias] = useState([]);
-  const [forosDestacados, setForosDestacados] = useState([]);
-  const [respuestas, setRespuestas] = useState({});
-  const [mostrarFormulario, setMostrarFormulario] = useState(false);
-  const [isLoading, setIsLoading] = useState(false);
-  const [nuevoForo, setNuevoForo] = useState({
-    titulo: "", // Inicializar con un string vacío
-    descripcion: "", // Inicializar con un string vacío
-    id_foro: "", // Inicializar con un string vacío
-    url_imagen: "", // Inicializar con un string vacío
-  });
-  const [respuestaActiva, setRespuestaActiva] = useState(null);
-  const [nuevaRespuesta, setNuevaRespuesta] = useState("");
-  const [pagina, setPagina] = useState(1);
-  const [totalPaginas, setTotalPaginas] = useState(1);
-  const [filtroCategoria, setFiltroCategoria] = useState(null);
-  const [respuestasVisibles, setRespuestasVisibles] = useState({});
-  const [mostrarAdmin, setMostrarAdmin] = useState(false); // Mostrar o no la interfaz de administración
-  const [misPublicaciones, setMisPublicaciones] = useState([]); // Publicaciones del usuario actual
-  const [mostrarCrear, setMostrarCrear] = useState(false);
+  const [categorias, setCategorias] = useState([])
+  const [forosDestacados, setForosDestacados] = useState([])
+  const [respuestas, setRespuestas] = useState({})
+  const [isLoading, setIsLoading] = useState(false)
+  const [respuestaActiva, setRespuestaActiva] = useState(null)
+  const [nuevaRespuesta, setNuevaRespuesta] = useState('')
+  const [pagina, setPagina] = useState(1)
+  const [totalPaginas, setTotalPaginas] = useState(1)
+  const [filtroCategoria, setFiltroCategoria] = useState(null)
+  const [respuestasVisibles, setRespuestasVisibles] = useState({})
+  const [mostrarAdmin, setMostrarAdmin] = useState(false) // Mostrar o no la interfaz de administración
+  const [misPublicaciones, setMisPublicaciones] = useState([]) // Publicaciones del usuario actual
+  const [mostrarCrear, setMostrarCrear] = useState(false)
 
   // Obtener categorías y publicaciones
   useEffect(() => {
     const fetchCategorias = async () => {
       try {
-        const response = await fetch("/api/auth/foro?type=categorias");
-        if (!response.ok) throw new Error("Error al cargar categorías");
-        const data = await response.json();
-        setCategorias(data);
+        const response = await fetch('/api/auth/foro?type=categorias')
+        if (!response.ok) throw new Error('Error al cargar categorías')
+        const data = await response.json()
+        setCategorias(data)
       } catch (error) {
-        console.error("Error al obtener categorías:", error);
-        setCategorias([]);
+        console.error('Error al obtener categorías:', error)
+        setCategorias([])
       }
-    };
+    }
 
-    fetchCategorias();
-    fetchForosDestacados();
-  }, [pagina, filtroCategoria]);
-
-  // Manejar el cambio en el formulario de creación
-  const handleChange = (e) => {
-    setNuevoForo({
-      ...nuevoForo,
-      [e.target.name]: e.target.value,
-    });
-  };
+    fetchCategorias()
+    fetchForosDestacados()
+  }, [pagina, filtroCategoria])
 
   const fetchForosDestacados = async () => {
     try {
-      setIsLoading(true);
+      setIsLoading(true)
       const queryParams = new URLSearchParams({
         page: pagina,
         ...(filtroCategoria && { categoria: filtroCategoria }),
-      }).toString();
+      }).toString()
       const response = await fetch(
         `/api/auth/foro?type=publicaciones&${queryParams}`
-      );
-      if (!response.ok) throw new Error("Error al cargar publicaciones");
-      const data = await response.json();
-      setForosDestacados(data.publicaciones || []);
-      setTotalPaginas(data.totalPaginas || 1);
-      setIsLoading(false);
+      )
+      if (!response.ok) throw new Error('Error al cargar publicaciones')
+      const data = await response.json()
+      setForosDestacados(data.publicaciones || [])
+      setTotalPaginas(data.totalPaginas || 1)
+      setIsLoading(false)
     } catch (error) {
-      console.error("Error al obtener publicaciones destacadas:", error);
-      setForosDestacados([]);
-      setIsLoading(false);
+      console.error('Error al obtener publicaciones destacadas:', error)
+      setForosDestacados([])
+      setIsLoading(false)
     }
-  };
-  
-  // Crear nueva publicación
-const handleCrearForo = async (nuevoForo) => {
-  try {
-    setIsLoading(true); // Indicar que está cargando
-    const token = localStorage.getItem("token");
-    
-    const response = await fetch("/api/auth/foro", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${token}`,
-      },
-      body: JSON.stringify(nuevoForo),
-    });
-
-    if (response.ok) {
-      const data = await response.json();
-      setForosDestacados((prev) => [
-        { ...nuevoForo, id_publicaciones: data.id },
-        ...prev,
-      ]);
-    } else {
-      const errorData = await response.json();
-      toast.error(errorData.message || "Error al crear la publicación."); // Mostrar mensaje de error
-    }
-  } catch (error) {
-    console.error("Error al crear publicación:", error);
-    toast.error("Ocurrió un error al crear la publicación."); // Mostrar mensaje de error
-  } finally {
-    setIsLoading(false); // Finalizar la indicación de carga
   }
-};
+
+  // Crear nueva publicación
+  const handleCrearForo = async (nuevoForo) => {
+    try {
+      setIsLoading(true) // Indicar que está cargando
+      const token = localStorage.getItem('token')
+
+      const response = await fetch('/api/auth/foro', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify(nuevoForo),
+      })
+
+      if (response.ok) {
+        const data = await response.json()
+        setForosDestacados((prev) => [
+          { ...nuevoForo, id_publicaciones: data.id },
+          ...prev,
+        ])
+      } else {
+        const errorData = await response.json()
+        toast.error(errorData.message || 'Error al crear la publicación.') // Mostrar mensaje de error
+      }
+    } catch (error) {
+      console.error('Error al crear publicación:', error)
+      toast.error('Ocurrió un error al crear la publicación.') // Mostrar mensaje de error
+    } finally {
+      setIsLoading(false) // Finalizar la indicación de carga
+    }
+  }
 
   // Obtener respuestas
   const fetchRespuestas = async (id_publicaciones) => {
@@ -119,109 +103,107 @@ const handleCrearForo = async (nuevoForo) => {
         setRespuestasVisibles((prev) => ({
           ...prev,
           [id_publicaciones]: false,
-        }));
-        return; // No hace la llamada si ya están visibles
+        }))
+        return // No hace la llamada si ya están visibles
       }
 
-      setIsLoading(true);
+      setIsLoading(true)
 
       const response = await fetch(
         `/api/auth/foro/respuestas?id_publicaciones=${id_publicaciones}`
-      );
-      if (!response.ok) throw new Error("Error al cargar respuestas");
-      const data = await response.json();
+      )
+      if (!response.ok) throw new Error('Error al cargar respuestas')
+      const data = await response.json()
 
       setRespuestas((prev) => ({
         ...prev,
         [id_publicaciones]: data,
-      }));
+      }))
 
       setRespuestasVisibles((prev) => ({
         ...prev,
         [id_publicaciones]: true,
-      }));
+      }))
     } catch (error) {
-      console.error("Error al obtener respuestas:", error);
+      console.error('Error al obtener respuestas:', error)
     } finally {
-      setIsLoading(false);
+      setIsLoading(false)
     }
-  };
+  }
 
   // Crear nueva respuesta
   const handleCrearRespuesta = async (id_publicaciones) => {
     try {
-      const token = localStorage.getItem("token");
-      if (!token)
-        throw new Error("Usuario no autorizado. Faltan credenciales.");
+      const token = localStorage.getItem('token')
+      if (!token) throw new Error('Usuario no autorizado. Faltan credenciales.')
 
-      const response = await fetch("/api/auth/foro/respuestas", {
-        method: "POST",
+      const response = await fetch('/api/auth/foro/respuestas', {
+        method: 'POST',
         headers: {
-          "Content-Type": "application/json",
+          'Content-Type': 'application/json',
           Authorization: `Bearer ${token}`,
         },
         body: JSON.stringify({ id_publicaciones, respuesta: nuevaRespuesta }),
-      });
+      })
 
       if (response.ok) {
-        await fetchRespuestas(id_publicaciones); // Actualizar las respuestas
-        setNuevaRespuesta("");
-        setRespuestaActiva(null);
+        await fetchRespuestas(id_publicaciones) // Actualizar las respuestas
+        setNuevaRespuesta('')
+        setRespuestaActiva(null)
       } else {
-        console.error("Error al crear la respuesta");
+        console.error('Error al crear la respuesta')
       }
     } catch (error) {
-      console.error("Error en la solicitud de creación de respuesta:", error);
+      console.error('Error en la solicitud de creación de respuesta:', error)
     }
-  };
+  }
 
   // Manejar reacciones
   const handleReaccionar = async (id_publicaciones, tipo) => {
     try {
-      const token = localStorage.getItem("token");
-      if (!token)
-        throw new Error("Usuario no autorizado. Faltan credenciales.");
+      const token = localStorage.getItem('token')
+      if (!token) throw new Error('Usuario no autorizado. Faltan credenciales.')
 
-      const response = await fetch("/api/auth/foro/reacciones", {
-        method: "POST",
+      const response = await fetch('/api/auth/foro/reacciones', {
+        method: 'POST',
         headers: {
-          "Content-Type": "application/json",
+          'Content-Type': 'application/json',
           Authorization: `Bearer ${token}`,
         },
         body: JSON.stringify({ id_publicaciones, tipo }),
-      });
+      })
 
       if (response.ok) {
         // Actualizar los conteos localmente
         setForosDestacados((prevForos) =>
           prevForos.map((foro) => {
             if (foro.id_publicaciones === id_publicaciones) {
-              const countKey = tipo === "me gusta" ? "meGusta" : "util";
-              const isAddingReaction = response.status === 201;
+              const countKey = tipo === 'me gusta' ? 'meGusta' : 'util'
+              const isAddingReaction = response.status === 201
 
               return {
                 ...foro,
                 [countKey]: isAddingReaction
                   ? foro[countKey] + 1
                   : foro[countKey] - 1,
-              };
+              }
             }
-            return foro;
+            return foro
           })
-        );
+        )
       } else {
-        console.error("Error al registrar la reacción");
+        console.error('Error al registrar la reacción')
       }
     } catch (error) {
-      console.error("Error en la solicitud de reacción:", error);
+      console.error('Error en la solicitud de reacción:', error)
     }
-  };
+  }
 
   const handlePaginaClick = (nuevaPagina) => {
     if (nuevaPagina > 0 && nuevaPagina <= totalPaginas) {
-      setPagina(nuevaPagina);
+      setPagina(nuevaPagina)
     }
-  };
+  }
 
   // Función para alternar respuestas
   const toggleRespuestas = async (id_publicaciones) => {
@@ -230,43 +212,43 @@ const handleCrearForo = async (nuevoForo) => {
       setRespuestasVisibles((prev) => ({
         ...prev,
         [id_publicaciones]: false,
-      }));
+      }))
     } else {
       // Si las respuestas no están visibles, intenta cargar desde la API
       try {
         const response = await fetch(
           `/api/auth/foro/respuestas?id_publicaciones=${id_publicaciones}`
-        );
-        if (!response.ok) throw new Error("Error al cargar respuestas");
-        const data = await response.json();
+        )
+        if (!response.ok) throw new Error('Error al cargar respuestas')
+        const data = await response.json()
 
         // Actualiza las respuestas y hazlas visibles
         setRespuestas((prev) => ({
           ...prev,
           [id_publicaciones]: data,
-        }));
+        }))
         setRespuestasVisibles((prev) => ({
           ...prev,
           [id_publicaciones]: true,
-        }));
+        }))
       } catch (error) {
-        console.error("Error al obtener respuestas:", error);
+        console.error('Error al obtener respuestas:', error)
       }
     }
-  };
+  }
 
   const handleEditar = async (publicacion) => {
     try {
-      const token = localStorage.getItem("token");
-      const response = await fetch("/api/auth/foro/publicaciones", {
-        method: "PUT",
+      const token = localStorage.getItem('token')
+      const response = await fetch('/api/auth/foro/publicaciones', {
+        method: 'PUT',
         headers: {
-          "Content-Type": "application/json",
+          'Content-Type': 'application/json',
           Authorization: `Bearer ${token}`,
         },
         body: JSON.stringify(publicacion),
-      });
-  
+      })
+
       if (response.ok) {
         // Actualizar en forosDestacados
         setForosDestacados((prev) =>
@@ -275,8 +257,8 @@ const handleCrearForo = async (nuevoForo) => {
               ? { ...foro, ...publicacion }
               : foro
           )
-        );
-  
+        )
+
         // Actualizar en misPublicaciones
         setMisPublicaciones((prev) =>
           prev.map((pub) =>
@@ -284,62 +266,62 @@ const handleCrearForo = async (nuevoForo) => {
               ? { ...pub, ...publicacion }
               : pub
           )
-        );
+        )
       }
     } catch (error) {
-      console.error("Error al editar publicación:", error);
+      console.error('Error al editar publicación:', error)
     }
-  };  
-  
+  }
+
   const handleEliminar = async (id_publicaciones) => {
     try {
-      const token = localStorage.getItem("token");
+      const token = localStorage.getItem('token')
       const response = await fetch(
         `/api/auth/foro/publicaciones?id_publicaciones=${id_publicaciones}`,
         {
-          method: "DELETE",
+          method: 'DELETE',
           headers: { Authorization: `Bearer ${token}` },
         }
-      );
-  
+      )
+
       if (response.ok) {
         // Actualizar en forosDestacados
         setForosDestacados((prev) =>
           prev.filter((foro) => foro.id_publicaciones !== id_publicaciones)
-        );
-  
+        )
+
         // Actualizar en misPublicaciones
         setMisPublicaciones((prev) =>
           prev.filter((pub) => pub.id_publicaciones !== id_publicaciones)
-        );
+        )
       }
     } catch (error) {
-      console.error("Error al eliminar publicación:", error);
+      console.error('Error al eliminar publicación:', error)
     }
-  };  
-  
+  }
+
   const fetchMisPublicaciones = async () => {
     try {
-      setIsLoading(true);
-      const token = localStorage.getItem("token");
-      const response = await fetch("/api/auth/foro/publicaciones/id", {
+      setIsLoading(true)
+      const token = localStorage.getItem('token')
+      const response = await fetch('/api/auth/foro/publicaciones/id', {
         headers: { Authorization: `Bearer ${token}` },
-      });
-      setIsLoading(false);
-      if (!response.ok) throw new Error("Error al cargar publicaciones");
-      const data = await response.json();
-      setMisPublicaciones(data);
+      })
+      setIsLoading(false)
+      if (!response.ok) throw new Error('Error al cargar publicaciones')
+      const data = await response.json()
+      setMisPublicaciones(data)
     } catch (error) {
-      console.error("Error al obtener publicaciones del usuario:", error);
+      console.error('Error al obtener publicaciones del usuario:', error)
     }
-  };
+  }
   if (isLoading) {
     return (
       <div className="flex flex-col justify-center items-center h-screen">
         <div className="w-12 h-12 border-4 border-blue-500 border-t-transparent rounded-full animate-spin mb-4"></div>
         <p className="text-lg text-gray-500 font-medium">Cargando Foros...</p>
       </div>
-    );
+    )
   }
 
   return (
@@ -365,8 +347,8 @@ const handleCrearForo = async (nuevoForo) => {
           )}
           <button
             onClick={() => {
-              setMostrarAdmin(true);
-              fetchMisPublicaciones();
+              setMostrarAdmin(true)
+              fetchMisPublicaciones()
             }}
             className="bg-blue-500 text-white p-2 rounded-lg"
           >
@@ -387,8 +369,8 @@ const handleCrearForo = async (nuevoForo) => {
               onClick={() => setFiltroCategoria(null)}
               className={`cursor-pointer p-4 rounded-lg shadow-md text-center ${
                 !filtroCategoria
-                  ? "bg-green-500 text-white"
-                  : "bg-white text-sky-700"
+                  ? 'bg-green-500 text-white'
+                  : 'bg-white text-sky-700'
               }`}
             >
               Todas las Categorías
@@ -399,8 +381,8 @@ const handleCrearForo = async (nuevoForo) => {
                 onClick={() => setFiltroCategoria(categoria.id_foro)}
                 className={`cursor-pointer p-4 rounded-lg shadow-md text-center ${
                   filtroCategoria === categoria.id_foro
-                    ? "bg-green-500 text-white"
-                    : "bg-white text-sky-700"
+                    ? 'bg-green-500 text-white'
+                    : 'bg-white text-sky-700'
                 }`}
               >
                 {categoria.nombre}
@@ -419,12 +401,12 @@ const handleCrearForo = async (nuevoForo) => {
               >
                 {/* Mostrar el autor */}
                 <p className="text-sm text-gray-600">
-                  Autor: {foro.nombre_negocio || "Anónimo"}
+                  Autor: {foro.nombre_negocio || 'Anónimo'}
                 </p>
 
                 {/* Imagen o Placeholder */}
                 <div className="relative w-full h-48 rounded-lg overflow-hidden shadow-md">
-                  {foro.url_imagen?.startsWith("http") ? (
+                  {foro.url_imagen?.startsWith('http') ? (
                     <img
                       src={foro.url_imagen}
                       alt={foro.titulo}
@@ -452,7 +434,7 @@ const handleCrearForo = async (nuevoForo) => {
                   {/* Reacciones */}
                   <button
                     onClick={() =>
-                      handleReaccionar(foro.id_publicaciones, "me gusta")
+                      handleReaccionar(foro.id_publicaciones, 'me gusta')
                     }
                     className="flex items-center text-blue-500 hover:underline"
                   >
@@ -461,7 +443,7 @@ const handleCrearForo = async (nuevoForo) => {
                   </button>
                   <button
                     onClick={() =>
-                      handleReaccionar(foro.id_publicaciones, "útil")
+                      handleReaccionar(foro.id_publicaciones, 'útil')
                     }
                     className="flex items-center text-green-500 hover:underline"
                   >
@@ -474,7 +456,7 @@ const handleCrearForo = async (nuevoForo) => {
                     className="bg-yellow-500 text-white p-2 rounded-lg"
                   >
                     {respuestasVisibles[foro.id_publicaciones]
-                      ? "Ocultar Respuestas"
+                      ? 'Ocultar Respuestas'
                       : `Ver Respuestas (${foro.total_respuestas || 0})`}
                   </button>
                   {/* Mostrar respuestas o mensaje */}
@@ -504,7 +486,7 @@ const handleCrearForo = async (nuevoForo) => {
                         No hay respuestas aún.
                       </p> // Mensaje si no hay respuestas cargadas
                     )
-                  ) : null}{" "}
+                  ) : null}{' '}
                   {/* Oculta las respuestas cuando no están visibles */}
                   {/* Responder */}
                   <button
@@ -565,8 +547,8 @@ const handleCrearForo = async (nuevoForo) => {
                   onClick={() => handlePaginaClick(num)}
                   className={`p-2 rounded-lg ${
                     num === pagina
-                      ? "bg-green-500 text-white"
-                      : "bg-sky-500 text-white hover:bg-sky-600"
+                      ? 'bg-green-500 text-white'
+                      : 'bg-sky-500 text-white hover:bg-sky-600'
                   }`}
                 >
                   {num}
@@ -591,5 +573,5 @@ const handleCrearForo = async (nuevoForo) => {
         </div>
       </div>
     </>
-  );
+  )
 }

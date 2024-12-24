@@ -1,67 +1,67 @@
-import Image from "next/image";
-import Link from "next/link";
-import { useRouter } from "next/navigation";
-import { useState, useEffect } from "react";
-import { jwtDecode } from "jwt-decode";
+import Image from 'next/image'
+import Link from 'next/link'
+import { useRouter } from 'next/navigation'
+import { useState, useEffect } from 'react'
+import { jwtDecode } from 'jwt-decode'
 
 export default function Header() {
-  const router = useRouter();
-  const [unreadMessages, setUnreadMessages] = useState(0); // Mensajes no leídos
-  const [profilePicture, setProfilePicture] = useState("/avatar.jpg");
-  const [user, setUser] = useState(null);
-  const [menuOpen, setMenuOpen] = useState(false);
+  const router = useRouter()
+  const [unreadMessages] = useState(0) // Mensajes no leídos
+  const [profilePicture, setProfilePicture] = useState('/avatar.jpg')
+  const [user, setUser] = useState(null)
+  const [menuOpen, setMenuOpen] = useState(false)
 
   // Función para manejar el logout del usuario
   const handleLogout = () => {
-    localStorage.removeItem("token");
-    document.cookie = "token=; Max-Age=0; Path=/;";
-    setUser(null);
-    router.push("/");
-  };
+    localStorage.removeItem('token')
+    document.cookie = 'token=; Max-Age=0; Path=/;'
+    setUser(null)
+    router.push('/')
+  }
 
   // Obtener el token de usuario y decodificarlo
   useEffect(() => {
-    const token = localStorage.getItem("token");
+    const token = localStorage.getItem('token')
     if (token) {
       try {
-        const decoded = jwtDecode(token);
-        setUser(decoded);
+        const decoded = jwtDecode(token)
+        setUser(decoded)
       } catch (error) {
-        console.error("Token inválido:", error);
-        localStorage.removeItem("token");
+        console.error('Token inválido:', error)
+        localStorage.removeItem('token')
       }
     }
-  }, []);
+  }, [])
 
   // Fetch de la imagen del usuario si está logueado
   useEffect(() => {
     if (user) {
       const fetchUserAvatar = async () => {
         try {
-          const response = await fetch("/api/userAvatar");
+          const response = await fetch('/api/userAvatar')
           if (response.ok) {
-            const data = await response.json();
-            setProfilePicture(data.usuario_imagen || "/avatar.jpg");
+            const data = await response.json()
+            setProfilePicture(data.usuario_imagen || '/avatar.jpg')
           } else {
-            console.error("Error al obtener la imagen de perfil");
+            console.error('Error al obtener la imagen de perfil')
           }
         } catch (error) {
-          console.error("Error en la solicitud de imagen de perfil:", error);
+          console.error('Error en la solicitud de imagen de perfil:', error)
         }
-      };
-      fetchUserAvatar();
+      }
+      fetchUserAvatar()
     }
-  }, [user]);
+  }, [user])
 
   // Función para redirigir a la lista de chats
   const handleViewMessages = () => {
-    router.push("/emprendedores/mensajes");
-  };
+    router.push('/emprendedores/mensajes')
+  }
 
   // Función para abrir/cerrar el menú de usuario
   const toggleMenu = () => {
-    setMenuOpen(!menuOpen);
-  };
+    setMenuOpen(!menuOpen)
+  }
 
   return (
     <header className="bg-zinc-800 px-6 h-20 shadow-lg w-full flex items-center justify-between">
@@ -109,14 +109,14 @@ export default function Header() {
               className="flex justify-center items-center gap-2"
             >
               <img
-                src={profilePicture || "/avatar.jpg"}
+                src={profilePicture || '/avatar.jpg'}
                 alt="User Avatar"
                 width={40}
                 height={40}
                 className="rounded-full cursor-pointer"
               />
               <span className="text-white font-semibold">
-                {user?.username || "Usuario"}
+                {user?.username || 'Usuario'}
               </span>
             </Link>
 
@@ -212,5 +212,5 @@ export default function Header() {
         )}
       </div>
     </header>
-  );
+  )
 }

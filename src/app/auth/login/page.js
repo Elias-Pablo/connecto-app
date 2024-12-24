@@ -1,52 +1,52 @@
-"use client";
-import { useState } from "react";
-import Image from "next/image";
-import { useRouter } from "next/navigation";
-import { jwtDecode } from "jwt-decode"; // Importar decodificador de JWT
-import Link from "next/link";
+'use client'
+import { useState } from 'react'
+import Image from 'next/image'
+import { useRouter } from 'next/navigation'
+import { jwtDecode } from 'jwt-decode' // Importar decodificador de JWT
+import Link from 'next/link'
 
 export default function LoginPage() {
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [showPassword, setShowPassword] = useState(false); // Estado para controlar visibilidad
-  const [error, setError] = useState(null);
-  const router = useRouter();
+  const [email, setEmail] = useState('')
+  const [password, setPassword] = useState('')
+  const [showPassword, setShowPassword] = useState(false) // Estado para controlar visibilidad
+  const [error, setError] = useState(null)
+  const router = useRouter()
 
   const handleLogin = async (e) => {
-    e.preventDefault();
+    e.preventDefault()
 
     try {
-      const response = await fetch("/api/auth/login", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
+      const response = await fetch('/api/auth/login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email, password }),
-      });
+      })
 
-      const data = await response.json();
-      console.log(data);
+      const data = await response.json()
+      console.log(data)
 
       if (data.success) {
         // Guardar el token en localStorage
-        localStorage.setItem("token", data.token);
+        localStorage.setItem('token', data.token)
 
         // Decodificar el token para obtener el tipo de usuario
-        const decoded = jwtDecode(data.token);
+        const decoded = jwtDecode(data.token)
 
         // Redirigir según el tipo de usuario
-        if (decoded.tipo_usuario === "emprendedor") {
-          router.push("/emprendedores/profile");
+        if (decoded.tipo_usuario === 'emprendedor') {
+          router.push('/emprendedores/profile')
         } else {
-          router.push("/"); // Página para usuarios regulares
+          router.push('/') // Página para usuarios regulares
         }
 
-        router.refresh();
+        router.refresh()
       } else {
-        setError(data.error);
+        setError(data.error)
       }
     } catch (err) {
-      setError("Error de conexión.");
+      setError('Error de conexión.')
     }
-  };
+  }
 
   return (
     <div className="flex flex-col items-center justify-center h-screen bg-neutral-900 p-5">
@@ -80,7 +80,7 @@ export default function LoginPage() {
             Contraseña
           </label>
           <input
-            type={showPassword ? "text" : "password"} // Cambia el tipo de input
+            type={showPassword ? 'text' : 'password'} // Cambia el tipo de input
             id="password"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
@@ -145,11 +145,11 @@ export default function LoginPage() {
             href="/auth/register"
             className="text-sky-400 font-bold hover:text-sky-600"
           >
-            {" "}
+            {' '}
             Registrate aquí
           </Link>
         </span>
       </form>
     </div>
-  );
+  )
 }

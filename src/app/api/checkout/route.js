@@ -1,24 +1,24 @@
-import connection from "@/lib/db";
-import jwt from "jsonwebtoken";
+import connection from '@/lib/db'
+import jwt from 'jsonwebtoken'
 
 export async function POST(req) {
   try {
     // Extraer datos del cuerpo de la solicitud
-    const { cartItems, shippingDetails, paymentDetails } = await req.json();
+    const { cartItems, shippingDetails, paymentDetails } = await req.json()
 
     // Obtener y validar el token
-    const token = req.cookies?.get("token")?.value;
+    const token = req.cookies?.get('token')?.value
 
     if (!token) {
       return new Response(
-        JSON.stringify({ message: "Usuario no autenticado" }),
+        JSON.stringify({ message: 'Usuario no autenticado' }),
         { status: 401 }
-      );
+      )
     }
 
     // Decodificar el token JWT
-    const decoded = jwt.verify(token, process.env.JWT_SECRET);
-    const userId = decoded.userId;
+    const decoded = jwt.verify(token, process.env.JWT_SECRET)
+    const userId = decoded.userId
 
     // Iniciar el registro del proceso de compra
     // 1. Registrar el documento
@@ -27,17 +27,17 @@ export async function POST(req) {
         `INSERT INTO documento (tipo_documento, tipo_pago) VALUES (?, ?)`,
         [paymentDetails.tipo_documento, paymentDetails.tipo_pago],
         (error, results) => {
-          if (error) return reject(error);
-          resolve(results);
+          if (error) return reject(error)
+          resolve(results)
         }
-      );
-    });
-    const id_documento = documentResult.insertId;
+      )
+    })
+    const id_documento = documentResult.insertId
 
     // 2. Registrar el envío
     const envioResult = await new Promise((resolve, reject) => {
       connection.query(
-        `INSERT INTO envio (direccion, destinatario, remitente, tiempo_estimado, valor, tiempo_llegada) 
+        `INSERT INTO envio (direccion, destinatario, remitente, tiempo_estimado, valor, tiempo_llegada)
         VALUES (?, ?, ?, ?, ?, ?)`,
         [
           shippingDetails.direccion,
@@ -48,50 +48,50 @@ export async function POST(req) {
           shippingDetails.tiempo_llegada,
         ],
         (error, results) => {
-          if (error) return reject(error);
-          resolve(results);
+          if (error) return reject(error)
+          resolve(results)
         }
-      );
-    });
-    const id_envio = envioResult.insertId;
+      )
+    })
+    const id_envio = envioResult.insertId
 
     // 3. Registrar la compra
     const total = cartItems.reduce(
       (sum, item) => sum + item.price * item.quantity,
       0
-    );
+    )
     const compraResult = await new Promise((resolve, reject) => {
       connection.query(
-        `INSERT INTO compra (id_documento, id_envio, id_usuario, detalle, cantidad, estado, total, fecha_creacion) 
+        `INSERT INTO compra (id_documento, id_envio, id_usuario, detalle, cantidad, estado, total, fecha_creacion)
         VALUES (?, ?, ?, ?, ?, ?, ?, NOW())`,
         [
           id_documento,
           id_envio,
           userId,
-          "Compra de productos",
+          'Compra de productos',
           cartItems.length,
-          "1", // Estado inicial
+          '1', // Estado inicial
           total,
         ],
         (error, results) => {
-          if (error) return reject(error);
-          resolve(results);
+          if (error) return reject(error)
+          resolve(results)
         }
-      );
-    });
-    const id_compra = compraResult.insertId;
+      )
+    })
+    const id_compra = compraResult.insertId
 
     // 4. Registrar detalles de la compra y actualizar stock
     await Promise.all(
       cartItems.map(async (item) => {
-        const subtotal = item.price * item.quantity;
-        const iva = subtotal * 0.19;
-        const totalConIva = subtotal + iva;
+        const subtotal = item.price * item.quantity
+        const iva = subtotal * 0.19
+        const totalConIva = subtotal + iva
 
         // Registrar detalle de la compra
         await new Promise((resolve, reject) => {
           connection.query(
-            `INSERT INTO detalle_compra (id_compra, cantidad, precio_unitario, subtotal, total_sin_iva, iva, total_con_iva) 
+            `INSERT INTO detalle_compra (id_compra, cantidad, precio_unitario, subtotal, total_sin_iva, iva, total_con_iva)
             VALUES (?, ?, ?, ?, ?, ?, ?)`,
             [
               id_compra,
@@ -103,11 +103,11 @@ export async function POST(req) {
               totalConIva,
             ],
             (error) => {
-              if (error) return reject(error);
-              resolve();
+              if (error) return reject(error)
+              resolve()
             }
-          );
-        });
+          )
+        })
 
         // Descontar stock del producto
         await new Promise((resolve, reject) => {
@@ -115,26 +115,26 @@ export async function POST(req) {
             `UPDATE productos SET stock = stock - ? WHERE id_producto = ?`,
             [item.quantity, item.id],
             (error) => {
-              if (error) return reject(error);
-              resolve();
+              if (error) return reject(error)
+              resolve()
             }
-          );
-        });
+          )
+        })
       })
-    );
+    )
 
     // Retornar respuesta exitosa
     return new Response(
-      JSON.stringify({ message: "Compra registrada con éxito" }),
+      JSON.stringify({ message: 'Compra registrada con éxito' }),
       { status: 200 }
-    );
+    )
   } catch (error) {
-    console.error("Error en el proceso de compra:", error);
+    console.error('Error en el proceso de compra:', error)
 
     // Manejo de errores
     return new Response(
-      JSON.stringify({ message: "Error en el proceso de compra" }),
+      JSON.stringify({ message: 'Error en el proceso de compra' }),
       { status: 500 }
-    );
+    )
   }
 }

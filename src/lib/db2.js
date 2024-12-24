@@ -1,4 +1,4 @@
-import mysql from "mysql2/promise";
+import mysql from 'mysql2/promise'
 
 const connectionpromise = mysql.createPool({
   host: process.env.DB_HOST,
@@ -7,6 +7,6 @@ const connectionpromise = mysql.createPool({
   database: process.env.DB_NAME,
   port: process.env.DB_PORT || 3306,
   waitForConnections: true,
-});
+})
 
-export default connectionpromise;
+export default connectionpromise

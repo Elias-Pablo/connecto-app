@@ -1,166 +1,166 @@
-"use client";
-import { CartProvider } from "@/app/context/CartContext";
-import Header from "@/components/Header-us";
-import React, { useState, useEffect } from "react";
-import { jwtDecode } from "jwt-decode";
-import Slider from "react-slick"; // Importación del carrusel de react-slick
-import "slick-carousel/slick/slick.css"; // Importar estilos de slick-carousel
-import "slick-carousel/slick/slick-theme.css";
-import { toast } from "react-toastify";
-import "react-toastify/dist/ReactToastify.css";
+'use client'
+import { CartProvider } from '@/app/context/CartContext'
+import Header from '@/components/Header-us'
+import React, { useState, useEffect } from 'react'
+import { jwtDecode } from 'jwt-decode'
+import Slider from 'react-slick' // Importación del carrusel de react-slick
+import 'slick-carousel/slick/slick.css' // Importar estilos de slick-carousel
+import 'slick-carousel/slick/slick-theme.css'
+import { toast } from 'react-toastify'
+import 'react-toastify/dist/ReactToastify.css'
 
 export default function FavoritesPage() {
-  const [favorites, setFavorites] = useState([]); // Productos favoritos
-  const [favoriteEntrepreneurs, setFavoriteEntrepreneurs] = useState([]); // Emprendedores favoritos
-  const [userId, setUserId] = useState(null);
-  const [entrepreneurPictures, setEntrepreneurPictures] = useState({}); // Imágenes de perfil de emprendedores
+  const [favorites, setFavorites] = useState([]) // Productos favoritos
+  const [favoriteEntrepreneurs, setFavoriteEntrepreneurs] = useState([]) // Emprendedores favoritos
+  const [userId, setUserId] = useState(null)
+  const [entrepreneurPictures, setEntrepreneurPictures] = useState({}) // Imágenes de perfil de emprendedores
 
   useEffect(() => {
     // Obtener userId desde el token
-    const token = localStorage.getItem("token");
+    const token = localStorage.getItem('token')
     if (token) {
       try {
-        const decodedToken = jwtDecode(token);
-        setUserId(decodedToken.userId);
+        const decodedToken = jwtDecode(token)
+        setUserId(decodedToken.userId)
       } catch (error) {
-        console.error("Error al decodificar el token:", error);
+        console.error('Error al decodificar el token:', error)
       }
     } else {
-      console.error("Token no encontrado");
+      console.error('Token no encontrado')
     }
-  }, []);
+  }, [])
 
   const formatPrice = (price) => {
-    return new Intl.NumberFormat("es-CL", {
-      style: "currency",
-      currency: "CLP",
+    return new Intl.NumberFormat('es-CL', {
+      style: 'currency',
+      currency: 'CLP',
       minimumFractionDigits: 0,
-    }).format(price);
-  };
+    }).format(price)
+  }
 
   // Fetch favoritos de productos
   useEffect(() => {
     const fetchFavorites = async () => {
-      if (!userId) return;
+      if (!userId) return
 
       try {
-        const response = await fetch(`/api/favorites?userId=${userId}`);
+        const response = await fetch(`/api/favorites?userId=${userId}`)
         if (response.ok) {
-          const data = await response.json();
-          setFavorites(data.favorites);
+          const data = await response.json()
+          setFavorites(data.favorites)
         } else {
-          console.error("Error al obtener los productos favoritos");
+          console.error('Error al obtener los productos favoritos')
         }
       } catch (error) {
-        console.error("Error en la solicitud para obtener favoritos:", error);
+        console.error('Error en la solicitud para obtener favoritos:', error)
       }
-    };
+    }
 
-    fetchFavorites();
-  }, [userId]);
+    fetchFavorites()
+  }, [userId])
 
   // Fetch favoritos de emprendedores
   useEffect(() => {
     const fetchEntrepreneurFavorites = async () => {
-      if (!userId) return;
+      if (!userId) return
 
       try {
-        const response = await fetch(`/api/user/emfavorito?userId=${userId}`);
+        const response = await fetch(`/api/user/emfavorito?userId=${userId}`)
         if (response.ok) {
-          const data = await response.json();
-          setFavoriteEntrepreneurs(data.favorites);
+          const data = await response.json()
+          setFavoriteEntrepreneurs(data.favorites)
 
           // Fetchear imágenes de perfil para cada emprendedor
-          const pictures = {};
+          const pictures = {}
           for (const entrepreneur of data.favorites) {
             try {
               const avatarResponse = await fetch(
                 `/api/empAvatar?id_perfil=${entrepreneur.id_perfil}`
-              );
+              )
               if (avatarResponse.ok) {
-                const { usuario_imagen } = await avatarResponse.json();
+                const { usuario_imagen } = await avatarResponse.json()
                 pictures[entrepreneur.id_perfil] =
-                  usuario_imagen || "/placeholder.webp";
+                  usuario_imagen || '/placeholder.webp'
               } else {
-                pictures[entrepreneur.id_perfil] = "/placeholder.webp";
+                pictures[entrepreneur.id_perfil] = '/placeholder.webp'
               }
             } catch (error) {
               console.error(
                 `Error al cargar la imagen de perfil para el emprendedor ${entrepreneur.id_perfil}:`,
                 error
-              );
-              pictures[entrepreneur.id_perfil] = "/placeholder.webp";
+              )
+              pictures[entrepreneur.id_perfil] = '/placeholder.webp'
             }
           }
-          setEntrepreneurPictures(pictures);
+          setEntrepreneurPictures(pictures)
         } else {
-          console.error("Error al obtener los emprendedores favoritos");
+          console.error('Error al obtener los emprendedores favoritos')
         }
       } catch (error) {
         console.error(
-          "Error en la solicitud para obtener emprendedores favoritos:",
+          'Error en la solicitud para obtener emprendedores favoritos:',
           error
-        );
+        )
       }
-    };
+    }
 
-    fetchEntrepreneurFavorites();
-  }, [userId]);
+    fetchEntrepreneurFavorites()
+  }, [userId])
 
   const handleRemoveFromFavorites = async (productId) => {
     setFavorites((prevFavorites) =>
       prevFavorites.filter((item) => item.id !== productId)
-    );
+    )
 
     try {
       // Obtener el userId desde el estado `user`
       const response = await fetch(
         `/api/favorites/${productId}?userId=${userId}`,
         {
-          method: "DELETE",
+          method: 'DELETE',
         }
-      );
+      )
 
       if (!response.ok) {
-        console.error("Error al eliminar el producto de favoritos");
+        console.error('Error al eliminar el producto de favoritos')
       } else {
-        toast.info("Producto eliminado de favoritos");
+        toast.info('Producto eliminado de favoritos')
       }
     } catch (error) {
-      console.error("Error en la solicitud de eliminar de favoritos:", error);
+      console.error('Error en la solicitud de eliminar de favoritos:', error)
     }
-  };
+  }
 
   const handleRemoveFromEntrepreneurs = async (idFavorito) => {
     if (!idFavorito) {
-      console.error("ID de favorito no proporcionado");
-      return;
+      console.error('ID de favorito no proporcionado')
+      return
     }
 
     try {
       const response = await fetch(
         `/api/user/emfavorito?id_favorito=${idFavorito}`,
         {
-          method: "DELETE",
+          method: 'DELETE',
         }
-      );
+      )
 
       if (response.ok) {
         // Actualiza el estado eliminando solo el elemento correspondiente
         setFavoriteEntrepreneurs((prevFavorites) =>
           prevFavorites.filter((item) => item.id_favorito !== idFavorito)
-        );
-        console.log("Emprendedor eliminado de favoritos");
-        toast.info("Emprendedor eliminado de favoritos");
+        )
+        console.log('Emprendedor eliminado de favoritos')
+        toast.info('Emprendedor eliminado de favoritos')
       } else {
         console.error(
-          "Error al eliminar el emprendedor de favoritos en la base de datos"
-        );
+          'Error al eliminar el emprendedor de favoritos en la base de datos'
+        )
       }
     } catch (error) {
-      console.error("Error en la solicitud de eliminar de favoritos:", error);
+      console.error('Error en la solicitud de eliminar de favoritos:', error)
     }
-  };
+  }
 
   // Configuración del carrusel
   const sliderSettings = {
@@ -170,7 +170,7 @@ export default function FavoritesPage() {
     slidesToShow: 1,
     slidesToScroll: 1,
     arrows: true,
-  };
+  }
 
   return (
     <CartProvider>
@@ -245,7 +245,7 @@ export default function FavoritesPage() {
                       <img
                         src={
                           entrepreneurPictures[entrepreneur.id_perfil] ||
-                          "/placeholder.webp"
+                          '/placeholder.webp'
                         }
                         alt={entrepreneur.nombre_negocio}
                         className="w-24 h-24 object-cover rounded-full mb-4"
@@ -272,5 +272,5 @@ export default function FavoritesPage() {
         )}
       </div>
     </CartProvider>
-  );
+  )
 }

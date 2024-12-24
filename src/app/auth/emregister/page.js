@@ -1,41 +1,41 @@
-"use client";
-import Image from "next/image";
-import Link from "next/link";
-import { useState } from "react";
+'use client'
+import Image from 'next/image'
+import Link from 'next/link'
+import { useState } from 'react'
 
 export default function Register() {
-  const [businessName, setBusinessName] = useState("");
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [passwordConfirm, setPasswordConfirm] = useState("");
-  const [error, setError] = useState(null);
-  const [showPassword, setShowPassword] = useState(false);
-  const [showPasswordConfirm, setShowPasswordConfirm] = useState(false);
+  const [businessName, setBusinessName] = useState('')
+  const [email, setEmail] = useState('')
+  const [password, setPassword] = useState('')
+  const [passwordConfirm, setPasswordConfirm] = useState('')
+  const [error, setError] = useState(null)
+  const [showPassword, setShowPassword] = useState(false)
+  const [showPasswordConfirm, setShowPasswordConfirm] = useState(false)
 
   const handleSubmit = async (e) => {
-    e.preventDefault();
+    e.preventDefault()
 
     if (password !== passwordConfirm) {
-      setError("Las contraseñas no coinciden");
-      return;
+      setError('Las contraseñas no coinciden')
+      return
     }
 
     try {
-      const response = await fetch("/api/auth/registerem", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
+      const response = await fetch('/api/auth/registerem', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ businessName, email, password }),
-      });
-      const data = await response.json();
+      })
+      const data = await response.json()
       if (response.ok) {
-        alert(data.message);
+        alert(data.message)
       } else {
-        setError(data.error);
+        setError(data.error)
       }
     } catch (error) {
-      setError("Error al registrar emprendedor");
+      setError('Error al registrar emprendedor')
     }
-  };
+  }
 
   return (
     <>
@@ -85,7 +85,7 @@ export default function Register() {
             </label>
             <div className="relative">
               <input
-                type={showPassword ? "text" : "password"}
+                type={showPassword ? 'text' : 'password'}
                 id="passwordEmp"
                 className="border border-gray-300 rounded-md p-1 mb-2 text-black w-full"
                 value={password}
@@ -140,7 +140,7 @@ export default function Register() {
             </label>
             <div className="relative">
               <input
-                type={showPasswordConfirm ? "text" : "password"}
+                type={showPasswordConfirm ? 'text' : 'password'}
                 id="passwordrevalid"
                 className="border border-gray-300 rounded-md p-1 mb-2 text-black w-full"
                 value={passwordConfirm}
@@ -206,5 +206,5 @@ export default function Register() {
         </div>
       </div>
     </>
-  );
+  )
 }

@@ -1,33 +1,32 @@
-import { useState } from "react";
-import { toast } from "react-toastify";
+import { useState } from 'react'
+import { toast } from 'react-toastify'
 
 const ModalCrearPublicacion = ({ onClose, categorias, onSubmit }) => {
   const [nuevoForo, setNuevoForo] = useState({
-    titulo: "",
-    descripcion: "",
-    id_foro: "",
-    url_imagen: "",
-  });
+    titulo: '',
+    descripcion: '',
+    id_foro: '',
+    url_imagen: '',
+  })
 
   const handleChange = (e) => {
     setNuevoForo({
       ...nuevoForo,
       [e.target.name]: e.target.value,
-    });
-  };
+    })
+  }
 
   const handleSubmit = () => {
     if (!nuevoForo.titulo || !nuevoForo.descripcion || !nuevoForo.id_foro) {
-      toast.error("Por favor, completa todos los campos obligatorios.");
-      return;
+      toast.error('Por favor, completa todos los campos obligatorios.')
+      return
     }
-  
-    onSubmit(nuevoForo); // Añadir la publicación al estado global
-    toast.success("Publicación creada exitosamente.");
-    setNuevoForo({ titulo: "", descripcion: "", id_foro: "", url_imagen: "" });
-    onClose();
-  };
-  
+
+    onSubmit(nuevoForo) // Añadir la publicación al estado global
+    toast.success('Publicación creada exitosamente.')
+    setNuevoForo({ titulo: '', descripcion: '', id_foro: '', url_imagen: '' })
+    onClose()
+  }
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50 transition-opacity duration-300">
@@ -93,7 +92,7 @@ const ModalCrearPublicacion = ({ onClose, categorias, onSubmit }) => {
         </div>
       </div>
     </div>
-  );
-};
+  )
+}
 
-export default ModalCrearPublicacion;
+export default ModalCrearPublicacion

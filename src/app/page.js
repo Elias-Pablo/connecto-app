@@ -1,69 +1,64 @@
-"use client";
-import { useState, useEffect, Suspense } from "react";
-import { useRouter } from "next/navigation";
-import SearchBar from "@/components/Searchbar";
-import Header from "@/components/Header-us";
-import SearchedProducts from "@/components/Searched-Products";
-import { useCart, CartProvider } from "../../src/app/context/CartContext";
-import Link from "next/link";
-import { jwtDecode } from "jwt-decode";
-import Slider from "react-slick"; // Importación del carrusel de react-slick
-import "slick-carousel/slick/slick.css"; // Importar estilos de slick-carousel
-import "slick-carousel/slick/slick-theme.css";
-import { GoHeart, GoHeartFill } from "react-icons/go";
-import { toast } from "react-toastify";
-import "react-toastify/dist/ReactToastify.css";
+'use client'
+import { useState, useEffect, Suspense } from 'react'
+import SearchBar from '@/components/Searchbar'
+import Header from '@/components/Header-us'
+import SearchedProducts from '@/components/Searched-Products'
+import { useCart, CartProvider } from '../../src/app/context/CartContext'
+import Link from 'next/link'
+import { jwtDecode } from 'jwt-decode'
+import Slider from 'react-slick' // Importación del carrusel de react-slick
+import 'slick-carousel/slick/slick.css' // Importar estilos de slick-carousel
+import 'slick-carousel/slick/slick-theme.css'
+import { GoHeart, GoHeartFill } from 'react-icons/go'
+import { toast } from 'react-toastify'
+import 'react-toastify/dist/ReactToastify.css'
 
 export default function Home() {
-  const router = useRouter();
-  const [searchedProducts, setSearchedProducts] = useState([]);
-  const [favorites, setFavorites] = useState([]);
-  const [user, setUser] = useState(null);
-  const [products, setProducts] = useState([]);
-  const [profiles, setProfiles] = useState([]);
+  const [searchedProducts, setSearchedProducts] = useState([])
+  const [favorites, setFavorites] = useState([])
+  const [user, setUser] = useState(null)
+  const [products, setProducts] = useState([])
+  const [profiles, setProfiles] = useState([])
 
   useEffect(() => {
-    const token = localStorage.getItem("token");
-    console.log("Token recuperado:", token);
+    const token = localStorage.getItem('token')
+    console.log('Token recuperado:', token)
 
     if (token) {
-      const decoded = jwtDecode(token);
-      setUser(decoded);
+      const decoded = jwtDecode(token)
+      setUser(decoded)
     }
-  }, []);
+  }, [])
 
-  const userId = user?.userId;
+  const userId = user?.userId
 
-  const handleFAQClick = () => {
-    router.push("/emprendedores/faq");
-  };
   useEffect(() => {
     const fetchFavorites = async () => {
-      if (!userId) return;
+      if (!userId) return
       try {
-        const response = await fetch(`/api/favorites?userId=${userId}`);
+        const response = await fetch(`/api/favorites?userId=${userId}`)
         if (response.ok) {
-          const data = await response.json();
-          setFavorites(data.favorites); // Guardar productos favoritos en el estado
+          const data = await response.json()
+          setFavorites(data.favorites) // Guardar productos favoritos en el estado
         } else {
-          console.error("Error al cargar productos favoritos");
+          console.error('Error al cargar productos favoritos')
         }
       } catch (error) {
-        console.error("Error en la solicitud de productos favoritos:", error);
+        console.error('Error en la solicitud de productos favoritos:', error)
       }
-    };
+    }
 
-    fetchFavorites();
-  }, [userId]);
+    fetchFavorites()
+  }, [userId])
 
   useEffect(() => {
     const fetchProfilesWithImages = async () => {
       try {
         // Fetch perfiles
-        const response = await fetch("/api/user/emprendedores");
+        const response = await fetch('/api/user/emprendedores')
         if (response.ok) {
-          const data = await response.json();
-          const perfiles = data.perfiles;
+          const data = await response.json()
+          const perfiles = data.perfiles
 
           // Fetch imágenes para cada perfil
           const updatedProfiles = await Promise.all(
@@ -71,144 +66,144 @@ export default function Home() {
               try {
                 const avatarResponse = await fetch(
                   `/api/empAvatar?id_perfil=${perfil.id}`
-                );
+                )
                 if (avatarResponse.ok) {
-                  const avatarData = await avatarResponse.json();
+                  const avatarData = await avatarResponse.json()
                   return {
                     ...perfil,
-                    avatar: avatarData.usuario_imagen || "/placeholder.webp",
-                  };
+                    avatar: avatarData.usuario_imagen || '/placeholder.webp',
+                  }
                 } else {
                   console.error(
                     `Error al cargar la imagen para perfil ${perfil.id}`
-                  );
-                  return { ...perfil, avatar: "/placeholder.webp" };
+                  )
+                  return { ...perfil, avatar: '/placeholder.webp' }
                 }
               } catch (error) {
                 console.error(
                   `Error en la solicitud de imagen para perfil ${perfil.id}:`,
                   error
-                );
-                return { ...perfil, avatar: "/placeholder.webp" };
+                )
+                return { ...perfil, avatar: '/placeholder.webp' }
               }
             })
-          );
+          )
 
-          setProfiles(updatedProfiles);
+          setProfiles(updatedProfiles)
         } else {
-          console.error("Error al cargar perfiles");
+          console.error('Error al cargar perfiles')
         }
       } catch (error) {
-        console.error("Error en la solicitud de perfiles:", error);
+        console.error('Error en la solicitud de perfiles:', error)
       } finally {
-        console.log("Fetch de perfiles completado");
+        console.log('Fetch de perfiles completado')
       }
-    };
+    }
 
-    fetchProfilesWithImages();
-  }, []);
+    fetchProfilesWithImages()
+  }, [])
 
   useEffect(() => {
     const fetchProducts = async () => {
       try {
-        const response = await fetch("/api/products");
+        const response = await fetch('/api/products')
         if (response.ok) {
-          const data = await response.json();
-          setProducts(data.products);
+          const data = await response.json()
+          setProducts(data.products)
         } else {
-          console.error("Error al cargar productos");
+          console.error('Error al cargar productos')
         }
       } catch (error) {
-        console.error("Error en la solicitud:", error);
+        console.error('Error en la solicitud:', error)
       }
-    };
+    }
 
-    fetchProducts();
-  }, []);
+    fetchProducts()
+  }, [])
 
   const handleSearch = async (query) => {
     try {
-      const response = await fetch(`/api/products?query=${query}`);
+      const response = await fetch(`/api/products?query=${query}`)
       if (response.ok) {
-        const data = await response.json();
-        setSearchedProducts(data.products);
+        const data = await response.json()
+        setSearchedProducts(data.products)
       } else {
-        console.error("Error al buscar productos");
+        console.error('Error al buscar productos')
       }
     } catch (error) {
-      console.error("Error en la solicitud de búsqueda:", error);
+      console.error('Error en la solicitud de búsqueda:', error)
     }
-  };
+  }
 
   const handleAddToFavorites = async (product) => {
-    setFavorites((prevFavorites) => [...prevFavorites, product]);
+    setFavorites((prevFavorites) => [...prevFavorites, product])
 
     try {
       const response = await fetch(`/api/favorites`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ userId, productId: product.id }),
-      });
+      })
 
       if (!response.ok) {
         console.error(
-          "Error al agregar producto a favoritos en la base de datos"
-        );
+          'Error al agregar producto a favoritos en la base de datos'
+        )
       } else {
-        toast.success("Producto agregado a favoritos");
+        toast.success('Producto agregado a favoritos')
       }
     } catch (error) {
-      console.error("Error en la solicitud de agregar a favoritos:", error);
+      console.error('Error en la solicitud de agregar a favoritos:', error)
     }
-  };
+  }
 
   const handleRemoveFromFavorites = async (productId) => {
     setFavorites((prevFavorites) =>
       prevFavorites.filter((item) => item.id !== productId)
-    );
+    )
 
     try {
-      const userId = user?.userId; // Obtener el userId desde el estado `user`
+      const userId = user?.userId // Obtener el userId desde el estado `user`
       const response = await fetch(
         `/api/favorites/${productId}?userId=${userId}`,
         {
-          method: "DELETE",
+          method: 'DELETE',
         }
-      );
+      )
 
       if (!response.ok) {
-        console.error("Error al eliminar el producto de favoritos");
+        console.error('Error al eliminar el producto de favoritos')
       } else {
-        toast.info("Producto eliminado de favoritos");
+        toast.info('Producto eliminado de favoritos')
       }
     } catch (error) {
-      console.error("Error en la solicitud de eliminar de favoritos:", error);
+      console.error('Error en la solicitud de eliminar de favoritos:', error)
     }
-  };
+  }
 
   const FAQ = [
     {
-      question: "¿Qué es ConnecTo y cómo funciona?",
+      question: '¿Qué es ConnecTo y cómo funciona?',
       answer:
-        "ConnecTo es una plataforma que facilita la conexión entre emprendedores y clientes mediante perfiles personalizados, productos destacados y planes de suscripción.",
+        'ConnecTo es una plataforma que facilita la conexión entre emprendedores y clientes mediante perfiles personalizados, productos destacados y planes de suscripción.',
     },
     {
-      question: "¿Es ConnecTo fácil de usar?",
+      question: '¿Es ConnecTo fácil de usar?',
       answer:
-        "Sí, ConnecTo está diseñado para ser accesible y fácil de usar. La plataforma proporciona una navegación sencilla con secciones claramente definidas.",
+        'Sí, ConnecTo está diseñado para ser accesible y fácil de usar. La plataforma proporciona una navegación sencilla con secciones claramente definidas.',
     },
-  ];
+  ]
 
   const ProductSection = () => {
-    const { addToCart } = useCart();
+    const { addToCart } = useCart()
 
     const formatPrice = (price) => {
-      return new Intl.NumberFormat("es-CL", {
-        style: "currency",
-        currency: "CLP",
+      return new Intl.NumberFormat('es-CL', {
+        style: 'currency',
+        currency: 'CLP',
         minimumFractionDigits: 0,
-      }).format(price);
-    };
+      }).format(price)
+    }
 
     const handleInteraction = async (
       type,
@@ -216,17 +211,17 @@ export default function Home() {
       id_producto = null,
       cantidad = null
     ) => {
-      const token = localStorage.getItem("token");
+      const token = localStorage.getItem('token')
       if (!token) {
-        console.error("Token no encontrado");
-        return;
+        console.error('Token no encontrado')
+        return
       }
 
       try {
-        const response = await fetch("/api/interactions", {
-          method: "POST",
+        const response = await fetch('/api/interactions', {
+          method: 'POST',
           headers: {
-            "Content-Type": "application/json",
+            'Content-Type': 'application/json',
             Authorization: `Bearer ${token}`,
           },
           body: JSON.stringify({
@@ -235,20 +230,20 @@ export default function Home() {
             id_producto,
             cantidad, // Send cantidad as null if not provided
           }),
-        });
+        })
 
         if (response.ok) {
-          console.log(`Interacción de tipo ${type} registrada con éxito.`);
+          console.log(`Interacción de tipo ${type} registrada con éxito.`)
         } else {
-          const errorData = await response.json();
+          const errorData = await response.json()
           console.error(
             `Error al registrar la interacción. Status: ${response.status}, Mensaje: ${errorData.message}`
-          );
+          )
         }
       } catch (error) {
-        console.error("Error en la solicitud de interacción:", error);
+        console.error('Error en la solicitud de interacción:', error)
       }
-    };
+    }
 
     const sliderSettings = {
       dots: true,
@@ -257,7 +252,7 @@ export default function Home() {
       slidesToShow: 1,
       slidesToScroll: 1,
       arrows: true,
-    };
+    }
 
     return (
       <section className="bg-white p-10">
@@ -280,7 +275,7 @@ export default function Home() {
                             key={index}
                             onClick={() =>
                               handleInteraction(
-                                "Click",
+                                'Click',
                                 product.id_perfil,
                                 product.id
                               )
@@ -313,11 +308,11 @@ export default function Home() {
                   </Link>
                   <div className="flex flex-col space-y-2 mt-2">
                     <p className="text-xs text-gray-500 my-2">
-                      Vendedor:{" "}
+                      Vendedor:{' '}
                       <Link
                         href={`/user/emprendedores/profile?id_perfil=${product.id_perfil}`}
                         onClick={() =>
-                          handleInteraction("View", product.id_perfil)
+                          handleInteraction('View', product.id_perfil)
                         } // Registrar interacción de tipo "View"
                         className="text-sky-500"
                       >
@@ -327,11 +322,11 @@ export default function Home() {
                     <button
                       onClick={() => {
                         handleInteraction(
-                          "Click",
+                          'Click',
                           product.id_perfil,
                           product.id
-                        ); // Registrar interacción de tipo "Click"
-                        addToCart(product); // Agregar producto al carrito
+                        ) // Registrar interacción de tipo "Click"
+                        addToCart(product) // Agregar producto al carrito
                       }}
                       className="bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600"
                     >
@@ -358,8 +353,8 @@ export default function Home() {
           </div>
         </>
       </section>
-    );
-  };
+    )
+  }
 
   const ProfileSection = () => {
     return (
@@ -380,7 +375,7 @@ export default function Home() {
                   >
                     <div className="w-32 h-32 mx-auto rounded-full shadow-lg overflow-hidden hover:scale-105 duration-300">
                       <img
-                        src={profiles.avatar || "/placeholder.webp"}
+                        src={profiles.avatar || '/placeholder.webp'}
                         width={128}
                         height={128}
                         alt={profiles.nombreNegocio}
@@ -398,15 +393,15 @@ export default function Home() {
           </div>
         </div>
       </section>
-    );
-  };
+    )
+  }
 
   const FAQSection = () => {
-    const [expandedQuestion, setExpandedQuestion] = useState(null);
+    const [expandedQuestion, setExpandedQuestion] = useState(null)
 
     const handleToggleAnswer = (index) => {
-      setExpandedQuestion(expandedQuestion === index ? null : index);
-    };
+      setExpandedQuestion(expandedQuestion === index ? null : index)
+    }
 
     return (
       <section className="p-10 bg-gray-100">
@@ -429,8 +424,8 @@ export default function Home() {
           ))}
         </div>
       </section>
-    );
-  };
+    )
+  }
 
   return (
     <CartProvider>
@@ -450,5 +445,5 @@ export default function Home() {
       <ProfileSection />
       <FAQSection />
     </CartProvider>
-  );
+  )
 }

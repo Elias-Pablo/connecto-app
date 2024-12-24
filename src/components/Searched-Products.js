@@ -1,20 +1,20 @@
-import { useCart } from "../../src/app/context/CartContext";
-import Link from "next/link";
-import Slider from "react-slick"; // Importación del carrusel de react-slick
-import "slick-carousel/slick/slick.css"; // Importar estilos de slick-carousel
-import "slick-carousel/slick/slick-theme.css";
+import { useCart } from '../../src/app/context/CartContext'
+import Link from 'next/link'
+import Slider from 'react-slick' // Importación del carrusel de react-slick
+import 'slick-carousel/slick/slick.css' // Importar estilos de slick-carousel
+import 'slick-carousel/slick/slick-theme.css'
 
 export default function SearchedProducts({ products }) {
-  const { addToCart } = useCart();
+  const { addToCart } = useCart()
 
   // Formatear el precio
   const formatPrice = (price) => {
-    return new Intl.NumberFormat("es-CL", {
-      style: "currency",
-      currency: "CLP",
+    return new Intl.NumberFormat('es-CL', {
+      style: 'currency',
+      currency: 'CLP',
       minimumFractionDigits: 0,
-    }).format(price);
-  };
+    }).format(price)
+  }
 
   // Configuración del carrusel
   const sliderSettings = {
@@ -24,7 +24,7 @@ export default function SearchedProducts({ products }) {
     slidesToShow: 1,
     slidesToScroll: 1,
     arrows: true,
-  };
+  }
 
   return (
     <div className="mt-4 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 bg-accent-cream shadow-lg border border-gray-200 gap-5 w-full p-8 mb-4 rounded-lg">
@@ -40,7 +40,7 @@ export default function SearchedProducts({ products }) {
                   {product.images.map((img, index) => (
                     <div key={index}>
                       <img
-                        src={img || "/placeholder.jpg"}
+                        src={img || '/placeholder.jpg'}
                         alt={`Producto ${index + 1}`}
                         width={250}
                         height={250}
@@ -70,7 +70,7 @@ export default function SearchedProducts({ products }) {
               Precio: {formatPrice(product.price)}
             </p>
             <p className="text-xs text-gray-500 my-2">
-              Vendedor:{" "}
+              Vendedor:{' '}
               <Link
                 href={`/user/emprendedores/profile?id_perfil=${product.id_perfil}`}
                 className="text-sky-500"
@@ -80,8 +80,8 @@ export default function SearchedProducts({ products }) {
             </p>
             <button
               onClick={(e) => {
-                e.stopPropagation(); // Prevenir que el click en el botón navegue al link del producto
-                addToCart(product);
+                e.stopPropagation() // Prevenir que el click en el botón navegue al link del producto
+                addToCart(product)
               }}
               className="mt-2 bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-700"
             >
@@ -91,5 +91,5 @@ export default function SearchedProducts({ products }) {
         </div>
       ))}
     </div>
-  );
+  )
 }

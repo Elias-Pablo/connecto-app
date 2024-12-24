@@ -1,6 +1,6 @@
-import Link from "next/link";
-import Image from "next/image";
-import { ArrowRightEndOnRectangleIcon } from "@heroicons/react/24/outline";
+import Link from 'next/link'
+import Image from 'next/image'
+import { ArrowRightEndOnRectangleIcon } from '@heroicons/react/24/outline'
 
 export default function Recover() {
   return (
@@ -56,5 +56,5 @@ export default function Recover() {
         </div>
       </div>
     </>
-  );
+  )
 }

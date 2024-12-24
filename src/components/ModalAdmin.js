@@ -1,59 +1,57 @@
-import { useState } from "react";
-import { toast } from "react-toastify";
+import { useState } from 'react'
+import { toast } from 'react-toastify'
 
 const ModalAdmin = ({ misPublicaciones, onClose, onEdit, onDelete }) => {
-  const [publicacionSeleccionada, setPublicacionSeleccionada] = useState(null);
-  const [titulo, setTitulo] = useState("");
-  const [descripcion, setDescripcion] = useState("");
-  const [confirmDelete, setConfirmDelete] = useState(null); // Publicación seleccionada para eliminar
+  const [publicacionSeleccionada, setPublicacionSeleccionada] = useState(null)
+  const [titulo, setTitulo] = useState('')
+  const [descripcion, setDescripcion] = useState('')
+  const [confirmDelete, setConfirmDelete] = useState(null) // Publicación seleccionada para eliminar
 
   const abrirModalEditar = (pub) => {
-    setPublicacionSeleccionada(pub);
-    setTitulo(pub.titulo);
-    setDescripcion(pub.descripcion);
-  };
+    setPublicacionSeleccionada(pub)
+    setTitulo(pub.titulo)
+    setDescripcion(pub.descripcion)
+  }
 
   const cerrarModalEditar = () => {
-    setPublicacionSeleccionada(null);
-    setTitulo("");
-    setDescripcion("");
-  };
+    setPublicacionSeleccionada(null)
+    setTitulo('')
+    setDescripcion('')
+  }
 
   const handleConfirmDelete = () => {
     if (confirmDelete) {
-      onDelete(confirmDelete); // Llamar a la función de eliminación desde el padre
-      setConfirmDelete(null); // Cerrar el modal de confirmación
-      toast.success("Publicación eliminada exitosamente.");
+      onDelete(confirmDelete) // Llamar a la función de eliminación desde el padre
+      setConfirmDelete(null) // Cerrar el modal de confirmación
+      toast.success('Publicación eliminada exitosamente.')
     }
-  };
-  
+  }
+
   const handleGuardarCambios = () => {
     if (!titulo || !descripcion) {
-      toast.error("Por favor, completa todos los campos.");
-      return;
+      toast.error('Por favor, completa todos los campos.')
+      return
     }
-  
+
     // Verificar si hay cambios
     if (
       titulo === publicacionSeleccionada.titulo &&
       descripcion === publicacionSeleccionada.descripcion
     ) {
-      toast.info("No se detectaron cambios en la publicación.");
-      cerrarModalEditar();
-      return;
+      toast.info('No se detectaron cambios en la publicación.')
+      cerrarModalEditar()
+      return
     }
-  
+
     onEdit({
       id_publicaciones: publicacionSeleccionada.id_publicaciones,
       titulo,
       descripcion,
-    });
-  
-    toast.success("Publicación actualizada exitosamente.");
-    cerrarModalEditar();
-  };
-  
-  
+    })
+
+    toast.success('Publicación actualizada exitosamente.')
+    cerrarModalEditar()
+  }
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
@@ -102,7 +100,9 @@ const ModalAdmin = ({ misPublicaciones, onClose, onEdit, onDelete }) => {
           <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
             <div className="bg-white p-6 rounded-lg shadow-lg w-11/12 md:w-1/3">
               <h3 className="text-xl font-bold mb-4">Confirmar Eliminación</h3>
-              <p className="mb-4">¿Estás seguro de que deseas eliminar esta publicación?</p>
+              <p className="mb-4">
+                ¿Estás seguro de que deseas eliminar esta publicación?
+              </p>
               <div className="flex justify-end space-x-4">
                 <button
                   onClick={handleConfirmDelete}
@@ -166,7 +166,7 @@ const ModalAdmin = ({ misPublicaciones, onClose, onEdit, onDelete }) => {
         )}
       </div>
     </div>
-  );
-};
+  )
+}
 
-export default ModalAdmin;
+export default ModalAdmin

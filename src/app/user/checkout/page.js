@@ -1,8 +1,8 @@
-"use client";
-import { useEffect, useState } from "react";
-import { useCart } from "@/app/context/CartContext";
-import { useRouter } from "next/navigation";
-import Header from "@/components/Header-us";
+'use client'
+import { useEffect, useState } from 'react'
+import { useCart } from '@/app/context/CartContext'
+import { useRouter } from 'next/navigation'
+import Header from '@/components/Header-us'
 
 export default function Checkout() {
   const {
@@ -12,29 +12,29 @@ export default function Checkout() {
     removeFromCart,
     decreaseQuantity,
     addToCart,
-  } = useCart();
-  const [isLoading, setIsLoading] = useState(true);
-  const router = useRouter();
+  } = useCart()
+  const [isLoading, setIsLoading] = useState(true)
+  const router = useRouter()
 
   // Sincronizar el carrito desde localStorage al cargar la página
   useEffect(() => {
-    const storedCart = localStorage.getItem("cart");
+    const storedCart = localStorage.getItem('cart')
     if (storedCart) {
-      const parsedCart = JSON.parse(storedCart);
-      setCartItems(parsedCart); // Sincronizamos el carrito con los datos del storage
-      setIsLoading(false);
+      const parsedCart = JSON.parse(storedCart)
+      setCartItems(parsedCart) // Sincronizamos el carrito con los datos del storage
+      setIsLoading(false)
     } else {
-      setIsLoading(false); // No hay carrito almacenado
+      setIsLoading(false) // No hay carrito almacenado
     }
-  }, [setCartItems]);
+  }, [setCartItems])
 
   // Redirigir si el carrito está vacío
   useEffect(() => {
     if (!isLoading && cartItems.length === 0) {
-      alert("Tu carrito está vacío. Redirigiendo a la tienda...");
-      router.push("/");
+      alert('Tu carrito está vacío. Redirigiendo a la tienda...')
+      router.push('/')
     }
-  }, [cartItems, isLoading, router]);
+  }, [cartItems, isLoading, router])
 
   if (isLoading) {
     return (
@@ -60,33 +60,33 @@ export default function Checkout() {
           }
         `}</style>
       </div>
-    );
+    )
   }
 
   const handleConfirmPurchase = async () => {
     try {
-      router.push("/user/secure/payment");
+      router.push('/user/secure/payment')
     } catch (error) {
-      console.error("Error en la confirmación de la compra:", error);
+      console.error('Error en la confirmación de la compra:', error)
     }
-  };
+  }
 
   const handleRemoveItem = (productId) => {
     if (
-      typeof window !== "undefined" &&
-      window.confirm("¿Estás seguro de que deseas eliminar este producto?")
+      typeof window !== 'undefined' &&
+      window.confirm('¿Estás seguro de que deseas eliminar este producto?')
     ) {
-      removeFromCart(productId);
+      removeFromCart(productId)
     }
-  };
+  }
 
   const formatPrice = (price) => {
-    return new Intl.NumberFormat("es-CL", {
-      style: "currency",
-      currency: "CLP",
+    return new Intl.NumberFormat('es-CL', {
+      style: 'currency',
+      currency: 'CLP',
       minimumFractionDigits: 0,
-    }).format(price);
-  };
+    }).format(price)
+  }
 
   return (
     <div>
@@ -104,7 +104,7 @@ export default function Checkout() {
               >
                 <div className="flex items-center gap-4">
                   <img
-                    src={item.images[0] || "/placeholder.webp"}
+                    src={item.images[0] || '/placeholder.webp'}
                     alt={item.name}
                     className="w-24 h-24 object-cover rounded-lg"
                   />
@@ -156,7 +156,7 @@ export default function Checkout() {
               Ir a pagar →
             </button>
             <button
-              onClick={() => router.push("/")}
+              onClick={() => router.push('/')}
               className="mt-2 w-full text-blue-500 py-2 rounded hover:underline"
             >
               Seguir comprando
@@ -165,5 +165,5 @@ export default function Checkout() {
         </div>
       </div>
     </div>
-  );
+  )
 }
