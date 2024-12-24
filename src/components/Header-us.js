@@ -19,7 +19,7 @@ export default function Header() {
   const [notifications, setNotifications] = useState([])
 
   const [unreadMessages, setUnreadMessages] = useState(0) // Mensajes no leídos
-  const [setChats] = useState([]) // Chats con clientes
+  const [chats, setChats] = useState([]) // Chats con clientes
 
   // Fetch inicial para obtener chats y mensajes no leídos
   useEffect(() => {
